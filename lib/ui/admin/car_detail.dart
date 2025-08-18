@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
-import 'package:mummy_cabs/resources/static_datas.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -21,8 +20,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   final AppColors _colors = AppColors();
   late AppController appController;
   final PreferenceService pref = Get.find<PreferenceService>();
-
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
+  String searchKey = "";
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +45,16 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                         child: CustomInput(
                       hintText: "Search name or register number",
                       fieldname: "search",
                       fieldType: "novalidation",
-                      prefixWidget: Icon(Icons.search),
+                      prefixWidget: const Icon(Icons.search),
+                      onchanged: (val) {
+                        searchKey = val.toString();
+                        setState(() {});
+                      },
                     )),
                     IconButton(
                         onPressed: () {
@@ -64,30 +67,36 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  child: ListView.separated(
+                  child: ListView.builder(
                     itemCount: pref.carList.length,
                     itemBuilder: (context, index) {
                       dynamic currentData = pref.carList[index];
-                      return Row(
-                        children: [
-                          Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
-                          Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'], fntsize: 14)),
-                          Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'], fntsize: 14)),
-                          Expanded(
-                              flex: 1,
-                              child: GestureDetector(
-                                  onTap: () {
-                                    Utils().showAlert("De", "Do you want to deactive?", subTitle: "Deactivate", onComplete: () {
-                                      Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": currentData['active_flag'] == 1 ? 0 : 1};
-                                      appController.deactivatecar(postParams);
-                                    });
-                                  },
-                                  child: currentData['active_flag'] == 1 ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour))),
-                        ],
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const Divider();
+                      String isactive = currentData['active_flag'].toString();
+                      return currentData['car_name'].toString().toLowerCase().contains(searchKey.toLowerCase()) || currentData['reg_no'].toString().toLowerCase().contains(searchKey.toLowerCase())
+                          ? Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
+                                    Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'], fntsize: 14)),
+                                    Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'], fntsize: 14)),
+                                    Expanded(
+                                        flex: 1,
+                                        child: GestureDetector(
+                                            onTap: () {
+                                              Utils().showAlert("De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
+                                                  onComplete: () {
+                                                Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": isactive == "1" ? 0 : 1};
+                                                appController.deactivatecar(postParams);
+                                              });
+                                            },
+                                            child: isactive == "1" ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour))),
+                                  ],
+                                ),
+                                const Divider()
+                              ],
+                            )
+                          : const SizedBox();
                     },
                   ),
                 ),

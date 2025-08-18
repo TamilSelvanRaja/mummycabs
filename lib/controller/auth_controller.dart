@@ -13,12 +13,14 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //******************* User Register Function ***********************/
 //******************************************************************/
-  Future userregister(dynamic postParams, String localpath, bool isAdminadd) async {
+  Future userregister(dynamic postParams, String localpath, bool issignup) async {
     final responce = await apiresponceCallback(postParams, localpath);
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
         Get.back();
-        Utils().showToast("Success", responce['message'], bgclr: _colors.greenColour);
+        if (issignup) {
+          Utils().showToast("Success", responce['message'], bgclr: _colors.greenColour);
+        }
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
       }
@@ -61,6 +63,8 @@ class AppController with ChangeNotifier {
     if (responce != null) {
       if (searchkey == "car_list") {
         pref.carList = responce['data'];
+      } else {
+        pref.driversList = responce['data'];
       }
       notifyListeners();
     }
@@ -82,7 +86,6 @@ class AppController with ChangeNotifier {
   Future deactivatecar(postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
       await getcarList("car_list");
       notifyListeners();
     }
@@ -94,7 +97,6 @@ class AppController with ChangeNotifier {
       final responce = await ApiServices().formDataAPIServices(postParams, localpath);
       Utils().hideProgress();
 
-      log("responce :$responce");
       if (responce != null) {
         if (responce["msg"].toString() == "true") {
           return responce;

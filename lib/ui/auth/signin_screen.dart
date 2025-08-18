@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       UIHelper.titleTxtStyle("Dont have an account?", fntcolor: _colors.bluecolor, fntsize: 14),
                       InkWell(
                           onTap: () {
-                            Get.toNamed(Routes.signup);
+                            Get.toNamed(Routes.signup, arguments: {"isSignup": true});
                           },
                           child: UIHelper.titleTxtStyle(" Register here", fntcolor: _colors.bluecolor, fntsize: 14, fntWeight: FontWeight.bold)),
                     ],

@@ -8,6 +8,7 @@ class AppColors {
   Color whiteColour = const Color(0xFFFFFFFF);
   Color blackColour = const Color(0xFF000000);
   Color greycolor = const Color(0xFF555252);
+  Color greycolor1 = const Color(0xFFBBB9B9);
 
   Color bluecolor = const Color(0xFF291AFF);
   Color redColour = const Color(0xFFD82525);
