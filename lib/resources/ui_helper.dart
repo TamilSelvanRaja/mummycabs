@@ -28,11 +28,12 @@ class UIHelper {
   }
 
 // Form builder Input Fields Decoration
-  static InputDecoration inputDecorateWidget(String labelText, final prefixWidget, {final suffixWidget}) {
+  static InputDecoration inputDecorateWidget(String labelText, final prefixWidget, {final suffixWidget, String suffixString = ""}) {
     return InputDecoration(
       labelText: labelText,
       suffixIcon: suffixWidget,
       prefixIcon: prefixWidget,
+      suffixText: suffixString,
       labelStyle: customTxtStyle(_colors.blackColour, 11, FontWeight.w600),
       filled: true,
       counterText: '',

@@ -1,14 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/custom_popup.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/services.dart';
 
 class Utils {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
-
+  final PreferenceService pref = Get.find<PreferenceService>();
   bool isNumberValid(value) {
     return RegExp(r'^[6789]\d{9}$').hasMatch(value);
   }
@@ -49,5 +52,10 @@ class Utils {
       barrierDismissible: false,
       CustomAlert(title: contentType, message: message, onBackPress: onBackPress ?? () {}, onClickOK: onComplete ?? () {}, subTitle: subTitle ?? ""),
     );
+  }
+
+  getDriverdetails(userid) {
+    dynamic user1 = pref.driversList.where((e) => e["_id"].toString() == userid).toList().first;
+    return user1;
   }
 }

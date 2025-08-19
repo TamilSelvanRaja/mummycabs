@@ -159,6 +159,54 @@ class _CustomInputState extends State<CustomInput> {
 }
 
 //*******************************************************/
+//*********** Input Field Class with Validation *********/
+//*******************************************************/
+class CustomInput1 extends StatefulWidget {
+  final String hintText;
+  final String fieldname;
+  final String fieldType;
+  final Widget? prefixWidget;
+  const CustomInput1({super.key, required this.hintText, required this.fieldname, required this.fieldType, this.prefixWidget});
+  @override
+  State<CustomInput1> createState() => _CustomInputState1();
+}
+
+class _CustomInputState1 extends State<CustomInput1> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FormBuilderTextField(
+      textInputAction: TextInputAction.next,
+      style: UIHelper.customTxtStyle(_colors.blackColour, 14, FontWeight.w400),
+      name: widget.fieldname,
+      initialValue: "",
+      autocorrect: false,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: (value) {},
+      decoration: UIHelper.inputDecorateWidget(widget.hintText, widget.prefixWidget, suffixString: widget.hintText == "Driver Salary" ? "%" : "₹"),
+      validator: ((value) {
+        if (widget.fieldType != "novalidation") {
+          if (value == "" || value == null) {
+            return "${widget.hintText} is required";
+          }
+        }
+        return null;
+      }),
+      keyboardType: TextInputType.number,
+    );
+  }
+}
+
+//*******************************************************/
 //*********** Date Picker Class with Validation *********/
 //*******************************************************/
 class CustomDatePicker extends StatefulWidget {

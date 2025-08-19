@@ -26,7 +26,6 @@ class _StartTripScreenState extends State<StartTripScreen> {
   final PreferenceService pref = Get.find<PreferenceService>();
   Map<String, dynamic> postParams = {};
   String selectedDriverid = "";
-  int currentperform = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
           iconTheme: IconThemeData(color: _colors.bgClr),
           title: UIHelper.titleTxtStyle("Start Trip", fntcolor: _colors.bgClr, fntsize: 22),
         ),
-        body: SingleChildScrollView(child: currentperform == 1 ? page1() : page2()));
+        body: SingleChildScrollView(child: page1()));
   }
 
   Widget page1() {
@@ -98,39 +97,46 @@ class _StartTripScreenState extends State<StartTripScreen> {
                   }),
             ),
             UIHelper.verticalSpaceSmall,
+            UIHelper.titleTxtStyle("Amount Details", fntcolor: _colors.primarycolour, fntsize: 18),
+            UIHelper.verticalSpaceSmall,
             const Row(
               children: [
-                Expanded(child: CustomInput(hintText: "OLA Cash", fieldname: "ola_cash", fieldType: "novalidation")),
+                Expanded(child: CustomInput1(hintText: "OLA Cash", fieldname: "ola_cash", fieldType: "novalidation")),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomInput(hintText: "OLA Operator", fieldname: "ola_operator", fieldType: "novalidation")),
+                Expanded(child: CustomInput1(hintText: "OLA Operator", fieldname: "ola_operator", fieldType: "novalidation")),
               ],
             ),
             UIHelper.verticalSpaceSmall,
             const Row(
               children: [
-                Expanded(child: CustomInput(hintText: "Uber Cash", fieldname: "uber_cash", fieldType: "novalidation")),
+                Expanded(child: CustomInput1(hintText: "Uber Cash", fieldname: "uber_cash", fieldType: "novalidation")),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomInput(hintText: "Uber Operator", fieldname: "uber_operator", fieldType: "novalidation")),
+                Expanded(child: CustomInput1(hintText: "Uber Operator", fieldname: "uber_operator", fieldType: "novalidation")),
               ],
             ),
             UIHelper.verticalSpaceSmall,
             const Row(
               children: [
-                Expanded(child: CustomInput(hintText: "Rapido Cash", fieldname: "rapido_cash", fieldType: "novalidation")),
+                Expanded(child: CustomInput1(hintText: "Rapido Cash", fieldname: "rapido_cash", fieldType: "novalidation")),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomInput(hintText: "Rapido Operator", fieldname: "rapido_operator", fieldType: "novalidation")),
+                Expanded(child: CustomInput1(hintText: "Rapido Operator", fieldname: "rapido_operator", fieldType: "novalidation")),
               ],
             ),
             UIHelper.verticalSpaceSmall,
-            const CustomInput(hintText: "Others", fieldname: "other_cash", fieldType: "novalidation"),
+            const CustomInput1(hintText: "Others", fieldname: "other_cash", fieldType: "novalidation"),
+            UIHelper.verticalSpaceSmall,
+            UIHelper.titleTxtStyle("Expences Details", fntcolor: _colors.primarycolour, fntsize: 18),
+            UIHelper.verticalSpaceSmall,
+            const CustomInput1(hintText: "Driver Salary", fieldname: "salary_perentage", fieldType: "salary"),
+            UIHelper.verticalSpaceSmall,
+            const CustomInput1(hintText: "Fuel", fieldname: "fuel_amt", fieldType: "fuel"),
             UIHelper.verticalSpaceMedium,
             Center(
               child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
                 if (_formKey.currentState!.saveAndValidate()) {
                   if (selectedDriverid.isNotEmpty) {
                     postParams = Map.from(_formKey.currentState!.value);
-                    postParams['service'] = "start_trip";
-                    postParams['driver_id'] = selectedDriverid;
+
                     double olacash = postParams['ola_cash'].toString().isNotEmpty ? double.parse(postParams['ola_cash']) : 0.0;
                     double ubercash = postParams['uber_cash'].toString().isNotEmpty ? double.parse(postParams['uber_cash']) : 0.0;
                     double rapidocash = postParams['rapido_cash'].toString().isNotEmpty ? double.parse(postParams['rapido_cash']) : 0.0;
@@ -139,23 +145,31 @@ class _StartTripScreenState extends State<StartTripScreen> {
                     double olaoperator = postParams['ola_operator'].toString().isNotEmpty ? double.parse(postParams['ola_operator']) : 0.0;
                     double uberoperator = postParams['uber_operator'].toString().isNotEmpty ? double.parse(postParams['uber_operator']) : 0.0;
                     double rapidoperator = postParams['rapido_operator'].toString().isNotEmpty ? double.parse(postParams['rapido_operator']) : 0.0;
+                    int salaryPercent = int.parse(postParams['salary_perentage'].toString());
 
+                    postParams['service'] = "start_trip";
+                    postParams['driver_id'] = selectedDriverid;
+                    postParams['over_all_operator'] = olaoperator + uberoperator + rapidoperator;
+                    postParams['over_all_cash'] = olacash + ubercash + rapidocash + othercash;
+
+                    double fuelamt = postParams['fuel_amt'].toString().isNotEmpty ? double.parse(postParams['fuel_amt']) : 0.0;
+                    double driversalary = salaryPercent / 100 * postParams['over_all_operator'];
+                    double needtopay = postParams['over_all_cash'] - driversalary - fuelamt;
+
+                    postParams['driversalary'] = "$driversalary";
+                    postParams['needtopay'] = "$needtopay";
                     postParams['amount_details'] = [
                       {"type": "OLA", "cash": olacash, "operator": olaoperator},
                       {"type": "Uber", "cash": ubercash, "operator": uberoperator},
                       {"type": "Rapido", "cash": rapidocash, "operator": rapidoperator},
-                      {"type": "Others", "cash": othercash, "operator": ""},
+                      {"type": "Others", "cash": othercash, "operator": "0.0"},
                     ];
 
-                    postParams['over_all_operator'] = olaoperator + uberoperator + rapidoperator;
-                    postParams['over_all_cash'] = olacash + ubercash + rapidocash + othercash;
-
-                    // currentperform = 2;
-                    setState(() {});
-                    log("$postParams");
+                    pref.starttripList.add(postParams);
+                    Get.back();
+                  } else {
+                    Utils().showAlert("W", "Please select the Driver");
                   }
-                } else {
-                  Utils().showAlert("W", "Please select the Driver");
                 }
               }),
             )
@@ -193,14 +207,14 @@ class _StartTripScreenState extends State<StartTripScreen> {
               ),
             ),
             UIHelper.titleTxtStyle("${postParams['over_all_operator']}", fntcolor: _colors.primarycolour, fntsize: 18, textOverflow: TextOverflow.visible),
-            // Center(
-            //   child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
-            //     // if (_page2key.currentState!.saveAndValidate()) {
-            //     //    Map<String, dynamic> postParams = Map.from(_page2key.currentState!.value);
-            //     //   log("$postParams");
-            //     // }
-            //   }),
-            // )
+            Center(
+              child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
+                // if (_page2key.currentState!.saveAndValidate()) {
+                //    Map<String, dynamic> postParams = Map.from(_page2key.currentState!.value);
+                //   log("$postParams");
+                // }
+              }),
+            )
           ],
         ),
       ),
