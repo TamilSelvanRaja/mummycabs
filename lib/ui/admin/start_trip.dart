@@ -18,14 +18,23 @@ class StartTripScreen extends StatefulWidget {
 }
 
 class _StartTripScreenState extends State<StartTripScreen> {
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-  final GlobalKey<FormBuilderState> _page2key = GlobalKey<FormBuilderState>();
-
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
-  Map<String, dynamic> postParams = {};
+
+  String tripDate = "";
+  String vehiclenumber = "";
   String selectedDriverid = "";
+  String olacash = "", olaoperator = "";
+  String ubercash = "", uberoperator = "";
+  String rapidocash = "", rapidooperator = "";
+  String othercash = "", otheroperator = "";
+  String salaryPercentage = "";
+  String fuel = "";
+  String otherexp = "";
+
+  double overAllCashAmt = 0.0;
+  double overAllOperatorAmt = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +51,6 @@ class _StartTripScreenState extends State<StartTripScreen> {
 
   Widget page1() {
     return FormBuilder(
-      key: _formKey,
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -51,9 +59,26 @@ class _StartTripScreenState extends State<StartTripScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: CustomDatePicker(hintText: "Trip Date", fieldname: "trip_date", onSelected: (val) {})),
+                Expanded(
+                    child: CustomDatePicker(
+                        initValue: tripDate,
+                        hintText: "Trip Date",
+                        fieldname: "trip_date",
+                        onSelected: (val) {
+                          tripDate = val;
+                          setState(() {});
+                        })),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomDropDown(initList: pref.carList, hintText: "Vehicle Number", fieldname: "vehicle_no", onSelected: (val) {}))
+                Expanded(
+                    child: CustomDropDown(
+                        initList: pref.carList,
+                        initValue: vehiclenumber,
+                        hintText: "Vehicle Number",
+                        fieldname: "vehicle_no",
+                        onSelected: (val) {
+                          vehiclenumber = val;
+                          setState(() {});
+                        }))
               ],
             ),
             UIHelper.verticalSpaceMedium,
@@ -99,77 +124,184 @@ class _StartTripScreenState extends State<StartTripScreen> {
             UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle("Amount Details", fntcolor: _colors.primarycolour, fntsize: 18),
             UIHelper.verticalSpaceSmall,
-            const Row(
+            Row(
               children: [
-                Expanded(child: CustomInput1(hintText: "OLA Cash", fieldname: "ola_cash", fieldType: "novalidation")),
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "OLA Cash",
+                  initValue: olacash,
+                  fieldname: "ola_cash",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    olacash = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomInput1(hintText: "OLA Operator", fieldname: "ola_operator", fieldType: "novalidation")),
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "OLA Operator",
+                  initValue: olaoperator,
+                  fieldname: "ola_operator",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    olaoperator = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
               ],
             ),
             UIHelper.verticalSpaceSmall,
-            const Row(
+            Row(
               children: [
-                Expanded(child: CustomInput1(hintText: "Uber Cash", fieldname: "uber_cash", fieldType: "novalidation")),
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "Uber Cash",
+                  initValue: ubercash,
+                  fieldname: "uber_cash",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    ubercash = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomInput1(hintText: "Uber Operator", fieldname: "uber_operator", fieldType: "novalidation")),
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "Uber Operator",
+                  initValue: uberoperator,
+                  fieldname: "uber_operator",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    uberoperator = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
               ],
             ),
             UIHelper.verticalSpaceSmall,
-            const Row(
+            Row(
               children: [
-                Expanded(child: CustomInput1(hintText: "Rapido Cash", fieldname: "rapido_cash", fieldType: "novalidation")),
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "Rapido Cash",
+                  initValue: rapidocash,
+                  fieldname: "rapido_cash",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    rapidocash = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
                 UIHelper.horizontalSpaceSmall,
-                Expanded(child: CustomInput1(hintText: "Rapido Operator", fieldname: "rapido_operator", fieldType: "novalidation")),
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "Rapido Operator",
+                  initValue: rapidooperator,
+                  fieldname: "rapido_operator",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    rapidooperator = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
               ],
             ),
             UIHelper.verticalSpaceSmall,
-            const CustomInput1(hintText: "Others", fieldname: "other_cash", fieldType: "novalidation"),
+            Row(
+              children: [
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "Others Cash",
+                  initValue: othercash,
+                  fieldname: "other_cash",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    othercash = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
+                UIHelper.horizontalSpaceSmall,
+                Expanded(
+                    child: CustomInput1(
+                  hintText: "Others Operator",
+                  initValue: otheroperator,
+                  fieldname: "other_operator",
+                  fieldType: "novalidation",
+                  onchanged: (val) {
+                    otheroperator = val;
+                    setState(() {});
+                    amountcalculate();
+                  },
+                )),
+              ],
+            ),
+            UIHelper.verticalSpaceSmall,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                UIHelper.titleTxtStyle("Total : $overAllCashAmt", fntsize: 14, fntWeight: FontWeight.w600),
+                UIHelper.titleTxtStyle("Total : $overAllOperatorAmt", fntsize: 14, fntWeight: FontWeight.w600),
+              ],
+            ),
+            Divider(color: _colors.bluecolor),
             UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle("Expences Details", fntcolor: _colors.primarycolour, fntsize: 18),
             UIHelper.verticalSpaceSmall,
-            const CustomInput1(hintText: "Driver Salary", fieldname: "salary_perentage", fieldType: "salary"),
+            CustomInput1(
+              hintText: "Driver Salary",
+              initValue: salaryPercentage,
+              fieldname: "salary_perentage",
+              fieldType: "salary",
+              onchanged: (val) {
+                salaryPercentage = val;
+                setState(() {});
+              },
+            ),
             UIHelper.verticalSpaceSmall,
-            const CustomInput1(hintText: "Fuel", fieldname: "fuel_amt", fieldType: "fuel"),
+            CustomInput1(
+              hintText: "Fuel",
+              fieldname: "fuel_amt",
+              initValue: fuel,
+              fieldType: "fuel",
+              onchanged: (val) {
+                fuel = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Others",
+              fieldname: "other_expences",
+              initValue: otherexp,
+              fieldType: "other_expences",
+              onchanged: (val) {
+                otherexp = val;
+                setState(() {});
+              },
+            ),
             UIHelper.verticalSpaceMedium,
             Center(
               child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
-                if (_formKey.currentState!.saveAndValidate()) {
-                  if (selectedDriverid.isNotEmpty) {
-                    postParams = Map.from(_formKey.currentState!.value);
-
-                    double olacash = postParams['ola_cash'].toString().isNotEmpty ? double.parse(postParams['ola_cash']) : 0.0;
-                    double ubercash = postParams['uber_cash'].toString().isNotEmpty ? double.parse(postParams['uber_cash']) : 0.0;
-                    double rapidocash = postParams['rapido_cash'].toString().isNotEmpty ? double.parse(postParams['rapido_cash']) : 0.0;
-                    double othercash = postParams['other_cash'].toString().isNotEmpty ? double.parse(postParams['other_cash']) : 0.0;
-
-                    double olaoperator = postParams['ola_operator'].toString().isNotEmpty ? double.parse(postParams['ola_operator']) : 0.0;
-                    double uberoperator = postParams['uber_operator'].toString().isNotEmpty ? double.parse(postParams['uber_operator']) : 0.0;
-                    double rapidoperator = postParams['rapido_operator'].toString().isNotEmpty ? double.parse(postParams['rapido_operator']) : 0.0;
-                    int salaryPercent = int.parse(postParams['salary_perentage'].toString());
-
-                    postParams['service'] = "start_trip";
-                    postParams['driver_id'] = selectedDriverid;
-                    postParams['over_all_operator'] = olaoperator + uberoperator + rapidoperator;
-                    postParams['over_all_cash'] = olacash + ubercash + rapidocash + othercash;
-
-                    double fuelamt = postParams['fuel_amt'].toString().isNotEmpty ? double.parse(postParams['fuel_amt']) : 0.0;
-                    double driversalary = salaryPercent / 100 * postParams['over_all_operator'];
-                    double needtopay = postParams['over_all_cash'] - driversalary - fuelamt;
-
-                    postParams['driversalary'] = "$driversalary";
-                    postParams['needtopay'] = "$needtopay";
-                    postParams['amount_details'] = [
-                      {"type": "OLA", "cash": olacash, "operator": olaoperator},
-                      {"type": "Uber", "cash": ubercash, "operator": uberoperator},
-                      {"type": "Rapido", "cash": rapidocash, "operator": rapidoperator},
-                      {"type": "Others", "cash": othercash, "operator": "0.0"},
-                    ];
-
-                    pref.starttripList.add(postParams);
-                    Get.back();
-                  } else {
-                    Utils().showAlert("W", "Please select the Driver");
-                  }
+                if (tripDate.isEmpty) {
+                  Utils().showToast("Warning", "please select Trip date", bgclr: _colors.orangeColour);
+                } else if (vehiclenumber.isEmpty) {
+                  Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
+                } else if (selectedDriverid.isEmpty) {
+                  Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
+                } else if (overAllCashAmt < 1 || overAllOperatorAmt < 1) {
+                  Utils().showToast("Warning", "Amount Details missing", bgclr: _colors.orangeColour);
+                } else if (salaryPercentage.isEmpty) {
+                  Utils().showToast("Warning", "please Enter the salary percentage", bgclr: _colors.orangeColour);
+                } else {
+                  dataparsefunction();
                 }
               }),
             )
@@ -179,55 +311,54 @@ class _StartTripScreenState extends State<StartTripScreen> {
     );
   }
 
-  Widget page2() {
-    return FormBuilder(
-      key: _page2key,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            UIHelper.verticalSpaceSmall,
-            Container(
-              padding: const EdgeInsets.all(15),
-              decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
-              child: Column(
-                children: [
-                  rowdata("Company", "Cash", "Operatot", true),
-                  UIHelper.verticalSpaceSmall,
-                  Column(
-                    children: List.generate(postParams['amount_details'].length, (index) {
-                      dynamic data = postParams['amount_details'][index];
-                      return rowdata("${data['type']}", "${data['cash']}", "${data['operator']}", false);
-                    }),
-                  ),
-                  const Divider(),
-                  rowdata("Total", "${postParams['over_all_cash']}", "${postParams['over_all_operator']}", true),
-                ],
-              ),
-            ),
-            UIHelper.titleTxtStyle("${postParams['over_all_operator']}", fntcolor: _colors.primarycolour, fntsize: 18, textOverflow: TextOverflow.visible),
-            Center(
-              child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
-                // if (_page2key.currentState!.saveAndValidate()) {
-                //    Map<String, dynamic> postParams = Map.from(_page2key.currentState!.value);
-                //   log("$postParams");
-                // }
-              }),
-            )
-          ],
-        ),
-      ),
-    );
+  amountcalculate() {
+    double olacash_ = olacash.isNotEmpty ? double.parse(olacash) : 0.0;
+    double ubercash_ = ubercash.isNotEmpty ? double.parse(ubercash) : 0.0;
+    double rapidocash_ = rapidocash.isNotEmpty ? double.parse(rapidocash) : 0.0;
+    double othercash_ = othercash.isNotEmpty ? double.parse(othercash) : 0.0;
+
+    double olaoperator_ = olaoperator.isNotEmpty ? double.parse(olaoperator) : 0.0;
+    double uberoperator_ = uberoperator.isNotEmpty ? double.parse(uberoperator) : 0.0;
+    double rapidoperator_ = rapidooperator.isNotEmpty ? double.parse(rapidooperator) : 0.0;
+    double otheroperator_ = otheroperator.isNotEmpty ? double.parse(otheroperator) : 0.0;
+
+    overAllOperatorAmt = olaoperator_ + uberoperator_ + rapidoperator_ + otheroperator_;
+    overAllCashAmt = olacash_ + ubercash_ + rapidocash_ + othercash_;
+    setState(() {});
   }
 
-  Widget rowdata(String t1, String t2, String t3, bool isheading) {
-    return Row(
-      children: [
-        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t1, fntsize: 14, fntWeight: isheading ? FontWeight.bold : FontWeight.normal)),
-        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t2, fntsize: 14, fntWeight: isheading ? FontWeight.bold : FontWeight.normal)),
-        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t3, fntsize: 14, fntWeight: isheading ? FontWeight.bold : FontWeight.normal)),
-      ],
-    );
+  dataparsefunction() {
+    double fuelamt = fuel.isNotEmpty ? double.parse(fuel) : 0.0;
+    double otherexpenceAmt = otherexp.isNotEmpty ? double.parse(otherexp) : 0.0;
+
+    int salaryPercent = int.parse(salaryPercentage);
+    double driversalary = salaryPercent / 100 * overAllOperatorAmt;
+    double roundedSalary = (driversalary * 100).roundToDouble() / 100;
+
+    double balanceamount = overAllCashAmt - roundedSalary - fuelamt - otherexpenceAmt;
+
+    Map<String, dynamic> postParams = {
+      'service': "start_trip",
+      '_id': 0,
+      'driver_id': selectedDriverid,
+      "ola_cash": olacash,
+      "ola_operator": olaoperator,
+      "uber_cash": ubercash,
+      "uber_operator": uberoperator,
+      "rapido_cash": rapidocash,
+      "rapido_operator": rapidooperator,
+      "other_cash": othercash,
+      "other_operator": otheroperator,
+      "total_cash_amt": overAllCashAmt,
+      "total_operator_amt": overAllOperatorAmt,
+      "salary_percentage": salaryPercentage,
+      "driver_salary": roundedSalary,
+      "fuel_amt": fuelamt,
+      "other_expences": otherexp,
+      "balance_amount": balanceamount,
+      "created_date": DateTime.now()
+    };
+
+    log("Postparams: $postParams");
   }
 }

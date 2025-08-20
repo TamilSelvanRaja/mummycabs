@@ -4,6 +4,8 @@ class AppImages {
 
   String car = "assets/car.png";
   String driver = "assets/driver.png";
+  String wallet = "assets/wallet.jpg";
+
   String profile = "assets/profile.png";
   String logout = "assets/logout.png";
   String warning = "assets/error.gif";

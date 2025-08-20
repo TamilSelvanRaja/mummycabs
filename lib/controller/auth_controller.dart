@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -38,7 +36,7 @@ class AppController with ChangeNotifier {
       await pref.setString("password", responce['data']['password']);
 
       if (responce['data']['role'] == "Admin") {
-        Get.toNamed(Routes.adminDashboard);
+        Get.offNamedUntil(Routes.adminDashboard, (p) => false);
       }
     }
   }

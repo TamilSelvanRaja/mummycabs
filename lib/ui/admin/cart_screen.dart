@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
@@ -8,19 +10,18 @@ import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:provider/provider.dart';
 
-class DriverDetailsScreen extends StatefulWidget {
-  const DriverDetailsScreen({super.key});
+class CartMainScreen extends StatefulWidget {
+  const CartMainScreen({super.key});
 
   @override
-  State<DriverDetailsScreen> createState() => _DriverDetailsScreenState();
+  State<CartMainScreen> createState() => _CartMainScreenState();
 }
 
-class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
+class _CartMainScreenState extends State<CartMainScreen> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   late AppController appController;
-  List selectedIndex = [];
   String searchKey = "";
 
   @override
@@ -31,7 +32,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
         backgroundColor: _colors.primarycolour,
         centerTitle: true,
         iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Drivers Details", fntcolor: _colors.bgClr, fntsize: 22),
+        title: UIHelper.titleTxtStyle("Amount Details", fntcolor: _colors.bgClr, fntsize: 22),
       ),
       body: MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => AppController())],
@@ -56,12 +57,6 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                         setState(() {});
                       },
                     )),
-                    IconButton(
-                        onPressed: () async {
-                          await Get.toNamed(Routes.signup, arguments: {"isSignup": false});
-                          await appController.getcarList("drivers_list");
-                        },
-                        icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
                   ],
                 ),
               ),
@@ -76,12 +71,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                       return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase())
                           ? InkWell(
                               onTap: () {
-                                if (selectedIndex.contains(index)) {
-                                  selectedIndex.remove(index);
-                                } else {
-                                  selectedIndex.add(index);
-                                }
-                                setState(() {});
+                                log("Tamil");
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(8),
@@ -89,13 +79,17 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                 child: Row(
                                   //crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    currentData['imgurl'] != null
-                                        ? CircleAvatar(
-                                            radius: 20,
-                                            backgroundColor: _colors.primarycolour,
-                                            backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
-                                          )
-                                        : Image.asset(_images.profile, height: 40, width: 40),
+                                    Container(
+                                      height: 60,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                          color: _colors.primarycolour,
+                                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                          image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: currentData['imgurl'] != null ? NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}") : AssetImage(_images.profile),
+                                          )),
+                                    ),
                                     UIHelper.horizontalSpaceMedium,
                                     Expanded(
                                       child: Column(
@@ -103,16 +97,11 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 16, fntcolor: _colors.primarycolour),
-                                          if (selectedIndex.contains(index)) ...[
-                                            rowdata1("Mobile No", "${currentData['mobile']}"),
-                                            rowdata1("Licence No", "${currentData['dl_no']}"),
-                                            rowdata1("Aadhar No", "${currentData['aadhar_no']}"),
-                                            rowdata1("Password", "${currentData['password']}"),
-                                          ]
+                                          UIHelper.titleTxtStyle("₹ 8000", fntWeight: FontWeight.w700, fntsize: 14, fntcolor: _colors.textColour),
                                         ],
                                       ),
                                     ),
-                                    Icon(Icons.expand_more, size: 20, color: _colors.greycolor1)
+                                    Icon(Icons.arrow_right_alt_outlined, size: 30, color: _colors.primarycolour)
                                   ],
                                 ),
                               ),
@@ -129,16 +118,6 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
           );
         }),
       ),
-    );
-  }
-
-  Widget rowdata1(String t1, String t2) {
-    return Row(
-      children: [
-        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t1, fntsize: 14, fntWeight: FontWeight.normal)),
-        Expanded(flex: 1, child: UIHelper.titleTxtStyle(":", fntsize: 14, fntWeight: FontWeight.normal)),
-        Expanded(flex: 3, child: UIHelper.titleTxtStyle(t2, fntsize: 14, fntWeight: FontWeight.bold)),
-      ],
     );
   }
 }

@@ -166,7 +166,10 @@ class CustomInput1 extends StatefulWidget {
   final String fieldname;
   final String fieldType;
   final Widget? prefixWidget;
-  const CustomInput1({super.key, required this.hintText, required this.fieldname, required this.fieldType, this.prefixWidget});
+  final dynamic onchanged;
+  final dynamic initValue;
+
+  const CustomInput1({super.key, required this.hintText, required this.fieldname, this.onchanged, this.initValue, required this.fieldType, this.prefixWidget});
   @override
   State<CustomInput1> createState() => _CustomInputState1();
 }
@@ -188,10 +191,14 @@ class _CustomInputState1 extends State<CustomInput1> {
       textInputAction: TextInputAction.next,
       style: UIHelper.customTxtStyle(_colors.blackColour, 14, FontWeight.w400),
       name: widget.fieldname,
-      initialValue: "",
+      initialValue: widget.initValue ?? "",
       autocorrect: false,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      onChanged: (value) {},
+      onChanged: (value) {
+        if (widget.onchanged != null) {
+          widget.onchanged(value);
+        }
+      },
       decoration: UIHelper.inputDecorateWidget(widget.hintText, widget.prefixWidget, suffixString: widget.hintText == "Driver Salary" ? "%" : "₹"),
       validator: ((value) {
         if (widget.fieldType != "novalidation") {
@@ -220,11 +227,20 @@ class CustomDatePicker extends StatefulWidget {
 }
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
+  DateTime? initdateTime;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initValue != null && widget.initValue != "") {
+      initdateTime = DateFormat("dd-MM-yyyy").parse(widget.initValue);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormBuilderDateTimePicker(
       name: widget.fieldname,
-      initialValue: widget.initValue,
+      initialValue: initdateTime,
       inputType: InputType.date,
       format: DateFormat('dd-MM-yyyy'),
       style: UIHelper.customTxtStyle(_colors.blackColour, 14, FontWeight.w400),
