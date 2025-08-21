@@ -46,7 +46,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       floatingActionButton: InkWell(
         onTap: () async {
-          await Get.toNamed(Routes.starttrip);
+          await Get.toNamed(Routes.starttrip, arguments: {"isedit": false});
           setState(() {});
         },
         child: Container(

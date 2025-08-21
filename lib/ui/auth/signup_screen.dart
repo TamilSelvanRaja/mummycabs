@@ -91,7 +91,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   UIHelper.verticalSpaceSmall,
                   CustomInput(hintText: "Driving Licence No", fieldname: "dl_no", fieldType: "text", onchanged: (value) {}, prefixWidget: const Icon(Icons.directions_car_outlined)),
                   UIHelper.verticalSpaceSmall,
-                  CustomInput(hintText: "Aadhar Number", fieldname: "aadhar_no", fieldType: "number", onchanged: (value) {}, prefixWidget: const Icon(Icons.credit_card_outlined)),
+                  CustomInput(hintText: "Aadhar Number", fieldname: "aadhar_no", fieldType: "aadhar_number", onchanged: (value) {}, prefixWidget: const Icon(Icons.credit_card_outlined)),
                   UIHelper.verticalSpaceSmall,
                   CustomInput(hintText: "Password", fieldname: "password", fieldType: "password", onchanged: (value) {}, isPassword: true, prefixWidget: const Icon(Icons.lock)),
                   UIHelper.verticalSpaceMedium,

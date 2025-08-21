@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -7,6 +10,7 @@ import 'package:mummy_cabs/services/utils.dart';
 class AppController with ChangeNotifier {
   final PreferenceService pref = Get.find<PreferenceService>();
   final AppColors _colors = AppColors();
+  List tripsList = [];
 
 //******************************************************************/
 //******************* User Register Function ***********************/
@@ -89,10 +93,40 @@ class AppController with ChangeNotifier {
     }
   }
 
+//******************************************************************/
+//******************* NEW Trip Add Function ***********************/
+//******************************************************************/
+  Future newTripStart(dynamic postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      if (responce["msg"].toString() == "true") {
+        Get.back();
+      } else {
+        Utils().showToast("Failure", '${responce["message"]}');
+      }
+    }
+  }
+
+//******************************************************************/
+//*******************  Get Trip List Function **********************/
+//******************************************************************/
+  Future gettripList(String date) async {
+    tripsList.clear();
+
+    dynamic postParams = {"service_id": "trips_list", "date": date};
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      tripsList = responce['data'];
+      notifyListeners();
+    }
+  }
+
   Future apiresponceCallback(postParams, localpath) async {
     try {
       Utils().showProgress();
+      log("postParams $postParams");
       final responce = await ApiServices().formDataAPIServices(postParams, localpath);
+      log("responce $responce");
       Utils().hideProgress();
 
       if (responce != null) {

@@ -152,8 +152,13 @@ class _CustomInputState extends State<CustomInput> {
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(10),
             ]
-          : [],
-      keyboardType: widget.fieldType == "mobile" || widget.fieldType == "number" ? TextInputType.number : TextInputType.text,
+          : widget.fieldType == "aadhar_number"
+              ? [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(12),
+                ]
+              : [],
+      keyboardType: widget.fieldType == "mobile" || widget.fieldType == "aadhar_number" || widget.fieldType == "number" ? TextInputType.number : TextInputType.text,
     );
   }
 }

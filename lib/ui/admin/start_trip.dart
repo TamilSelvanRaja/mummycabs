@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
@@ -21,6 +22,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
+  bool isEdit = false;
+  dynamic initdata = {};
 
   String tripDate = "";
   String vehiclenumber = "";
@@ -37,6 +40,34 @@ class _StartTripScreenState extends State<StartTripScreen> {
   double overAllOperatorAmt = 0.0;
 
   @override
+  void initState() {
+    super.initState();
+    isEdit = Get.arguments['isedit'];
+    if (isEdit) {
+      initdata = Get.arguments['initdata'];
+      log("initdata $initdata ");
+
+      tripDate = initdata["trip_date"].toString();
+      vehiclenumber = initdata["vehicle_no"].toString();
+      selectedDriverid = initdata["driver_id"].toString();
+      olacash = initdata["ola_cash"].toString();
+      olaoperator = initdata["ola_operator"].toString();
+      ubercash = initdata["uber_cash"].toString();
+      uberoperator = initdata["uber_operator"].toString();
+      rapidocash = initdata["rapido_cash"].toString();
+      rapidooperator = initdata["rapido_operator"].toString();
+      othercash = initdata["other_cash"].toString();
+      otheroperator = initdata["other_operator"].toString();
+      salaryPercentage = initdata["salary_percentage"].toString();
+      fuel = initdata["fuel_amt"].toString();
+      otherexp = initdata["other_expences"].toString();
+      overAllCashAmt = double.parse(initdata["total_cash_amt"].toString());
+      overAllOperatorAmt = double.parse(initdata["total_operator_amt"].toString());
+    }
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: _colors.bgClr,
@@ -44,7 +75,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
           backgroundColor: _colors.primarycolour,
           centerTitle: true,
           iconTheme: IconThemeData(color: _colors.bgClr),
-          title: UIHelper.titleTxtStyle("Start Trip", fntcolor: _colors.bgClr, fntsize: 22),
+          title: UIHelper.titleTxtStyle(isEdit ? "Edit Trip" : "Start Trip", fntcolor: _colors.bgClr, fntsize: 22),
         ),
         body: SingleChildScrollView(child: page1()));
   }
@@ -301,7 +332,14 @@ class _StartTripScreenState extends State<StartTripScreen> {
                 } else if (salaryPercentage.isEmpty) {
                   Utils().showToast("Warning", "please Enter the salary percentage", bgclr: _colors.orangeColour);
                 } else {
-                  dataparsefunction();
+                  Map<String, dynamic> reqData = dataparsefunction();
+                  if (isEdit) {
+                    reqData['service_id'] = "edit_trip";
+                    reqData['trip_id'] = initdata['_id'];
+                  } else {
+                    reqData['service_id'] = "new_trip";
+                  }
+                  AppController().newTripStart(reqData);
                 }
               }),
             )
@@ -338,8 +376,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
     double balanceamount = overAllCashAmt - roundedSalary - fuelamt - otherexpenceAmt;
 
     Map<String, dynamic> postParams = {
-      'service': "start_trip",
-      '_id': 0,
+      "trip_date": tripDate,
+      "vehicle_no": vehiclenumber,
       'driver_id': selectedDriverid,
       "ola_cash": olacash,
       "ola_operator": olaoperator,
@@ -356,9 +394,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
       "fuel_amt": fuelamt,
       "other_expences": otherexp,
       "balance_amount": balanceamount,
-      "created_date": DateTime.now()
     };
-
-    log("Postparams: $postParams");
+    return postParams;
   }
 }
