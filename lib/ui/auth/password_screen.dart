@@ -3,6 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
+import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -17,6 +18,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   final AppColors _colors = AppColors();
+  final AppImages _images = AppImages();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +36,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Column(
                 children: [
                   const Spacer(),
+                  Image.asset(_images.logo, height: 100, width: 100),
+                  UIHelper.verticalSpaceSmall,
                   UIHelper.titleTxtStyle("Hello Again!", fntcolor: _colors.primarycolour, fntsize: 22, fntWeight: FontWeight.bold),
                   UIHelper.titleTxtStyle("Change your password", fntcolor: _colors.primarycolour, fntsize: 20),
                   const Spacer(),

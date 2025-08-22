@@ -44,6 +44,9 @@ class AppController with ChangeNotifier {
       } else {
         Get.offNamedUntil(Routes.driverDashboard, (p) => false);
       }
+    } else {
+      pref.cleanAllPreferences();
+      Get.offNamedUntil(Routes.initial, (p) => false);
     }
   }
 

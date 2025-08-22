@@ -1,4 +1,5 @@
 class AppImages {
+  String logo = "assets/logo.png";
   String loader = "assets/tyre.gif";
   String jeep = "assets/jeep.png";
 
