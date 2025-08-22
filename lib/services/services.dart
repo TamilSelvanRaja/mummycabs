@@ -8,7 +8,6 @@ import 'package:http/io_client.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
-import 'package:mummy_cabs/ui/admin/cart_screen.dart';
 import 'package:mummy_cabs/ui/admin/driver_detail.dart';
 import 'package:mummy_cabs/ui/admin/start_trip.dart';
 import 'package:mummy_cabs/ui/admin/trip_list.dart';
@@ -48,7 +47,6 @@ abstract class AppPages {
     pageanimation(Routes.cardetails, const CarDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverdetails, const DriverDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.triplist, const TripListPage(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.cartList, const CartMainScreen(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {

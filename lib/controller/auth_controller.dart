@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -117,6 +116,22 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       tripsList = responce['data'];
+      notifyListeners();
+    }
+  }
+
+//******************** Cart Amount Update Function *************************/
+//**************************************************************************/
+  Future cartAmtUpdateFun(postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      Get.back();
+      Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
+      for (var i in pref.driversList) {
+        if (i["_id"].toString() == postParams['driver_id'].toString()) {
+          i['cart_amt'] = "${responce['amount']}";
+        }
+      }
       notifyListeners();
     }
   }

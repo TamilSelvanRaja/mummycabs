@@ -140,6 +140,6 @@ class UIHelper {
             padding: const EdgeInsets.all(10),
             width: wid,
             alignment: Alignment.center,
-            child: UIHelper.titleTxtStyle(btnText, fntsize: 18, fntcolor: _colors.bgClr, fntWeight: FontWeight.bold)));
+            child: UIHelper.titleTxtStyle(btnText, fntsize: fs, fntcolor: _colors.bgClr, fntWeight: FontWeight.bold)));
   }
 }

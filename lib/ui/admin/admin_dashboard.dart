@@ -40,7 +40,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       body: Column(
         children: [
           customAppBar(),
-          detailsCard(),
+          UIHelper.verticalSpaceMedium,
           menuItemCards(),
         ],
       ),
@@ -92,39 +92,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ));
   }
 
-  Widget detailsCard() {
-    return Stack(
-      children: [
-        Container(height: 40, color: _colors.primarycolour),
-        Row(
-            children: List.generate(adminTitleList.length, (index) {
-          dynamic currentdata = adminTitleList[index];
-          return Expanded(
-            child: InkWell(
-              onTap: () {
-                if (index == 0) {
-                  Get.toNamed(Routes.cardetails);
-                } else {
-                  Get.toNamed(Routes.driverdetails);
-                }
-              },
-              child: Container(
-                height: 60,
-                margin: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                padding: const EdgeInsets.all(8),
-                decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.bgClr, isShadow: true, shadowColor: _colors.greycolor),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Image.asset(currentdata['image']), UIHelper.horizontalSpaceSmall, UIHelper.titleTxtStyle(currentdata['title'], fntWeight: FontWeight.bold)],
-                ),
-              ),
-            ),
-          );
-        })),
-      ],
-    );
-  }
-
   Widget menuItemCards() {
     return Column(
         children: List.generate(
@@ -135,8 +102,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
           onTap: () {
             if (index == 0) {
               Get.toNamed(Routes.triplist);
+            } else if (index == 1) {
+              Get.toNamed(Routes.driverdetails);
             } else {
-              Get.toNamed(Routes.cartList);
+              Get.toNamed(Routes.cardetails);
             }
           },
           child: Container(

@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -6,6 +9,7 @@ import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
+import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
@@ -19,6 +23,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
+  final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   late AppController appController;
   List selectedIndex = [];
   String searchKey = "";
@@ -34,7 +39,15 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
         title: UIHelper.titleTxtStyle("Drivers Details", fntcolor: _colors.bgClr, fntsize: 22),
       ),
       body: MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => AppController())],
+        providers: [
+          ChangeNotifierProvider(create: (_) {
+            final controller = AppController();
+            Future.delayed(const Duration(milliseconds: 600), () {
+              controller.getcarList("drivers_list");
+            });
+            return controller;
+          })
+        ],
         child: Consumer<AppController>(builder: (context, ref, child) {
           appController = ref;
           return Column(
@@ -86,33 +99,61 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 width: Get.width,
-                                child: Row(
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Column(
                                   children: [
-                                    currentData['imgurl'] != null
-                                        ? CircleAvatar(
-                                            radius: 20,
-                                            backgroundColor: _colors.primarycolour,
-                                            backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
-                                          )
-                                        : Image.asset(_images.profile, height: 40, width: 40),
-                                    UIHelper.horizontalSpaceMedium,
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 16, fntcolor: _colors.primarycolour),
-                                          if (selectedIndex.contains(index)) ...[
-                                            rowdata1("Mobile No", "${currentData['mobile']}"),
-                                            rowdata1("Licence No", "${currentData['dl_no']}"),
-                                            rowdata1("Aadhar No", "${currentData['aadhar_no']}"),
-                                            rowdata1("Password", "${currentData['password']}"),
-                                          ]
-                                        ],
-                                      ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(3),
+                                          decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.whiteColour, borderColor: _colors.greycolor),
+                                          child: Container(
+                                            height: 60,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.fill,
+                                                  image: currentData['imgurl'] != null ? NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}") : AssetImage(_images.profile),
+                                                )),
+                                          ),
+                                        ),
+                                        UIHelper.horizontalSpaceMedium,
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 16, fntcolor: _colors.primarycolour),
+                                              UIHelper.titleTxtStyle("${currentData['mobile']}", fntsize: 14, fntWeight: FontWeight.bold),
+                                              rowdata1("DL No.", "${currentData['dl_no']}"),
+                                              rowdata1("Password", "${currentData['password']}"),
+                                              rowdata1("Balance", "₹ ${currentData['cart_amt']}", fntSize: 16, fntclr: _colors.redColour),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(Icons.expand_more, size: 20, color: _colors.greycolor1)
+                                      ],
                                     ),
-                                    Icon(Icons.expand_more, size: 20, color: _colors.greycolor1)
+                                    if (selectedIndex.contains(index)) ...[
+                                      UIHelper.verticalSpaceSmall,
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          UIHelper().actionButton("Add Amount", 15, Get.width / 2.5, bgcolour: _colors.redColour, onPressed: () {
+                                            showAmountDialog("Add Amount", "${currentData['_id']}");
+                                          }),
+                                          UIHelper().actionButton("Deduct Amount", 15, Get.width / 2.5, bgcolour: _colors.bluecolor, onPressed: () {
+                                            double cartamt = double.parse("${currentData['cart_amt']}");
+                                            if (cartamt > 0) {
+                                              showAmountDialog("Deduct Amount", "${currentData['_id']}");
+                                            } else {
+                                              Utils().showAlert("W", "Cart amount is too low");
+                                            }
+                                          }),
+                                        ],
+                                      )
+                                    ]
                                   ],
                                 ),
                               ),
@@ -132,13 +173,72 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
     );
   }
 
-  Widget rowdata1(String t1, String t2) {
+  Widget rowdata1(String t1, String t2, {double fntSize = 14, Color fntclr = Colors.blue}) {
     return Row(
       children: [
-        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t1, fntsize: 14, fntWeight: FontWeight.normal)),
-        Expanded(flex: 1, child: UIHelper.titleTxtStyle(":", fntsize: 14, fntWeight: FontWeight.normal)),
-        Expanded(flex: 3, child: UIHelper.titleTxtStyle(t2, fntsize: 14, fntWeight: FontWeight.bold)),
+        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t1, fntsize: fntSize, fntWeight: FontWeight.normal)),
+        Expanded(flex: 1, child: UIHelper.titleTxtStyle(":", fntsize: fntSize, fntWeight: FontWeight.normal)),
+        Expanded(flex: 3, child: UIHelper.titleTxtStyle(t2, fntsize: fntSize, fntcolor: fntclr, fntWeight: FontWeight.bold)),
       ],
     );
+  }
+
+  Future showAmountDialog(String title, String id) async {
+    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
+      return MediaQuery.removeViewInsets(
+          removeBottom: true,
+          context: context,
+          child: AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              backgroundColor: _colors.bgClr,
+              insetPadding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                        height: 50,
+                        decoration: UIHelper.roundedBorderWithColor(16, 16, 0, 0, _colors.primarycolour),
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          children: [
+                            Expanded(child: UIHelper.titleTxtStyle(title, fntcolor: _colors.bgClr, fntsize: 18)),
+                            InkWell(
+                              onTap: (() {
+                                Get.back();
+                              }),
+                              child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
+                            ),
+                          ],
+                        )),
+                    UIHelper.verticalSpaceMedium,
+                    FormBuilder(
+                      key: _formkey,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(children: [
+                            const CustomInput(hintText: "Amount", fieldname: "amount", fieldType: "number"),
+                            if (title == "Add Amount") UIHelper.verticalSpaceSmall,
+                            if (title == "Add Amount") const CustomInput(hintText: "Reason", fieldname: "add_reason", fieldType: "text"),
+                            UIHelper.verticalSpaceMedium,
+                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
+                              if (_formkey.currentState!.saveAndValidate()) {
+                                Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
+                                postParams['service_id'] = "cart_amount_update";
+                                postParams['driver_id'] = id;
+                                postParams['type'] = title;
+                                appController.cartAmtUpdateFun(postParams);
+                              }
+                            }),
+                          ])),
+                    ),
+                    UIHelper.verticalSpaceMedium,
+                  ],
+                ),
+              )));
+    }));
   }
 }

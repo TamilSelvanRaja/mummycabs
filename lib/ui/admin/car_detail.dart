@@ -149,7 +149,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             UIHelper.verticalSpaceSmall,
                             const CustomInput(hintText: "Register Number", fieldname: "reg_no", fieldType: "reg_no"),
                             UIHelper.verticalSpaceMedium,
-                            UIHelper().actionButton("Submit", 14, Get.width / 3, onPressed: () {
+                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
                                 postParams['service_id'] = "add_new_car";
