@@ -106,7 +106,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                       children: [
                                         Container(
                                           padding: const EdgeInsets.all(3),
-                                          decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.whiteColour, borderColor: _colors.greycolor),
+                                          decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.bluecolor1, borderColor: _colors.greycolor),
                                           child: Container(
                                             height: 60,
                                             width: 50,

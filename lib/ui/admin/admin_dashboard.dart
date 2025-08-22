@@ -78,7 +78,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     radius: 25,
                     backgroundImage: NetworkImage("${ApiServices().apiurl}/${pref.userdata['imgurl']}"),
                   )
-                : Image.asset(_images.profile, height: 50, width: 50),
+                : Image.asset(_images.adminprofile, height: 50, width: 50),
             UIHelper.titleTxtStyle("${pref.userdata['name']}", fntcolor: _colors.bgClr, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
             InkWell(
                 onTap: () {

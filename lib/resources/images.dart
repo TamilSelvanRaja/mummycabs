@@ -7,6 +7,7 @@ class AppImages {
   String wallet = "assets/wallet.jpg";
 
   String profile = "assets/profile.png";
+  String adminprofile = "assets/male.png";
   String logout = "assets/logout.png";
   String warning = "assets/error.gif";
   String success = "assets/success.png";
