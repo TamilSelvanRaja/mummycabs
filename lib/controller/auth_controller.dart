@@ -10,6 +10,7 @@ class AppController with ChangeNotifier {
   final PreferenceService pref = Get.find<PreferenceService>();
   final AppColors _colors = AppColors();
   List tripsList = [];
+  List drivertripsList = [];
 
 //******************************************************************/
 //******************* User Register Function ***********************/
@@ -40,7 +41,20 @@ class AppController with ChangeNotifier {
 
       if (responce['data']['role'] == "Admin") {
         Get.offNamedUntil(Routes.adminDashboard, (p) => false);
+      } else {
+        Get.offNamedUntil(Routes.driverDashboard, (p) => false);
       }
+    }
+  }
+
+//******************************************************************/
+//******************** Cart Amount Function *************************/
+//******************************************************************/
+  Future cartAmountGet(postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      pref.userdata = responce['data'];
+      notifyListeners();
     }
   }
 
@@ -132,6 +146,24 @@ class AppController with ChangeNotifier {
           i['cart_amt'] = "${responce['amount']}";
         }
       }
+      notifyListeners();
+    }
+  }
+
+//******************************************************************/
+//*******************  Get Trip List Function **********************/
+//******************************************************************/
+  Future getdrivertripList(String date) async {
+    drivertripsList.clear();
+
+    dynamic postParams = {
+      "service_id": "trip_list_driver",
+      "driver_id": pref.userdata["_id"],
+      "date": date,
+    };
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      drivertripsList = responce['data'];
       notifyListeners();
     }
   }

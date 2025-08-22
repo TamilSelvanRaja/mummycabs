@@ -15,6 +15,7 @@ import 'package:mummy_cabs/ui/auth/password_screen.dart';
 import 'package:mummy_cabs/ui/auth/signin_screen.dart';
 import 'package:mummy_cabs/ui/auth/signup_screen.dart';
 import 'package:mummy_cabs/ui/auth/splash_screen.dart';
+import 'package:mummy_cabs/ui/driver/dashboard.dart';
 
 //**********************************************/
 //************** Routes String *****************/
@@ -31,6 +32,8 @@ class Routes {
   static String driverdetails = '/driverdetails';
   static String triplist = '/triplist';
   static String cartList = '/cartList';
+
+  static String driverDashboard = '/driverDashboard';
 }
 
 //**********************************************/
@@ -47,6 +50,7 @@ abstract class AppPages {
     pageanimation(Routes.cardetails, const CarDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverdetails, const DriverDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.triplist, const TripListPage(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {
