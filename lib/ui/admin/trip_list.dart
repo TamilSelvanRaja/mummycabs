@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
@@ -74,7 +75,14 @@ class _TripListPageState extends State<TripListPage> {
                               selectedDate = val;
                               setState(() {});
                             })),
-                    const Expanded(flex: 2, child: SizedBox()),
+                    UIHelper.horizontalSpaceSmall,
+                    Expanded(
+                        flex: 2,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
+                          child: UIHelper.titleTxtStyle("₹ ${appController.tripdayamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
+                        )),
                   ],
                 ),
                 UIHelper.verticalSpaceSmall,

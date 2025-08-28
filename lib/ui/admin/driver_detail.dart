@@ -166,6 +166,15 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                   ),
                 ),
               ),
+              UIHelper.verticalSpaceSmall,
+              Container(
+                padding: const EdgeInsets.all(12),
+                width: Get.width / 2,
+                alignment: Alignment.center,
+                decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
+                child: UIHelper.titleTxtStyle("₹ ${appController.totalcartamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
+              ),
+              UIHelper.verticalSpaceSmall,
             ],
           );
         }),

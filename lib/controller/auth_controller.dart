@@ -9,6 +9,9 @@ import 'package:mummy_cabs/services/utils.dart';
 class AppController with ChangeNotifier {
   final PreferenceService pref = Get.find<PreferenceService>();
   final AppColors _colors = AppColors();
+  String tripdayamount = "";
+  String totalcartamount = "";
+
   List tripsList = [];
   List drivertripsList = [];
 
@@ -83,6 +86,7 @@ class AppController with ChangeNotifier {
         pref.carList = responce['data'];
       } else {
         pref.driversList = responce['data'];
+        totalcartamount = responce['total_amount'].toString();
       }
       notifyListeners();
     }
@@ -133,6 +137,7 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       tripsList = responce['data'];
+      tripdayamount = responce['over_all_amount'].toString();
       notifyListeners();
     }
   }

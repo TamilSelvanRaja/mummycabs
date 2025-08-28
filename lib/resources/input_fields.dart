@@ -52,7 +52,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
           .map((item) => DropdownMenuItem(
                 alignment: AlignmentDirectional.centerStart,
                 value: item[keyCode].toString(),
-                child: UIHelper.titleTxtStyle(item[titleText]),
+                child: UIHelper.titleTxtStyle(item[titleText].toString().toUpperCase()),
               ))
           .toList(),
       onChanged: (value) async {
@@ -204,7 +204,12 @@ class _CustomInputState1 extends State<CustomInput1> {
           widget.onchanged(value);
         }
       },
-      decoration: UIHelper.inputDecorateWidget(widget.hintText, widget.prefixWidget, suffixString: widget.hintText == "Driver Salary" ? "%" : "₹"),
+      decoration: UIHelper.inputDecorateWidget(widget.hintText, widget.prefixWidget,
+          suffixString: widget.hintText == "Driver Salary"
+              ? "%"
+              : widget.hintText == "Kilometer"
+                  ? "Km"
+                  : "₹"),
       validator: ((value) {
         if (widget.fieldType != "novalidation") {
           if (value == "" || value == null) {

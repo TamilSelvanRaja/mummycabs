@@ -78,8 +78,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 Row(
                                   children: [
                                     Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
-                                    Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'], fntsize: 14)),
-                                    Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'], fntsize: 14)),
+                                    Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'].toString().toUpperCase(), fntsize: 14)),
+                                    Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'].toString().toUpperCase(), fntsize: 14)),
                                     Expanded(
                                         flex: 1,
                                         child: GestureDetector(
@@ -148,6 +148,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             const CustomInput(hintText: "Car Name", fieldname: "car_name", fieldType: "car_name"),
                             UIHelper.verticalSpaceSmall,
                             const CustomInput(hintText: "Register Number", fieldname: "reg_no", fieldType: "reg_no"),
+                            UIHelper.verticalSpaceMedium,
+                            const CustomInput(hintText: "Rent Amount", fieldname: "rental_amount", fieldType: "rental_amount"),
                             UIHelper.verticalSpaceMedium,
                             UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
                               if (_formkey.currentState!.saveAndValidate()) {

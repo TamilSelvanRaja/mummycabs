@@ -35,6 +35,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
   String salaryPercentage = "";
   String fuel = "";
   String otherexp = "";
+  String otherdesc = "";
+  String kilometer = "";
 
   double overAllCashAmt = 0.0;
   double overAllOperatorAmt = 0.0;
@@ -61,6 +63,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
       salaryPercentage = initdata["salary_percentage"].toString();
       fuel = initdata["fuel_amt"].toString();
       otherexp = initdata["other_expences"].toString();
+      otherdesc = initdata["other_desc"].toString();
+      kilometer = initdata["kilometer"].toString();
       overAllCashAmt = double.parse(initdata["total_cash_amt"].toString());
       overAllOperatorAmt = double.parse(initdata["total_operator_amt"].toString());
     }
@@ -118,39 +122,41 @@ class _StartTripScreenState extends State<StartTripScreen> {
             SizedBox(
               height: 120,
               width: Get.width,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: pref.driversList.length,
-                  itemBuilder: (context, index) {
-                    dynamic currentData = pref.driversList[index];
-                    return InkWell(
-                      onTap: () {
-                        selectedDriverid = currentData['_id'].toString();
-                        setState(() {});
-                      },
-                      child: Container(
-                          margin: const EdgeInsets.all(5),
-                          width: 100,
-                          padding: const EdgeInsets.all(5),
-                          decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour,
-                              borderColor: selectedDriverid == currentData['_id'].toString() ? _colors.primarycolour : _colors.greycolor1,
-                              borderWidth: selectedDriverid == currentData['_id'].toString() ? 2 : 1),
-                          child: Column(
-                            children: [
-                              UIHelper.verticalSpaceSmall,
-                              currentData['imgurl'] != null
-                                  ? CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: _colors.primarycolour,
-                                      backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
-                                    )
-                                  : Image.asset(_images.profile, height: 50, width: 50),
-                              UIHelper.verticalSpaceSmall,
-                              UIHelper.titleTxtStyle(currentData['name'], fntcolor: _colors.primarycolour, fntsize: 12),
-                            ],
-                          )),
-                    );
-                  }),
+              child: pref.driversList.isNotEmpty
+                  ? ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: pref.driversList.length,
+                      itemBuilder: (context, index) {
+                        dynamic currentData = pref.driversList[index];
+                        return InkWell(
+                          onTap: () {
+                            selectedDriverid = currentData['_id'].toString();
+                            setState(() {});
+                          },
+                          child: Container(
+                              margin: const EdgeInsets.all(5),
+                              width: 100,
+                              padding: const EdgeInsets.all(5),
+                              decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour,
+                                  borderColor: selectedDriverid == currentData['_id'].toString() ? _colors.primarycolour : _colors.greycolor1,
+                                  borderWidth: selectedDriverid == currentData['_id'].toString() ? 2 : 1),
+                              child: Column(
+                                children: [
+                                  UIHelper.verticalSpaceSmall,
+                                  currentData['imgurl'] != null
+                                      ? CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: _colors.primarycolour,
+                                          backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
+                                        )
+                                      : Image.asset(_images.profile, height: 50, width: 50),
+                                  UIHelper.verticalSpaceSmall,
+                                  UIHelper.titleTxtStyle(currentData['name'], fntcolor: _colors.primarycolour, fntsize: 12),
+                                ],
+                              )),
+                        );
+                      })
+                  : UIHelper.titleTxtStyle("Driver List is empty.", fntcolor: _colors.redColour, fntsize: 12),
             ),
             UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle("Amount Details", fntcolor: _colors.primarycolour, fntsize: 18),
@@ -284,6 +290,20 @@ class _StartTripScreenState extends State<StartTripScreen> {
             ),
             Divider(color: _colors.bluecolor),
             UIHelper.verticalSpaceSmall,
+            UIHelper.titleTxtStyle("Kilometer Details", fntcolor: _colors.primarycolour, fntsize: 18),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Kilometer",
+              initValue: kilometer,
+              fieldname: "kilometer",
+              fieldType: "number",
+              onchanged: (val) {
+                kilometer = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle("Expences Details", fntcolor: _colors.primarycolour, fntsize: 18),
             UIHelper.verticalSpaceSmall,
             CustomInput1(
@@ -309,12 +329,23 @@ class _StartTripScreenState extends State<StartTripScreen> {
             ),
             UIHelper.verticalSpaceSmall,
             CustomInput1(
-              hintText: "Others",
+              hintText: "Others Expences",
               fieldname: "other_expences",
               initValue: otherexp,
               fieldType: "other_expences",
               onchanged: (val) {
                 otherexp = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput(
+              hintText: "Others Description",
+              fieldname: "other_description",
+              initValue: otherdesc,
+              fieldType: "novalidation",
+              onchanged: (val) {
+                otherdesc = val;
                 setState(() {});
               },
             ),
@@ -329,6 +360,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
                   Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
                 } else if (overAllCashAmt < 1 || overAllOperatorAmt < 1) {
                   Utils().showToast("Warning", "Amount Details missing", bgclr: _colors.orangeColour);
+                } else if (kilometer.isEmpty) {
+                  Utils().showToast("Warning", "please Enter the Kilometers", bgclr: _colors.orangeColour);
                 } else if (salaryPercentage.isEmpty) {
                   Utils().showToast("Warning", "please Enter the salary percentage", bgclr: _colors.orangeColour);
                 } else {
@@ -372,8 +405,10 @@ class _StartTripScreenState extends State<StartTripScreen> {
     int salaryPercent = int.parse(salaryPercentage);
     double driversalary = salaryPercent / 100 * overAllOperatorAmt;
     double roundedSalary = (driversalary * 100).roundToDouble() / 100;
-
     double balanceamount = overAllCashAmt - roundedSalary - fuelamt - otherexpenceAmt;
+
+    int kminteger = int.parse(kilometer);
+    double perkmamt = overAllOperatorAmt / kminteger;
 
     Map<String, dynamic> postParams = {
       "trip_date": tripDate,
@@ -393,7 +428,10 @@ class _StartTripScreenState extends State<StartTripScreen> {
       "driver_salary": roundedSalary,
       "fuel_amt": fuelamt,
       "other_expences": otherexp,
+      "other_desc": otherdesc,
+      "kilometer": kilometer,
       "balance_amount": balanceamount,
+      "per_km": (perkmamt * 100).roundToDouble() / 100,
     };
     return postParams;
   }
