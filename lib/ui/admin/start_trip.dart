@@ -367,12 +367,11 @@ class _StartTripScreenState extends State<StartTripScreen> {
                 } else {
                   Map<String, dynamic> reqData = dataparsefunction();
                   if (isEdit) {
-                    reqData['service_id'] = "edit_trip";
-                    reqData['trip_id'] = initdata['_id'];
+                    reqData['uni_id'] = initdata['uni_id'];
+                    AppController().tripLocalUpdate(reqData);
                   } else {
-                    reqData['service_id'] = "new_trip";
+                    AppController().triplocalsave(reqData);
                   }
-                  AppController().newTripStart(reqData);
                 }
               }),
             )
@@ -409,6 +408,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
 
     int kminteger = int.parse(kilometer);
     double perkmamt = overAllOperatorAmt / kminteger;
+    double roundedperkm = (perkmamt * 100).roundToDouble() / 100;
 
     Map<String, dynamic> postParams = {
       "trip_date": tripDate,
@@ -431,7 +431,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
       "other_desc": otherdesc,
       "kilometer": kilometer,
       "balance_amount": balanceamount,
-      "per_km": (perkmamt * 100).roundToDouble() / 100,
+      "per_km": roundedperkm,
     };
     return postParams;
   }

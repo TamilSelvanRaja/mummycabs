@@ -50,16 +50,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
           setState(() {});
         },
         child: Container(
-          padding: const EdgeInsets.all(8),
-          width: Get.width / 2,
-          decoration: UIHelper.roundedBorderWithColor(30, 30, 30, 30, _colors.primarycolour),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              UIHelper.titleTxtStyle("Start Trip", fntcolor: _colors.bgClr, fntsize: 16),
-            ],
-          ),
-        ),
+            padding: const EdgeInsets.all(8),
+            decoration: UIHelper.circleWithColorWithShadow(1, _colors.primarycolour, _colors.primarycolour),
+            child: Icon(Icons.directions_car_outlined, size: 40, color: _colors.bgClr)
+            // UIHelper.titleTxtStyle("Start Trip", fntcolor: _colors.bgClr, fntsize: 16),
+            ),
       ),
     );
   }
@@ -93,7 +88,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget menuItemCards() {
-    return Column(
+    return Wrap(
         children: List.generate(
       menuTitleList.length,
       (index) {
@@ -101,24 +96,25 @@ class _AdminDashboardState extends State<AdminDashboard> {
         return GestureDetector(
           onTap: () {
             if (index == 0) {
-              Get.toNamed(Routes.triplist);
-            } else if (index == 1) {
               Get.toNamed(Routes.driverdetails);
-            } else {
+            } else if (index == 1) {
               Get.toNamed(Routes.cardetails);
+            } else if (index == 2) {
+              Get.toNamed(Routes.triplist);
+            } else {
+              Get.toNamed(Routes.pendingtriplist);
             }
           },
           child: Container(
-            height: 100,
-            margin: const EdgeInsets.fromLTRB(16, 10, 16, 16),
             padding: const EdgeInsets.all(16),
-            decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            width: Get.width / 2.5,
+            margin: const EdgeInsets.all(10),
+            decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.bgClr, isShadow: true, shadowColor: _colors.greycolor),
+            child: Column(
               children: [
-                Image.asset(currentdata['image']),
-                UIHelper.titleTxtStyle(currentdata['title'], fntsize: 25, fntcolor: _colors.primarycolour, fntWeight: FontWeight.bold),
-                Icon(Icons.forward, color: _colors.primarycolour)
+                Image.asset(currentdata['image'], height: 80, width: 80),
+                UIHelper.verticalSpaceSmall,
+                UIHelper.titleTxtStyle(currentdata['title'], fntsize: 18, fntcolor: _colors.primarycolour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
               ],
             ),
           ),

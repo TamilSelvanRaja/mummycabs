@@ -9,6 +9,7 @@ import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
 import 'package:mummy_cabs/ui/admin/driver_detail.dart';
+import 'package:mummy_cabs/ui/admin/pending_list.dart';
 import 'package:mummy_cabs/ui/admin/start_trip.dart';
 import 'package:mummy_cabs/ui/admin/trip_list.dart';
 import 'package:mummy_cabs/ui/auth/password_screen.dart';
@@ -31,6 +32,7 @@ class Routes {
   static String cardetails = '/cardetails';
   static String driverdetails = '/driverdetails';
   static String triplist = '/triplist';
+  static String pendingtriplist = '/pendingtriplist';
   static String cartList = '/cartList';
 
   static String driverDashboard = '/driverDashboard';
@@ -45,12 +47,13 @@ abstract class AppPages {
     pageanimation(Routes.login, const LoginScreen(), Transition.fadeIn),
     pageanimation(Routes.signup, const SignupScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.password, const ForgotPasswordScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.adminDashboard, const AdminDashboard(), Transition.circularReveal),
+    pageanimation(Routes.adminDashboard, const AdminDashboard(), Transition.downToUp),
     pageanimation(Routes.starttrip, const StartTripScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.cardetails, const CarDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverdetails, const DriverDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.triplist, const TripListPage(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.pendingtriplist, const PendingListPage(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {
@@ -117,9 +120,18 @@ class ApiServices extends GetConnect {
 class PreferenceService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   dynamic userdata = {};
+  List paymentTypes = [
+    {"reg_no": "Cash"},
+    {"reg_no": "G-pay"},
+    {"reg_no": "Phone Pay"},
+    {"reg_no": "Paytm"}
+  ];
   List carList = [];
   List driversList = [];
+
+  List pendingTripList = [];
   List starttripList = [];
+
 //// ************ Set User Info ***********\\\\\
   Future<void> setString(String key, String value) async {
     await _storage.write(key: key, value: value);

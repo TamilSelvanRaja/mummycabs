@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
@@ -230,8 +228,9 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Column(children: [
                             const CustomInput(hintText: "Amount", fieldname: "amount", fieldType: "number"),
-                            if (title == "Add Amount") UIHelper.verticalSpaceSmall,
+                            UIHelper.verticalSpaceSmall,
                             if (title == "Add Amount") const CustomInput(hintText: "Reason", fieldname: "add_reason", fieldType: "text"),
+                            if (title != "Add Amount") CustomDropDown(initList: pref.paymentTypes, hintText: "Payment Type", fieldname: "payment_type", onSelected: (val) {}),
                             UIHelper.verticalSpaceMedium,
                             UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
                               if (_formkey.currentState!.saveAndValidate()) {
