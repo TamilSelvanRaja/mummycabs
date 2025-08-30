@@ -125,7 +125,7 @@ class _TripListPageState extends State<TripListPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(15),
-            margin: const EdgeInsets.symmetric(vertical: 8),
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
             child: Column(
               children: [

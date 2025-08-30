@@ -8,7 +8,7 @@ import 'package:http/io_client.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
-import 'package:mummy_cabs/ui/admin/driver_detail.dart';
+import 'package:mummy_cabs/ui/admin/driver_list.dart';
 import 'package:mummy_cabs/ui/admin/pending_list.dart';
 import 'package:mummy_cabs/ui/admin/start_trip.dart';
 import 'package:mummy_cabs/ui/admin/trip_list.dart';
@@ -50,7 +50,7 @@ abstract class AppPages {
     pageanimation(Routes.adminDashboard, const AdminDashboard(), Transition.downToUp),
     pageanimation(Routes.starttrip, const StartTripScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.cardetails, const CarDetailsScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverdetails, const DriverDetailsScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverdetails, const DriverListScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.triplist, const TripListPage(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
     pageanimation(Routes.pendingtriplist, const PendingListPage(), Transition.rightToLeftWithFade),
