@@ -8,6 +8,7 @@ import 'package:http/io_client.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
+import 'package:mummy_cabs/ui/admin/driver_detail.dart';
 import 'package:mummy_cabs/ui/admin/driver_list.dart';
 import 'package:mummy_cabs/ui/admin/pending_list.dart';
 import 'package:mummy_cabs/ui/admin/start_trip.dart';
@@ -17,6 +18,7 @@ import 'package:mummy_cabs/ui/auth/signin_screen.dart';
 import 'package:mummy_cabs/ui/auth/signup_screen.dart';
 import 'package:mummy_cabs/ui/auth/splash_screen.dart';
 import 'package:mummy_cabs/ui/driver/dashboard.dart';
+import 'package:mummy_cabs/ui/driver/transaction_status.dart';
 
 //**********************************************/
 //************** Routes String *****************/
@@ -31,11 +33,14 @@ class Routes {
   static String starttrip = '/starttrip';
   static String cardetails = '/cardetails';
   static String driverdetails = '/driverdetails';
+  static String driverlist = '/driverlist';
+
   static String triplist = '/triplist';
   static String pendingtriplist = '/pendingtriplist';
   static String cartList = '/cartList';
 
   static String driverDashboard = '/driverDashboard';
+  static String driverTransaction = '/driverTransaction';
 }
 
 //**********************************************/
@@ -50,10 +55,12 @@ abstract class AppPages {
     pageanimation(Routes.adminDashboard, const AdminDashboard(), Transition.downToUp),
     pageanimation(Routes.starttrip, const StartTripScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.cardetails, const CarDetailsScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverdetails, const DriverListScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverlist, const DriverListScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverdetails, const DriverDetailsScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.triplist, const TripListPage(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
     pageanimation(Routes.pendingtriplist, const PendingListPage(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverTransaction, const DriverTransactionScreen(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {
@@ -79,8 +86,8 @@ class InitialBinding implements Bindings {
 //************** Service API Call **************/
 //**********************************************/
 class ApiServices extends GetConnect {
-//  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-  String apiurl = "http://10.163.19.180/mummy_cabs";
+  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
+//  String apiurl = "http://10.163.19.180/mummy_cabs";
   ApiServices();
   IOClient ioClient = IOClient();
 

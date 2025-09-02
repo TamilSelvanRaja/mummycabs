@@ -150,12 +150,23 @@ class _PendingListPageState extends State<PendingListPage> {
           Positioned(
               right: 5,
               top: 5,
-              child: IconButton(
-                  onPressed: () async {
-                    await Get.toNamed(Routes.starttrip, arguments: {"isedit": true, "initdata": currentData});
-                    setState(() {});
-                  },
-                  icon: Icon(Icons.edit, size: 30, color: _colors.bluecolor)))
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () async {
+                        await Get.toNamed(Routes.starttrip, arguments: {"isedit": true, "initdata": currentData});
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.edit, size: 25, color: _colors.bluecolor)),
+                  IconButton(
+                      onPressed: () async {
+                        Utils().showAlert("W", "Do you want to delete this item?", onComplete: () {
+                          appController.triplocaldelete(int.parse("${currentData['uni_id']}"));
+                        });
+                      },
+                      icon: Icon(Icons.delete, size: 25, color: _colors.redColour)),
+                ],
+              ))
         ],
       ),
     );

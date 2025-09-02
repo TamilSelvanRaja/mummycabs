@@ -82,7 +82,10 @@ class _DriverListScreenState extends State<DriverListScreen> {
                       dynamic currentData = pref.driversList[index];
                       return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase())
                           ? InkWell(
-                              onTap: () {},
+                              onTap: () async {
+                                await Get.toNamed(Routes.driverdetails, arguments: {"initdata": currentData});
+                                setState(() {});
+                              },
                               child: SizedBox(
                                 width: Get.width,
                                 child: Column(

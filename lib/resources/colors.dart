@@ -15,5 +15,6 @@ class AppColors {
   Color redColour = const Color(0xFFD82525);
   Color orangeColour = const Color(0xFFFF9F04);
   Color yellowColour = Colors.yellow;
-  Color greenColour = const Color(0xFF1BE909);
+  Color greenColour1 = const Color(0xFF1BE909);
+  Color greenColour = const Color(0xFF0C9400);
 }

@@ -47,15 +47,15 @@ class _DriverDashboardState extends State<DriverDashboard> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
-                      UIHelper.titleTxtStyle("Pending Amount :", fntcolor: _colors.redColour, fntsize: 16),
+                      UIHelper.titleTxtStyle("Pending Amount :", fntcolor: _colors.redColour, fntsize: 12),
                       UIHelper.horizontalSpaceMedium,
                       Container(
-                        height: 50,
-                        width: 150,
+                        height: 40,
+                        width: 100,
                         alignment: Alignment.center,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(5),
                         decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
-                        child: UIHelper.titleTxtStyle("₹ ${pref.userdata['cart_amt']}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
+                        child: UIHelper.titleTxtStyle("₹ ${pref.userdata['cart_amt']}", fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -100,14 +100,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
                   )
                 : Image.asset(_images.driver, height: 50, width: 50),
             UIHelper.titleTxtStyle("${pref.userdata['name']}", fntcolor: _colors.bgClr, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
-            InkWell(
-                onTap: () {
-                  Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
-                    pref.cleanAllPreferences();
-                    Get.offNamedUntil(Routes.initial, (p) => false);
-                  });
-                },
-                child: Icon(Icons.logout, size: 26, color: _colors.bgClr)),
+            InkWell(onTap: () => _showPopupMenu(), child: Icon(Icons.menu_rounded, size: 30, color: _colors.whiteColour)),
           ],
         ));
   }
@@ -190,6 +183,48 @@ class _DriverDashboardState extends State<DriverDashboard> {
         Expanded(flex: 1, child: UIHelper.titleTxtStyle(":", fntsize: 14, fntWeight: FontWeight.normal)),
         Expanded(flex: 2, child: UIHelper.titleTxtStyle("$prefixTxt $t2", fntsize: 14, fntWeight: FontWeight.bold)),
       ],
+    );
+  }
+
+  itemWidget(title, int i, IconData icon) {
+    return InkWell(
+      onTap: () {
+        Get.back();
+        if (i == 0) {
+          Get.toNamed(Routes.driverTransaction);
+        } else {
+          Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
+            pref.cleanAllPreferences();
+            Get.offNamedUntil(Routes.initial, (p) => false);
+          });
+        }
+      },
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: _colors.primarycolour,
+          ),
+          UIHelper.horizontalSpaceTiny,
+          UIHelper.titleTxtStyle(title)
+        ],
+      ),
+    );
+  }
+
+  void _showPopupMenu() async {
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width - 40, kToolbarHeight, 10, 0),
+      items: [
+        PopupMenuItem<String>(
+          child: itemWidget("Transaction Status", 0, Icons.receipt_long_sharp),
+        ),
+        PopupMenuItem<String>(
+          child: itemWidget("Logout", 1, Icons.logout_rounded),
+        ),
+      ],
+      elevation: 8.0,
     );
   }
 }

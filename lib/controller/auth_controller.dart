@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +7,10 @@ import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/services/db_healper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
 
 class AppController with ChangeNotifier {
   AppController() {
@@ -20,6 +24,7 @@ class AppController with ChangeNotifier {
 
   List tripsList = [];
   List drivertripsList = [];
+  List transactionList = [];
 
   var dbHelper = DbHelper();
   Database? dbClient;
@@ -222,6 +227,20 @@ class AppController with ChangeNotifier {
   }
 
 //******************************************************************/
+//********************** Trip local delete *************************/
+//******************************************************************/
+  Future triplocaldelete(int id) async {
+    var count = 0;
+    dbClient ??= await dbHelper.db;
+    count = await dbClient!.rawDelete('DELETE FROM pendingList WHERE uni_id = ?', [id]);
+    if (count > 0) {
+      pref.pendingTripList = await dbClient!.rawQuery('SELECT * FROM pendingList');
+      Utils().showToast("Deleted", "Trip deleted successfully.", bgclr: _colors.greenColour);
+      notifyListeners();
+    }
+  }
+
+//******************************************************************/
 //******************* NEW Trip Add Function ***********************/
 //******************************************************************/
   Future newTripStart(dynamic postParams) async {
@@ -287,6 +306,40 @@ class AppController with ChangeNotifier {
     }
   }
 
+//******************************************************************/
+//****************  Get Transaction List Function ******************/
+//******************************************************************/
+  Future gettransactionList(String driverid) async {
+    transactionList.clear();
+
+    dynamic postParams = {
+      "service_id": "transaction_history",
+      "driver_id": driverid,
+    };
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      transactionList = responce['data'];
+      notifyListeners();
+    }
+  }
+
+//******************************************************************/
+//***************  Monthly Report Generate Function ****************/
+//******************************************************************/
+  Future generateMonthlyReport(String monthyear) async {
+    transactionList.clear();
+
+    dynamic postParams = {
+      "service_id": "file_generate",
+      "from_date": monthyear,
+    };
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      return responce['filepath'];
+    }
+    return "";
+  }
+
   Future apiresponceCallback(postParams, localpath) async {
     try {
       Utils().showProgress();
@@ -306,5 +359,46 @@ class AppController with ChangeNotifier {
     } catch (e) {
       Utils().showToast("Failure", "Error : $e");
     } finally {}
+  }
+
+  Future<void> downloadImage(String fname, String urlpart) async {
+    try {
+      String url = "${ApiServices().apiurl}/$urlpart";
+
+      // Request storage permission
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        Utils().showToast("Failure", "Storage permission denied");
+        return;
+      }
+
+      // Download image data
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        // Get downloads directory
+        Directory? directory;
+        if (Platform.isAndroid) {
+          directory = Directory("/storage/emulated/0/Download");
+        } else {
+          directory = await getApplicationDocumentsDirectory();
+        }
+
+        // Create file path
+        String fileName = "${fname}_report_${DateTime.now().millisecondsSinceEpoch}.csv";
+        File file = File("${directory.path}/$fileName");
+
+        // Save file
+        await file.writeAsBytes(response.bodyBytes);
+        Get.back();
+
+        Utils().showToast("Success", "Saved to: ${file.path}", bgclr: _colors.greenColour);
+      } else {
+        throw Exception("Failed to download image");
+      }
+      return;
+    } catch (e) {
+      Utils().showToast("Error", "Error: $e");
+      return;
+    }
   }
 }
