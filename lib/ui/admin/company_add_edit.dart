@@ -7,6 +7,7 @@ import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
+import 'package:mummy_cabs/resources/static_datas.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -34,6 +35,8 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   String pickuptime = "";
   String droptime = "";
   String amount = "";
+  String pickup_sf = "";
+  String drop_sf = "";
 
   @override
   void initState() {
@@ -51,6 +54,8 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       pickuptime = initdata["pickup_time"].toString();
       droptime = initdata["drop_time"].toString();
       amount = initdata["amount"].toString();
+      pickup_sf = initdata["pickup_sf"].toString();
+      drop_sf = initdata["drop_sf"].toString();
     }
     setState(() {});
   }
@@ -209,8 +214,45 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                     setState(() {});
                   },
                 )),
+                // Expanded(
+                //     child: CustomDropDown(
+                //         initList: defaultTime,
+                //         initValue: pickup_sf,
+                //         hintText: "AM/PM",
+                //         fieldname: "am/pm",
+                //         onSelected: (val) {
+                //           pickup_sf = val;
+                //           setState(() {});
+                //         })),
               ],
             ),
+            // UIHelper.verticalSpaceSmall,
+            // Row(
+            //   children: [
+            //     Expanded(
+            //         child: CustomInput(
+            //       hintText: "Drop Time",
+            //       initValue: droptime,
+            //       fieldname: "drop_time",
+            //       fieldType: "novalidation",
+            //       onchanged: (val) {
+            //         droptime = val;
+            //         setState(() {});
+            //       },
+            //     )),
+            //     UIHelper.horizontalSpaceSmall,
+            //   Expanded(
+            //         child:   CustomDropDown(
+            //         initList: defaultTime,
+            //         initValue: drop_sf,
+            //         hintText: "AM/PM",
+            //         fieldname: "am/pm1",
+            //         onSelected: (val) {
+            //           drop_sf = val;
+            //           setState(() {});
+            //         }))
+            //   ],
+            // ),
             UIHelper.verticalSpaceSmall,
             CustomInput1(
               hintText: "Amount",
@@ -269,6 +311,8 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       "pickup_time": pickuptime,
       "drop_time": droptime,
       "amount": amount,
+      "pickup_sf": pickup_sf,
+      "drop_sf": drop_sf
     };
     return postParams;
   }

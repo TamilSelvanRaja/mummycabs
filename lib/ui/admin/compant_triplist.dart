@@ -190,7 +190,8 @@ class _CompantTripListState extends State<CompantTripList> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 UIHelper.titleTxtStyle("${currentData['trip_date']}", fntcolor: _colors.bluecolor, fntsize: 12, fntWeight: FontWeight.bold),
-                UIHelper.titleTxtStyle("${currentData['pickup_time']} - ${currentData['drop_time']}", fntcolor: _colors.bluecolor, fntsize: 10, fntWeight: FontWeight.bold),
+                UIHelper.titleTxtStyle("${currentData['pickup_time']} ${currentData['pickup_sf']} - ${currentData['drop_time']} ${currentData['drop_sf']}",
+                    fntcolor: _colors.bluecolor, fntsize: 10, fntWeight: FontWeight.bold),
               ],
             ))
       ],

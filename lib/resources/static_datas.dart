@@ -13,3 +13,8 @@ List menuTitleList = [
   {"id": 3, "title": "Trip\nList", "image": _images.list1},
   {"id": 4, "title": "Pending\nList", "image": _images.list2},
 ];
+
+List defaultTime = [
+  {"reg_no": "AM"},
+  {"reg_no": "PM"}
+];
