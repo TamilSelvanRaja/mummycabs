@@ -21,7 +21,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   String inputDate = "";
-  String downloadFilepath = "";
   @override
   void initState() {
     super.initState();
@@ -39,12 +38,35 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
-      body: Column(
-        children: [
-          customAppBar(),
-          UIHelper.verticalSpaceMedium,
-          menuItemCards(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            customAppBar(),
+            UIHelper.verticalSpaceMedium,
+            menuItemCards(),
+            UIHelper.verticalSpaceSmall,
+            GestureDetector(
+              onTap: () {
+                Get.toNamed(Routes.companyTripList);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                width: Get.width,
+                margin: const EdgeInsets.symmetric(horizontal: 26),
+                decoration: UIHelper.roundedBorderWithColor(30, 3, 3, 30, _colors.bgClr, isShadow: true, shadowColor: _colors.greenColour),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(_images.destination, height: 50, width: 50),
+                    UIHelper.horizontalSpaceSmall,
+                    UIHelper.titleTxtStyle("Company Trips", fntsize: 16, fntcolor: _colors.primarycolour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
+                  ],
+                ),
+              ),
+            ),
+            UIHelper.verticalSpaceSmall,
+          ],
+        ),
       ),
       floatingActionButton: InkWell(
         onTap: () async {
@@ -140,7 +162,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
         Get.back();
         if (i == 0) {
           inputDate = "";
-          downloadFilepath = "";
           fgbottomsheet();
         } else {
           Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
@@ -233,7 +254,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             mm = "0$mm";
                           }
                           inputDate = '$mm-$year';
-                          downloadFilepath = await AppController().generateMonthlyReport(inputDate);
+                          //  downloadFilepath = ;
                           setState(() {});
                         },
                             initialSelectedMonth: DateTime.now().month,
@@ -263,22 +284,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       )),
                 ),
                 UIHelper.verticalSpaceMedium,
-                if (downloadFilepath.isNotEmpty) ...[
-                  InkWell(
-                    onTap: () {
-                      AppController().downloadImage(inputDate, downloadFilepath);
+                Center(
+                  child: InkWell(
+                    onTap: () async {
+                      if (inputDate.isNotEmpty) {
+                        Get.back();
+                        await AppController().generateMonthlyReport(inputDate);
+                      }
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(_images.excel, height: 80, width: 80),
-                        UIHelper.horizontalSpaceSmall,
-                        UIHelper.titleTxtStyle("Download", fntsize: 16, fntcolor: _colors.bluecolor, fntWeight: FontWeight.bold),
-                      ],
+                    child: Container(
+                      decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.primarycolour),
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                      child: UIHelper.titleTxtStyle("Generate Email", fntsize: 16, fntcolor: _colors.bgClr, fntWeight: FontWeight.bold),
                     ),
                   ),
-                ],
-                UIHelper.verticalSpaceVeryLarge,
+                ),
+                UIHelper.verticalSpaceMedium,
               ],
             );
           }),

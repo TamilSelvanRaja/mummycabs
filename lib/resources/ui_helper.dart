@@ -90,8 +90,17 @@ class UIHelper {
   }
 
 //Gradient Container Style Provider
-  static BoxDecoration gradientContainer(double topleft, double topright, double btmleft, double btmright, List<Color> c1,
-      {Color borderColor = Colors.transparent, double borderWidth = 0, double stop1 = 0.1, double stop2 = 1.0}) {
+  static BoxDecoration gradientContainer(
+    double topleft,
+    double topright,
+    double btmleft,
+    double btmright,
+    List<Color> c1, {
+    Color borderColor = Colors.transparent,
+    double borderWidth = 0,
+    double stop1 = 0.1,
+    double stop2 = 1.0,
+  }) {
     return BoxDecoration(
       gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -104,6 +113,31 @@ class UIHelper {
       border: Border.all(color: borderColor, width: borderWidth),
       borderRadius: BorderRadius.only(topRight: Radius.circular(topright), topLeft: Radius.circular(topleft), bottomLeft: Radius.circular(btmleft), bottomRight: Radius.circular(btmright)),
     );
+  }
+
+//Gradient Container Style Provider
+  static BoxDecoration gradientContainer1(double topleft, double topright, double btmleft, double btmright, List<Color> c1,
+      {Color borderColor = Colors.transparent, bool isShadow = false, Color shadowColor = Colors.black45, double borderWidth = 0, double stop1 = 0.1, double stop2 = 1.0}) {
+    return BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            stops: [
+              stop1,
+              stop2,
+            ],
+            colors: c1),
+        border: Border.all(color: borderColor, width: borderWidth),
+        borderRadius: BorderRadius.only(topRight: Radius.circular(topright), topLeft: Radius.circular(topleft), bottomLeft: Radius.circular(btmleft), bottomRight: Radius.circular(btmright)),
+        boxShadow: isShadow
+            ? [
+                BoxShadow(
+                  color: shadowColor,
+                  offset: const Offset(0.8, 1),
+                  blurRadius: 8.0,
+                )
+              ]
+            : []);
   }
 
 //Circle Container Style Provider

@@ -80,6 +80,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     itemCount: pref.driversList.length,
                     itemBuilder: (context, index) {
                       dynamic currentData = pref.driversList[index];
+
                       return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase())
                           ? InkWell(
                               onTap: () async {
@@ -114,7 +115,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
-                                              rowdata1("Balance", "₹ ${currentData['cart_amt']}", fntSize: 14, fntclr: _colors.redColour),
+                                              rowdata1("Balance", "₹ ${double.parse("${currentData['cart_amt']}").toStringAsFixed(2)}", fntSize: 14, fntclr: _colors.redColour),
                                             ],
                                           ),
                                         ),

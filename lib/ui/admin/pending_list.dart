@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
@@ -67,6 +69,7 @@ class _PendingListPageState extends State<PendingListPage> {
   }
 
   Widget cardData(int index, dynamic currentData) {
+    log("$currentData");
     List amountList = [
       {"type": "OLA", "cash": "${currentData['ola_cash']}", "operator": "${currentData['ola_operator']}"},
       {"type": "UBER", "cash": "${currentData['uber_cash']}", "operator": "${currentData['uber_operator']}"},
@@ -123,6 +126,10 @@ class _PendingListPageState extends State<PendingListPage> {
                       return rowdata("${data['type']}", "${data['cash']}", "${data['operator']}", false, "₹");
                     }),
                   ),
+                  if (currentData['duty_desc'] != null && currentData['duty_desc'] != "") ...[
+                    UIHelper.verticalSpaceTiny,
+                    Align(alignment: Alignment.centerLeft, child: UIHelper.titleTxtStyle("${currentData['duty_desc']}", fntsize: 14, fntcolor: _colors.bluecolor, txtAlign: TextAlign.left)),
+                  ],
                   const Divider(),
                   rowdata("Total", "${currentData['total_cash_amt']}", "${currentData['total_operator_amt']}", true, "₹"),
                   const Divider(),
@@ -131,8 +138,14 @@ class _PendingListPageState extends State<PendingListPage> {
                   UIHelper.verticalSpaceSmall,
                   rowdata1("Fuel Amount", "${currentData['fuel_amt']}", "₹"),
                   UIHelper.verticalSpaceSmall,
+                  rowdata1("KM", "${currentData['total_operator_amt']}/${currentData['kilometer']} = ${currentData['per_km']}", ""),
+                  UIHelper.verticalSpaceSmall,
                   rowdata1("Other Expences", "${currentData['other_expences']}", "₹"),
                   UIHelper.verticalSpaceSmall,
+                  if (currentData['other_desc'] != "" && currentData['other_desc'] != null) ...[
+                    Align(alignment: Alignment.centerLeft, child: UIHelper.titleTxtStyle("${currentData['other_desc']}", fntsize: 14, fntcolor: _colors.bluecolor, txtAlign: TextAlign.left)),
+                    UIHelper.verticalSpaceSmall,
+                  ],
                   rowdata1("Balance Amount", "${currentData['balance_amount']}", "₹"),
                   UIHelper.verticalSpaceMedium,
                   Center(
@@ -185,8 +198,9 @@ class _PendingListPageState extends State<PendingListPage> {
   Widget rowdata1(String t1, String t2, String prefixTxt) {
     return Row(
       children: [
-        Expanded(flex: 3, child: UIHelper.titleTxtStyle(t1, fntsize: 14, fntWeight: FontWeight.normal)),
-        Expanded(flex: 1, child: UIHelper.titleTxtStyle(":", fntsize: 14, fntWeight: FontWeight.normal)),
+        Expanded(flex: 2, child: UIHelper.titleTxtStyle(t1, fntsize: 14, fntWeight: FontWeight.normal)),
+        UIHelper.titleTxtStyle(":", fntsize: 14, fntWeight: FontWeight.normal),
+        UIHelper.horizontalSpaceTiny,
         Expanded(flex: 2, child: UIHelper.titleTxtStyle("$prefixTxt $t2", fntsize: 14, fntWeight: FontWeight.bold)),
       ],
     );

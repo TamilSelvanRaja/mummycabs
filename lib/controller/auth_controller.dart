@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,10 +6,7 @@ import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/services/db_healper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:http/http.dart' as http;
 
 class AppController with ChangeNotifier {
   AppController() {
@@ -19,12 +15,14 @@ class AppController with ChangeNotifier {
 
   final PreferenceService pref = Get.find<PreferenceService>();
   final AppColors _colors = AppColors();
-  String tripdayamount = "";
+  String tripdayamount = "0";
   String totalcartamount = "";
 
   List tripsList = [];
   List drivertripsList = [];
   List transactionList = [];
+
+  List companytripsList = [];
 
   var dbHelper = DbHelper();
   Database? dbClient;
@@ -105,7 +103,8 @@ class AppController with ChangeNotifier {
         pref.carList = responce['data'];
       } else {
         pref.driversList = responce['data'];
-        totalcartamount = responce['total_amount'].toString();
+        double amount = double.parse("${responce['total_amount']}");
+        totalcartamount = amount.toStringAsFixed(2);
       }
       notifyListeners();
     }
@@ -143,14 +142,14 @@ class AppController with ChangeNotifier {
   INSERT INTO pendingList (
     trip_date, vehicle_no, driver_id, ola_cash, ola_operator,
     uber_cash, uber_operator, rapido_cash, rapido_operator,
-    other_cash, other_operator, total_cash_amt, total_operator_amt,
+    other_cash, other_operator,duty_desc, total_cash_amt, total_operator_amt,
     salary_percentage, driver_salary, fuel_amt, other_expences,
     other_desc, kilometer, balance_amount, per_km
   )
   VALUES (
   "${postParams["trip_date"]}","${postParams["vehicle_no"]}","${postParams["driver_id"]}","${postParams["ola_cash"]}","${postParams["ola_operator"]}",
     "${postParams["uber_cash"]}","${postParams["uber_operator"]}","${postParams["rapido_cash"]}","${postParams["rapido_operator"]}","${postParams["other_cash"]}",
-    "${postParams["other_operator"]}","${postParams["total_cash_amt"]}","${postParams["total_operator_amt"]}","${postParams["salary_percentage"]}",
+    "${postParams["other_operator"]}","${postParams["duty_desc"]}","${postParams["total_cash_amt"]}","${postParams["total_operator_amt"]}","${postParams["salary_percentage"]}",
     "${postParams["driver_salary"]}","${postParams["fuel_amt"]}","${postParams["other_expences"]}","${postParams["other_desc"]}","${postParams["kilometer"]}",
     "${postParams["balance_amount"]}","${postParams["per_km"]}"  
   )
@@ -180,6 +179,7 @@ class AppController with ChangeNotifier {
       uber_operator = ?,
       rapido_cash = ?,
       rapido_operator = ?,
+      duty_desc = ?,
       other_cash = ?,
       other_operator = ?,
       total_cash_amt = ?,
@@ -203,6 +203,7 @@ class AppController with ChangeNotifier {
       postParams["uber_operator"],
       postParams["rapido_cash"],
       postParams["rapido_operator"],
+      postParams["duty_desc"],
       postParams["other_cash"],
       postParams["other_operator"],
       postParams["total_cash_amt"],
@@ -324,6 +325,35 @@ class AppController with ChangeNotifier {
   }
 
 //******************************************************************/
+//*******************  Get Trip List Function **********************/
+//******************************************************************/
+  Future getCompanytripList(String date) async {
+    companytripsList.clear();
+
+    dynamic postParams = {"service_id": "companytrip_list", "from_date": date};
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      companytripsList = responce['data'];
+      tripdayamount = responce['over_all_amount'].toString();
+      notifyListeners();
+    }
+  }
+
+//******************************************************************/
+//******************* NEW Trip Add Function ***********************/
+//******************************************************************/
+  Future newCompanyTripStart(dynamic postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      if (responce["msg"].toString() == "true") {
+        Get.back();
+      } else {
+        Utils().showToast("Failure", '${responce["message"]}');
+      }
+    }
+  }
+
+//******************************************************************/
 //***************  Monthly Report Generate Function ****************/
 //******************************************************************/
   Future generateMonthlyReport(String monthyear) async {
@@ -335,9 +365,8 @@ class AppController with ChangeNotifier {
     };
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      return responce['filepath'];
+      Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
     }
-    return "";
   }
 
   Future apiresponceCallback(postParams, localpath) async {
@@ -359,46 +388,5 @@ class AppController with ChangeNotifier {
     } catch (e) {
       Utils().showToast("Failure", "Error : $e");
     } finally {}
-  }
-
-  Future<void> downloadImage(String fname, String urlpart) async {
-    try {
-      String url = "${ApiServices().apiurl}/$urlpart";
-
-      // Request storage permission
-      var status = await Permission.storage.request();
-      if (!status.isGranted) {
-        Utils().showToast("Failure", "Storage permission denied");
-        return;
-      }
-
-      // Download image data
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        // Get downloads directory
-        Directory? directory;
-        if (Platform.isAndroid) {
-          directory = Directory("/storage/emulated/0/Download");
-        } else {
-          directory = await getApplicationDocumentsDirectory();
-        }
-
-        // Create file path
-        String fileName = "${fname}_report_${DateTime.now().millisecondsSinceEpoch}.csv";
-        File file = File("${directory.path}/$fileName");
-
-        // Save file
-        await file.writeAsBytes(response.bodyBytes);
-        Get.back();
-
-        Utils().showToast("Success", "Saved to: ${file.path}", bgclr: _colors.greenColour);
-      } else {
-        throw Exception("Failed to download image");
-      }
-      return;
-    } catch (e) {
-      Utils().showToast("Error", "Error: $e");
-      return;
-    }
   }
 }

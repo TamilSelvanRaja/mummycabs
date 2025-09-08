@@ -9,6 +9,7 @@ class AppImages {
   String list2 = "assets/list2.png";
   String wallet = "assets/wallet.jpg";
   String excel = "assets/excel.png";
+  String destination = "assets/destination.png";
 
   String profile = "assets/profile.png";
   String adminprofile = "assets/male.png";

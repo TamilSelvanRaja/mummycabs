@@ -8,6 +8,8 @@ import 'package:http/io_client.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
+import 'package:mummy_cabs/ui/admin/compant_triplist.dart';
+import 'package:mummy_cabs/ui/admin/company_add_edit.dart';
 import 'package:mummy_cabs/ui/admin/driver_detail.dart';
 import 'package:mummy_cabs/ui/admin/driver_list.dart';
 import 'package:mummy_cabs/ui/admin/pending_list.dart';
@@ -38,6 +40,8 @@ class Routes {
   static String triplist = '/triplist';
   static String pendingtriplist = '/pendingtriplist';
   static String cartList = '/cartList';
+  static String companyTripList = '/companyTripList';
+  static String companyaddEditTrip = '/companyaddEditTrip';
 
   static String driverDashboard = '/driverDashboard';
   static String driverTransaction = '/driverTransaction';
@@ -61,6 +65,8 @@ abstract class AppPages {
     pageanimation(Routes.pendingtriplist, const PendingListPage(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverTransaction, const DriverTransactionScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.companyTripList, const CompantTripList(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.companyaddEditTrip, const CompantTripScreen(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {
@@ -86,8 +92,8 @@ class InitialBinding implements Bindings {
 //************** Service API Call **************/
 //**********************************************/
 class ApiServices extends GetConnect {
-  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-//  String apiurl = "http://10.163.19.180/mummy_cabs";
+//  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
+  String apiurl = "http://10.163.19.180/mummy_cabs";
   ApiServices();
   IOClient ioClient = IOClient();
 

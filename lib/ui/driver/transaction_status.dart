@@ -41,7 +41,30 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
         ],
         child: Consumer<AppController>(builder: (context, ref, child) {
           appController = ref;
-          return transactionHistory();
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    UIHelper.titleTxtStyle("Pending Amount :", fntcolor: _colors.redColour, fntsize: 12),
+                    UIHelper.horizontalSpaceMedium,
+                    Container(
+                      height: 40,
+                      width: 100,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(5),
+                      decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
+                      child: UIHelper.titleTxtStyle("₹ ${double.parse("${pref.userdata['cart_amt']}").toStringAsFixed(2)}", fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(color: _colors.primarycolour),
+              Expanded(child: transactionHistory())
+            ],
+          );
         }),
       ),
     );
@@ -75,14 +98,14 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
                 child: Container(
                   width: Get.width / 1.5,
                   padding: const EdgeInsets.all(10),
-                  decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.3) : _colors.redColour.withOpacity(0.3)),
+                  decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.2) : _colors.redColour.withOpacity(0.2)),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Align(
                         alignment: Alignment.centerRight,
-                        child: UIHelper.titleTxtStyle(formatted, fntsize: 8),
+                        child: UIHelper.titleTxtStyle(formatted, fntsize: 10),
                       ),
                       UIHelper.titleTxtStyle("₹ ${currentData['trip_amount']}", fntsize: 14, fntWeight: FontWeight.bold),
                       if (currentData['add_deduct_type'] == "Deduct Amount") ...[

@@ -36,6 +36,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
   String fuel = "";
   String otherexp = "";
   String otherdesc = "";
+  String dutydesc = "";
   String kilometer = "";
 
   double overAllCashAmt = 0.0;
@@ -64,6 +65,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
       fuel = initdata["fuel_amt"].toString();
       otherexp = initdata["other_expences"].toString();
       otherdesc = initdata["other_desc"].toString();
+      dutydesc = initdata["duty_desc"].toString();
       kilometer = initdata["kilometer"].toString();
       overAllCashAmt = double.parse(initdata["total_cash_amt"].toString());
       overAllOperatorAmt = double.parse(initdata["total_operator_amt"].toString());
@@ -281,6 +283,17 @@ class _StartTripScreenState extends State<StartTripScreen> {
               ],
             ),
             UIHelper.verticalSpaceSmall,
+            CustomInput(
+              hintText: "Description",
+              fieldname: "duty_desc",
+              initValue: dutydesc,
+              fieldType: "novalidation",
+              onchanged: (val) {
+                dutydesc = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -429,6 +442,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
       "fuel_amt": fuelamt,
       "other_expences": otherexp,
       "other_desc": otherdesc,
+      "duty_desc": dutydesc,
       "kilometer": kilometer,
       "balance_amount": balanceamount,
       "per_km": roundedperkm,

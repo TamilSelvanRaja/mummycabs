@@ -54,6 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: UIHelper.titleTxtStyle("Forgot password?", fntcolor: _colors.bluecolor, fntsize: 14))),
                   UIHelper.verticalSpaceMedium,
                   UIHelper().actionButton("Login", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () async {
+                    // dynamic postParams = {
+                    //   "service_id": "login",
+                    //   "mobile": "8608335666",
+                    //   "password": "Mani@123#",
+                    // };
+                    // AppController().loginFunction(postParams);
+
                     if (_formKey.currentState!.saveAndValidate()) {
                       Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
                       postParams['service_id'] = "login";

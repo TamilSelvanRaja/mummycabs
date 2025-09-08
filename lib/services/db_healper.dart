@@ -33,7 +33,7 @@ class DbHelper {
     dropAllTable(db);
     await db.execute('''CREATE TABLE pendingList (uni_id INTEGER PRIMARY KEY AUTOINCREMENT,trip_date TEXT,vehicle_no TEXT,driver_id TEXT,ola_cash TEXT,
                         ola_operator TEXT,uber_cash TEXT,uber_operator TEXT,rapido_cash TEXT,rapido_operator TEXT,other_cash TEXT,
-                        other_operator TEXT,total_cash_amt TEXT,total_operator_amt TEXT,salary_percentage TEXT,driver_salary TEXT,
+                        other_operator TEXT,duty_desc TEXT,total_cash_amt TEXT,total_operator_amt TEXT,salary_percentage TEXT,driver_salary TEXT,
                         fuel_amt TEXT,other_expences TEXT,other_desc TEXT,kilometer TEXT,balance_amount TEXT,per_km TEXT
                     )''');
   }

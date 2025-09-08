@@ -88,7 +88,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                               UIHelper.titleTxtStyle("${initialData['mobile']}", fntsize: 14, fntWeight: FontWeight.bold),
                               rowdata1("DL No.", "${initialData['dl_no']}"),
                               rowdata1("Password", "${initialData['password']}"),
-                              rowdata1("Balance", "₹ ${initialData['cart_amt']}", fntSize: 12, fntclr: _colors.redColour),
+                              rowdata1("Balance", "₹ ${double.parse("${initialData['cart_amt']}").toStringAsFixed(2)}", fntSize: 12, fntclr: _colors.redColour),
                             ],
                           ),
                         ),
@@ -166,14 +166,14 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                 child: Container(
                   width: Get.width / 1.5,
                   padding: const EdgeInsets.all(10),
-                  decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.3) : _colors.redColour.withOpacity(0.3)),
+                  decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.2) : _colors.redColour.withOpacity(0.2)),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Align(
                         alignment: Alignment.centerRight,
-                        child: UIHelper.titleTxtStyle(formatted, fntsize: 8),
+                        child: UIHelper.titleTxtStyle(formatted, fntsize: 10),
                       ),
                       UIHelper.titleTxtStyle("₹ ${currentData['trip_amount']}", fntsize: 14, fntWeight: FontWeight.bold),
                       if (currentData['add_deduct_type'] == "Deduct Amount") ...[
