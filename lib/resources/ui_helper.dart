@@ -120,7 +120,7 @@ class UIHelper {
       {Color borderColor = Colors.transparent, bool isShadow = false, Color shadowColor = Colors.black45, double borderWidth = 0, double stop1 = 0.1, double stop2 = 1.0}) {
     return BoxDecoration(
         gradient: LinearGradient(
-            begin: Alignment.centerLeft,
+            begin: Alignment.topCenter,
             end: Alignment.centerRight,
             stops: [
               stop1,

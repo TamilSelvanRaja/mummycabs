@@ -5,6 +5,8 @@ class AppImages {
 
   String car = "assets/car.png";
   String driver = "assets/driver.png";
+  String customer = "assets/customer.png";
+
   String list1 = "assets/list1.png";
   String list2 = "assets/list2.png";
   String wallet = "assets/wallet.jpg";

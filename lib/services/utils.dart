@@ -56,4 +56,9 @@ class Utils {
     dynamic user1 = pref.driversList.where((e) => e["_id"].toString() == userid).toList().first;
     return user1;
   }
+
+  getCustomerrdetails(userid) {
+    dynamic user1 = pref.customersList.where((e) => e["_id"].toString() == userid).toList().first;
+    return user1;
+  }
 }

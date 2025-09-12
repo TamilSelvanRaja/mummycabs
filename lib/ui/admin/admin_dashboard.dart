@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
+import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/static_datas.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
@@ -21,6 +22,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   String inputDate = "";
+  String cusId = "";
   @override
   void initState() {
     super.initState();
@@ -32,6 +34,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Future initialize() async {
     await AppController().getcarList("car_list");
     await AppController().getcarList("drivers_list");
+    await AppController().getcarList("customer_list");
+    setState(() {});
   }
 
   @override
@@ -42,7 +46,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: Column(
           children: [
             customAppBar(),
-            UIHelper.verticalSpaceMedium,
+            menuitemCards1(),
             menuItemCards(),
             UIHelper.verticalSpaceSmall,
             GestureDetector(
@@ -76,9 +80,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: Container(
             padding: const EdgeInsets.all(8),
             decoration: UIHelper.circleWithColorWithShadow(1, _colors.primarycolour, _colors.primarycolour),
-            child: Icon(Icons.directions_car_outlined, size: 40, color: _colors.bgClr)
-            // UIHelper.titleTxtStyle("Start Trip", fntcolor: _colors.bgClr, fntsize: 16),
-            ),
+            child: Icon(Icons.directions_car_outlined, size: 40, color: _colors.bgClr)),
       ),
     );
   }
@@ -104,19 +106,51 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ));
   }
 
+  Widget menuitemCards1() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(menuTitleList.length, (index) {
+          dynamic currentdata = menuTitleList[index];
+          return GestureDetector(
+            onTap: () async {
+              if (index == 0) {
+                Get.toNamed(Routes.cardetails);
+              } else if (index == 1) {
+                Get.toNamed(Routes.driverlist);
+              } else {
+                await Get.toNamed(Routes.customerList);
+                setState(() {});
+              }
+            },
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: UIHelper.circleWithColorWithShadow(1, _colors.whiteColour, _colors.greycolor1, borderColor: _colors.greycolor1),
+                  child: Image.asset(currentdata['image'], height: Get.width / 5, width: Get.width / 5),
+                ),
+                UIHelper.verticalSpaceTiny,
+                UIHelper.titleTxtStyle(currentdata['title'], fntsize: 12, fntcolor: _colors.primarycolour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
   Widget menuItemCards() {
     return Wrap(
         children: List.generate(
-      menuTitleList.length,
+      menuTitleList1.length,
       (index) {
-        dynamic currentdata = menuTitleList[index];
+        dynamic currentdata = menuTitleList1[index];
+
         return GestureDetector(
           onTap: () async {
             if (index == 0) {
-              Get.toNamed(Routes.driverlist);
-            } else if (index == 1) {
-              Get.toNamed(Routes.cardetails);
-            } else if (index == 2) {
               Get.toNamed(Routes.triplist);
             } else {
               await Get.toNamed(Routes.pendingtriplist);
@@ -129,16 +163,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 padding: const EdgeInsets.all(16),
                 width: Get.width / 2.5,
                 margin: const EdgeInsets.all(10),
-                decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.bgClr, isShadow: true, shadowColor: _colors.greycolor),
+                decoration: UIHelper.gradientContainer1(25, 0, 0, 25, index == 0 ? _colors.gradient1 : _colors.gradient2, isShadow: true, shadowColor: _colors.greycolor),
+                //     decoration: UIHelper.roundedBorderWithColor(25, 0, 0, 25, _colors.bgClr, isShadow: true, shadowColor: _colors.greycolor),
                 child: Column(
                   children: [
                     Image.asset(currentdata['image'], height: 80, width: 80),
                     UIHelper.verticalSpaceSmall,
-                    UIHelper.titleTxtStyle(currentdata['title'], fntsize: 18, fntcolor: _colors.primarycolour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
+                    UIHelper.titleTxtStyle(currentdata['title'], fntsize: 18, fntcolor: _colors.blackColour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
                   ],
                 ),
               ),
-              if (index == 3 && pref.pendingTripList.isNotEmpty)
+              if (index == 1 && pref.pendingTripList.isNotEmpty)
                 Positioned(
                   right: 0,
                   child: Container(
@@ -160,9 +195,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return InkWell(
       onTap: () {
         Get.back();
-        if (i == 0) {
+        if (i == 0 || i == 1) {
           inputDate = "";
-          fgbottomsheet();
+          cusId = "";
+          fgbottomsheet(i);
         } else {
           Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
             pref.cleanAllPreferences();
@@ -189,17 +225,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
       position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width - 40, kToolbarHeight, 10, 0),
       items: [
         PopupMenuItem<String>(
-          child: itemWidget("Generate Reports", 0, Icons.receipt_long_sharp),
+          child: itemWidget("Trips Reports", 0, Icons.receipt_long_sharp),
         ),
         PopupMenuItem<String>(
-          child: itemWidget("Logout", 1, Icons.logout_rounded),
+          child: itemWidget("Customer Reports", 1, Icons.receipt_long_sharp),
+        ),
+        PopupMenuItem<String>(
+          child: itemWidget("Logout", 2, Icons.logout_rounded),
         ),
       ],
       elevation: 8.0,
     );
   }
 
-  Future fgbottomsheet() {
+  Future fgbottomsheet(int index) {
     return showModalBottomSheet(
       backgroundColor: _colors.whiteColour,
       isScrollControlled: true,
@@ -231,7 +270,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        UIHelper.titleTxtStyle("Generate Files", fntcolor: _colors.primarycolour, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
+                        UIHelper.titleTxtStyle(index == 0 ? "Trips Report" : "Customer Report", fntcolor: _colors.primarycolour, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
                         InkWell(
                           onTap: () {
                             Get.back();
@@ -283,13 +322,36 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         ),
                       )),
                 ),
+                if (index == 1) ...[
+                  UIHelper.verticalSpaceSmall,
+                  Center(
+                    child: SizedBox(
+                        width: Get.width / 2,
+                        child: CustomDropDown(
+                            initList: pref.customersList,
+                            initValue: cusId,
+                            hintText: "Customer Name",
+                            fieldname: "customer_id",
+                            onSelected: (val) {
+                              cusId = val;
+                              setState(() {});
+                            })),
+                  )
+                ],
                 UIHelper.verticalSpaceMedium,
                 Center(
                   child: InkWell(
                     onTap: () async {
                       if (inputDate.isNotEmpty) {
-                        Get.back();
-                        await AppController().generateMonthlyReport(inputDate);
+                        if (index == 0) {
+                          Get.back();
+                          await AppController().generateMonthlyReport(inputDate);
+                        } else {
+                          if (cusId.isNotEmpty) {
+                            Get.back();
+                            await AppController().generateInvoiceReport(inputDate, cusId);
+                          }
+                        }
                       }
                     },
                     child: Container(

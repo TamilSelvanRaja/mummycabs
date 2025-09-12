@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -25,12 +27,20 @@ class CustomDropDown extends StatefulWidget {
 }
 
 class _CustomDropDownState extends State<CustomDropDown> {
-  String keyCode = "reg_no";
-  String titleText = "reg_no";
+  String keyCode = "";
+  String titleText = "";
 
   @override
   void initState() {
     super.initState();
+    if (widget.fieldname == "vehicle_no" || widget.fieldname == "payment_type") {
+      keyCode = "reg_no";
+      titleText = "reg_no";
+    } else if (widget.fieldname == "customer_id") {
+      keyCode = "_id";
+      titleText = "name";
+    } else {}
+    setState(() {});
   }
 
   @override
@@ -231,18 +241,28 @@ class CustomDatePicker extends StatefulWidget {
   final String fieldname;
   final dynamic onSelected;
   final dynamic initValue;
-  const CustomDatePicker({super.key, required this.hintText, required this.fieldname, this.onSelected, this.initValue});
+  final bool? isTimeonly;
+  const CustomDatePicker({super.key, required this.hintText, required this.fieldname, this.onSelected, this.initValue, this.isTimeonly});
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();
 }
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
   DateTime? initdateTime;
+  bool isTimeonly = false;
   @override
   void initState() {
     super.initState();
+    if (widget.isTimeonly != null) {
+      isTimeonly = widget.isTimeonly!;
+    }
+
     if (widget.initValue != null && widget.initValue != "") {
-      initdateTime = DateFormat("dd-MM-yyyy").parse(widget.initValue);
+      if (isTimeonly) {
+        initdateTime = DateFormat("hh:mm a").parse(widget.initValue);
+      } else {
+        initdateTime = DateFormat("dd-MM-yyyy").parse(widget.initValue);
+      }
     }
   }
 
@@ -251,8 +271,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return FormBuilderDateTimePicker(
       name: widget.fieldname,
       initialValue: initdateTime,
-      inputType: InputType.date,
-      format: DateFormat('dd-MM-yyyy'),
+      inputType: isTimeonly ? InputType.time : InputType.date,
+      format: isTimeonly ? DateFormat("hh:mm a") : DateFormat('dd-MM-yyyy'),
       style: UIHelper.customTxtStyle(_colors.blackColour, 14, FontWeight.w400),
       timePickerInitialEntryMode: TimePickerEntryMode.dial,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -267,9 +287,16 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       onChanged: (value) {
         if (value != null) {
           DateTime inputDate = DateTime.parse(value.toString());
-          DateFormat format = DateFormat('dd-MM-yyyy');
-          String selectedDate = format.format(inputDate);
-          widget.onSelected(selectedDate);
+
+          if (isTimeonly) {
+            DateFormat format = DateFormat('hh:mm a');
+            String selectedDate = format.format(inputDate);
+            widget.onSelected(selectedDate);
+          } else {
+            DateFormat format = DateFormat('dd-MM-yyyy');
+            String selectedDate = format.format(inputDate);
+            widget.onSelected(selectedDate);
+          }
         }
       },
     );

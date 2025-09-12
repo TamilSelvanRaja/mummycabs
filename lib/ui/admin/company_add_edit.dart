@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
@@ -35,8 +36,12 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   String pickuptime = "";
   String droptime = "";
   String amount = "";
-  String pickup_sf = "";
-  String drop_sf = "";
+  String tollAmt = "";
+  String driversalarry = "";
+  String parkingAmt = "";
+  String advAmt = "";
+  String othrAmt = "";
+  String otherDesc = "";
 
   @override
   void initState() {
@@ -48,14 +53,18 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       tripDate = initdata["trip_date"].toString();
       vehiclenumber = initdata["vehicle_no"].toString();
       selectedDriverid = initdata["driver_id"].toString();
-      customerName = initdata["customer_name"].toString();
+      customerName = initdata["customer_id"].toString();
       pickuppoint = initdata["pickup_place"].toString();
       droppoint = initdata["drop_place"].toString();
       pickuptime = initdata["pickup_time"].toString();
       droptime = initdata["drop_time"].toString();
       amount = initdata["amount"].toString();
-      pickup_sf = initdata["pickup_sf"].toString();
-      drop_sf = initdata["drop_sf"].toString();
+      tollAmt = initdata["toll_amt"].toString();
+      driversalarry = initdata["driver_salary"].toString();
+      parkingAmt = initdata["parking"].toString();
+      advAmt = initdata["advance_amt"].toString();
+      othrAmt = initdata["other_amount"].toString();
+      otherDesc = initdata["description"].toString();
     }
     setState(() {});
   }
@@ -150,16 +159,15 @@ class CompantTripScreenState extends State<CompantTripScreen> {
             UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle("Amount Details", fntcolor: _colors.primarycolour, fntsize: 18),
             UIHelper.verticalSpaceSmall,
-            CustomInput(
-              hintText: "Customer Name",
-              initValue: customerName,
-              fieldname: "customer_name",
-              fieldType: "text",
-              onchanged: (val) {
-                customerName = val;
-                setState(() {});
-              },
-            ),
+            CustomDropDown(
+                initList: pref.customersList,
+                initValue: customerName,
+                hintText: "Customer Name",
+                fieldname: "customer_id",
+                onSelected: (val) {
+                  customerName = val;
+                  setState(() {});
+                }),
             UIHelper.verticalSpaceSmall,
             Row(
               children: [
@@ -192,75 +200,102 @@ class CompantTripScreenState extends State<CompantTripScreen> {
             Row(
               children: [
                 Expanded(
-                    child: CustomInput(
-                  hintText: "Pickup Time",
-                  initValue: pickuptime,
-                  fieldname: "pickup_time",
-                  fieldType: "novalidation",
-                  onchanged: (val) {
-                    pickuptime = val;
-                    setState(() {});
-                  },
-                )),
+                    child: CustomDatePicker(
+                        initValue: pickuptime,
+                        hintText: "Pickup Time",
+                        fieldname: "pickup_time",
+                        isTimeonly: true,
+                        onSelected: (val) {
+                          pickuptime = val;
+                          setState(() {});
+                        })),
                 UIHelper.horizontalSpaceSmall,
                 Expanded(
-                    child: CustomInput(
-                  hintText: "Drop Time",
-                  initValue: droptime,
-                  fieldname: "drop_time",
-                  fieldType: "novalidation",
-                  onchanged: (val) {
-                    droptime = val;
-                    setState(() {});
-                  },
-                )),
-                // Expanded(
-                //     child: CustomDropDown(
-                //         initList: defaultTime,
-                //         initValue: pickup_sf,
-                //         hintText: "AM/PM",
-                //         fieldname: "am/pm",
-                //         onSelected: (val) {
-                //           pickup_sf = val;
-                //           setState(() {});
-                //         })),
+                    child: CustomDatePicker(
+                        initValue: droptime,
+                        hintText: "Drop Time",
+                        fieldname: "drop_time",
+                        isTimeonly: true,
+                        onSelected: (val) {
+                          droptime = val;
+                          setState(() {});
+                        })),
               ],
             ),
-            // UIHelper.verticalSpaceSmall,
-            // Row(
-            //   children: [
-            //     Expanded(
-            //         child: CustomInput(
-            //       hintText: "Drop Time",
-            //       initValue: droptime,
-            //       fieldname: "drop_time",
-            //       fieldType: "novalidation",
-            //       onchanged: (val) {
-            //         droptime = val;
-            //         setState(() {});
-            //       },
-            //     )),
-            //     UIHelper.horizontalSpaceSmall,
-            //   Expanded(
-            //         child:   CustomDropDown(
-            //         initList: defaultTime,
-            //         initValue: drop_sf,
-            //         hintText: "AM/PM",
-            //         fieldname: "am/pm1",
-            //         onSelected: (val) {
-            //           drop_sf = val;
-            //           setState(() {});
-            //         }))
-            //   ],
-            // ),
             UIHelper.verticalSpaceSmall,
             CustomInput1(
-              hintText: "Amount",
+              hintText: "Premium Amount",
               initValue: amount,
               fieldname: "amount",
               fieldType: "novalidation",
               onchanged: (val) {
                 amount = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Toll Amount",
+              initValue: tollAmt,
+              fieldname: "toll_amt",
+              fieldType: "novalidation",
+              onchanged: (val) {
+                tollAmt = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Driver Salary",
+              initValue: driversalarry,
+              fieldname: "driver_salary",
+              fieldType: "novalidation",
+              onchanged: (val) {
+                driversalarry = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Parking Amount",
+              initValue: parkingAmt,
+              fieldname: "parking",
+              fieldType: "novalidation",
+              onchanged: (val) {
+                parkingAmt = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Advance Amount",
+              initValue: advAmt,
+              fieldname: "advance_amt",
+              fieldType: "novalidation",
+              onchanged: (val) {
+                advAmt = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput1(
+              hintText: "Other Amount",
+              initValue: othrAmt,
+              fieldname: "other_amount",
+              fieldType: "novalidation",
+              onchanged: (val) {
+                othrAmt = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
+            CustomInput(
+              hintText: "Other description",
+              initValue: otherDesc,
+              fieldname: "description",
+              fieldType: "tect",
+              onchanged: (val) {
+                otherDesc = val;
                 setState(() {});
               },
             ),
@@ -281,6 +316,8 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                   Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
                 } else if (amount.isEmpty) {
                   Utils().showToast("Warning", "please Enter the amount", bgclr: _colors.orangeColour);
+                } else if (driversalarry.isEmpty) {
+                  Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
                 } else {
                   Map<String, dynamic> reqData = dataparsefunction();
                   if (isEdit) {
@@ -301,18 +338,30 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   }
 
   dataparsefunction() {
+    double premiumamtTodouble = double.parse(amount);
+    double tollTodouble = tollAmt.isNotEmpty ? double.parse(tollAmt) : 0;
+    double salaryTodouble = driversalarry.isNotEmpty ? double.parse(driversalarry) : 0;
+    double parkingTodouble = parkingAmt.isNotEmpty ? double.parse(parkingAmt) : 0;
+    double otheramtTodouble = othrAmt.isNotEmpty ? double.parse(othrAmt) : 0;
+    double advanceTodouble = advAmt.isNotEmpty ? double.parse(advAmt) : 0;
+    double balanceAmount = (premiumamtTodouble + tollTodouble + salaryTodouble + parkingTodouble + otheramtTodouble) - advanceTodouble;
     Map<String, dynamic> postParams = {
       "trip_date": tripDate,
       "vehicle_no": vehiclenumber,
       'driver_id': selectedDriverid,
-      "customer_name": customerName,
+      "customer_id": customerName,
       "pickup_place": pickuppoint,
       "drop_place": droppoint,
       "pickup_time": pickuptime,
       "drop_time": droptime,
       "amount": amount,
-      "pickup_sf": pickup_sf,
-      "drop_sf": drop_sf
+      "toll_amt": tollTodouble,
+      "driver_salary": salaryTodouble,
+      "parking": parkingTodouble,
+      "advance_amt": advanceTodouble,
+      "other_amount": otheramtTodouble,
+      "description": otherDesc,
+      "balance_amount": balanceAmount
     };
     return postParams;
   }

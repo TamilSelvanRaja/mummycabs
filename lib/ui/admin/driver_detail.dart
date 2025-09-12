@@ -88,7 +88,12 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                               UIHelper.titleTxtStyle("${initialData['mobile']}", fntsize: 14, fntWeight: FontWeight.bold),
                               rowdata1("DL No.", "${initialData['dl_no']}"),
                               rowdata1("Password", "${initialData['password']}"),
-                              rowdata1("Balance", "₹ ${double.parse("${initialData['cart_amt']}").toStringAsFixed(2)}", fntSize: 12, fntclr: _colors.redColour),
+                              rowdata1(
+                                "Balance",
+                                "₹ ${double.parse("${initialData['cart_amt']}").toStringAsFixed(2)}",
+                                fntSize: 12,
+                                fntclr: int.parse("${initialData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour,
+                              ),
                             ],
                           ),
                         ),

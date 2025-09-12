@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
+import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -24,7 +25,7 @@ class _CompantTripListState extends State<CompantTripList> {
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   String selectedDate = "";
-
+  String cusId = "";
   late AppController appController;
 
   @override
@@ -38,27 +39,25 @@ class _CompantTripListState extends State<CompantTripList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _colors.bgClr,
-      appBar: AppBar(
-        backgroundColor: _colors.primarycolour,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.bgClr, fntsize: 22),
-      ),
-      body: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) {
-            final controller = AppController();
-            Future.delayed(const Duration(seconds: 1), () {
-              controller.getCompanytripList(selectedDate);
-            });
-            return controller;
-          })
-        ],
-        child: Consumer<AppController>(builder: (context, ref, child) {
-          appController = ref;
-          return Container(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) {
+          final controller = AppController();
+
+          return controller;
+        })
+      ],
+      child: Consumer<AppController>(builder: (context, ref, child) {
+        appController = ref;
+        return Scaffold(
+          backgroundColor: _colors.bgClr,
+          appBar: AppBar(
+            backgroundColor: _colors.primarycolour,
+            centerTitle: true,
+            iconTheme: IconThemeData(color: _colors.bgClr),
+            title: UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.bgClr, fntsize: 22),
+          ),
+          body: Container(
             padding: const EdgeInsets.all(10),
             height: Get.height,
             width: Get.width,
@@ -66,6 +65,18 @@ class _CompantTripListState extends State<CompantTripList> {
               children: [
                 Row(
                   children: [
+                    Expanded(
+                        flex: 2,
+                        child: CustomDropDown(
+                            initList: pref.customersList,
+                            initValue: cusId,
+                            hintText: "Customer",
+                            fieldname: "customer_id",
+                            onSelected: (val) {
+                              cusId = val;
+                              setState(() {});
+                            })),
+                    UIHelper.horizontalSpaceSmall,
                     Expanded(
                         flex: 2,
                         child: GestureDetector(
@@ -76,7 +87,6 @@ class _CompantTripListState extends State<CompantTripList> {
                                   mm = "0$mm";
                                 }
                                 selectedDate = '$mm-$year';
-                                appController.getCompanytripList(selectedDate);
                                 setState(() {});
                               },
                                   initialSelectedMonth: DateTime.now().month,
@@ -104,13 +114,14 @@ class _CompantTripListState extends State<CompantTripList> {
                                 ],
                               ),
                             ))),
-                    UIHelper.horizontalSpaceSmall,
+                    UIHelper.verticalSpaceSmall,
                     IconButton(
                         onPressed: () async {
-                          await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": false});
-                          appController.getCompanytripList(selectedDate);
+                          if (cusId.isNotEmpty && selectedDate.isNotEmpty) {
+                            appController.getCompanytripList(selectedDate, cusId);
+                          }
                         },
-                        icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
+                        icon: Icon(size: 40, color: _colors.primarycolour, Icons.send_outlined)),
                   ],
                 ),
                 UIHelper.verticalSpaceSmall,
@@ -126,74 +137,109 @@ class _CompantTripListState extends State<CompantTripList> {
                         : Center(child: UIHelper.titleTxtStyle("Data not found")))
               ],
             ),
-          );
-        }),
-      ),
+          ),
+          floatingActionButton: IconButton(
+              onPressed: () async {
+                await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": false});
+                appController.getCompanytripList(selectedDate, cusId);
+              },
+              icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
+        );
+      }),
     );
   }
 
   Widget cardData(int index, dynamic currentData) {
     dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
-
-    return Stack(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(15),
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-          decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
-          child: Column(
+    dynamic customer = Utils().getCustomerrdetails("${currentData['customer_id']}");
+    return Container(
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+      decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
+              UIHelper.titleTxtStyle(customer['name'], fntcolor: _colors.primarycolour, fntsize: 14, fntWeight: FontWeight.bold),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  user['imgurl'] != null
-                      ? CircleAvatar(
-                          radius: 25,
-                          backgroundColor: _colors.primarycolour,
-                          backgroundImage: NetworkImage("${ApiServices().apiurl}/${user['imgurl']}"),
-                        )
-                      : Image.asset(_images.profile, height: 50, width: 50),
-                  UIHelper.horizontalSpaceSmall,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UIHelper.titleTxtStyle(user['name'], fntcolor: _colors.primarycolour, fntsize: 14, fntWeight: FontWeight.bold),
-                      UIHelper.titleTxtStyle(currentData['vehicle_no'], fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
-                      UIHelper.verticalSpaceTiny,
-                      UIHelper.titleTxtStyle("Customer: ${currentData['customer_name']}", fntcolor: _colors.orangeColour, fntsize: 12, fntWeight: FontWeight.bold),
-                      UIHelper.verticalSpaceTiny,
-                      UIHelper.titleTxtStyle("${currentData['pickup_place']} - ${currentData['drop_place']}", fntcolor: _colors.textColour, fntsize: 12),
-                      UIHelper.verticalSpaceTiny,
-                      UIHelper.titleTxtStyle("Amount : ₹ ${currentData['amount']}", fntcolor: _colors.redColour, fntsize: 14, fntWeight: FontWeight.bold),
-                    ],
-                  )
+                  UIHelper.titleTxtStyle("${currentData['trip_date']}", fntcolor: _colors.bluecolor, fntsize: 12, fntWeight: FontWeight.bold),
+                  UIHelper.titleTxtStyle("${currentData['pickup_time']} - ${currentData['drop_time']}", fntcolor: _colors.bluecolor, fntsize: 10, fntWeight: FontWeight.bold),
                 ],
-              ),
-              UIHelper.verticalSpaceSmall,
-              GestureDetector(
-                onTap: () async {
-                  await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": true, "initdata": currentData});
-                  appController.getCompanytripList(selectedDate);
-                },
-                child: Container(
-                  decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.greycolor1),
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
-                  child: UIHelper.titleTxtStyle("Edit", fntWeight: FontWeight.bold),
-                ),
               )
             ],
           ),
-        ),
-        Positioned(
-            right: 20,
-            top: 10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                UIHelper.titleTxtStyle("${currentData['trip_date']}", fntcolor: _colors.bluecolor, fntsize: 12, fntWeight: FontWeight.bold),
-                UIHelper.titleTxtStyle("${currentData['pickup_time']} ${currentData['pickup_sf']} - ${currentData['drop_time']} ${currentData['drop_sf']}",
-                    fntcolor: _colors.bluecolor, fntsize: 10, fntWeight: FontWeight.bold),
-              ],
-            ))
+          Divider(color: _colors.greycolor1),
+          Row(
+            children: [
+              UIHelper.titleTxtStyle(user['name'].toString().toUpperCase(), fntcolor: _colors.orangeColour, fntsize: 14, fntWeight: FontWeight.bold),
+              UIHelper.titleTxtStyle(" - (${currentData['vehicle_no']})", fntcolor: _colors.textColour, fntsize: 12),
+            ],
+          ),
+          Row(
+            children: [
+              Icon(Icons.location_on_outlined, size: 20, color: _colors.bluecolor),
+              UIHelper.horizontalSpaceTiny,
+              UIHelper.titleTxtStyle("${currentData['pickup_place']} - ${currentData['drop_place']}", fntcolor: _colors.textColour, fntsize: 12),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  rowwidget("Amount", "${currentData['amount']}"),
+                  rowwidget("Toll Amount", "${currentData['toll_amt']}"),
+                  rowwidget("Others", "${currentData['other_amount']}"),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  rowwidget("Driver Salary", "${currentData['driver_salary']}"),
+                  rowwidget("Parking", "${currentData['parking']}"),
+                  rowwidget("Advance", "${currentData['advance_amt']}", txtClr: _colors.greenColour),
+                ],
+              )
+            ],
+          ),
+          UIHelper.verticalSpaceSmall,
+          currentData['description'].toString().isNotEmpty
+              ? UIHelper.titleTxtStyle("${currentData['description']}", fntcolor: _colors.orangeColour, fntsize: 15, textOverflow: TextOverflow.visible)
+              : const SizedBox(),
+          Divider(color: _colors.primarycolour),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              rowwidget("Balance", "${currentData['balance_amount']}", txtClr: _colors.redColour),
+              GestureDetector(
+                onTap: () async {
+                  await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": true, "initdata": currentData});
+                  appController.getCompanytripList(selectedDate, cusId);
+                },
+                child: Container(
+                  decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.bluecolor),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
+                  child: UIHelper.titleTxtStyle("Edit", fntcolor: _colors.whiteColour, fntWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget rowwidget(title, value, {Color txtClr = Colors.black}) {
+    return Row(
+      children: [
+        UIHelper.titleTxtStyle("$title", fntcolor: _colors.greycolor, fntsize: 13),
+        UIHelper.titleTxtStyle(" : ₹ $value", fntcolor: txtClr, fntsize: 13, fntWeight: FontWeight.bold),
       ],
     );
   }

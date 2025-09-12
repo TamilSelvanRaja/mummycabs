@@ -101,10 +101,12 @@ class AppController with ChangeNotifier {
     if (responce != null) {
       if (searchkey == "car_list") {
         pref.carList = responce['data'];
-      } else {
+      } else if (searchkey == "drivers_list") {
         pref.driversList = responce['data'];
         double amount = double.parse("${responce['total_amount']}");
         totalcartamount = amount.toStringAsFixed(2);
+      } else {
+        pref.customersList = responce['data'];
       }
       notifyListeners();
     }
@@ -127,6 +129,17 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       await getcarList("car_list");
+      notifyListeners();
+    }
+  }
+
+//******************** New Customer Function *************************/
+//******************************************************************/
+  Future newcustomeradd(postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      Get.back();
+      pref.customersList.add(responce['data']);
       notifyListeners();
     }
   }
@@ -327,10 +340,10 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //*******************  Get Trip List Function **********************/
 //******************************************************************/
-  Future getCompanytripList(String date) async {
+  Future getCompanytripList(String date, String cusId) async {
     companytripsList.clear();
 
-    dynamic postParams = {"service_id": "companytrip_list", "from_date": date};
+    dynamic postParams = {"service_id": "companytrip_list", "customer_id": cusId, "from_date": date};
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       companytripsList = responce['data'];
@@ -363,6 +376,19 @@ class AppController with ChangeNotifier {
       "service_id": "file_generate",
       "from_date": monthyear,
     };
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
+    }
+  }
+
+//******************************************************************/
+//***************  Monthly Report Generate Function ****************/
+//******************************************************************/
+  Future generateInvoiceReport(String monthyear, String cusid) async {
+    transactionList.clear();
+
+    dynamic postParams = {"service_id": "invoice_generate", "from_date": monthyear, "customer_id": cusid};
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);

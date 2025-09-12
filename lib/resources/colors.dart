@@ -17,5 +17,6 @@ class AppColors {
   Color yellowColour = Colors.yellow;
   Color greenColour1 = const Color(0xFF1BE909);
   Color greenColour = const Color(0xFF0C9400);
-  List<Color> gradient1 = [const Color(0xFF5c258d), const Color(0xFF4389a2)];
+  List<Color> gradient1 = [const Color(0xFFE8E8E8), const Color(0xFFFFFBA5)];
+  List<Color> gradient2 = [const Color(0xFFB2FDED), const Color(0xFFDCA6FD)];
 }

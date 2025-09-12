@@ -10,6 +10,7 @@ import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
 import 'package:mummy_cabs/ui/admin/compant_triplist.dart';
 import 'package:mummy_cabs/ui/admin/company_add_edit.dart';
+import 'package:mummy_cabs/ui/admin/customers_list.dart';
 import 'package:mummy_cabs/ui/admin/driver_detail.dart';
 import 'package:mummy_cabs/ui/admin/driver_list.dart';
 import 'package:mummy_cabs/ui/admin/pending_list.dart';
@@ -40,6 +41,8 @@ class Routes {
   static String triplist = '/triplist';
   static String pendingtriplist = '/pendingtriplist';
   static String cartList = '/cartList';
+
+  static String customerList = '/customerList';
   static String companyTripList = '/companyTripList';
   static String companyaddEditTrip = '/companyaddEditTrip';
 
@@ -65,6 +68,7 @@ abstract class AppPages {
     pageanimation(Routes.pendingtriplist, const PendingListPage(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverTransaction, const DriverTransactionScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.customerList, const CustomerDetails(), Transition.rightToLeftWithFade),
     pageanimation(Routes.companyTripList, const CompantTripList(), Transition.rightToLeftWithFade),
     pageanimation(Routes.companyaddEditTrip, const CompantTripScreen(), Transition.rightToLeftWithFade),
   ];
@@ -140,6 +144,7 @@ class PreferenceService {
     {"reg_no": "Paytm"}
   ];
   List carList = [];
+  List customersList = [];
   List driversList = [];
 
   List pendingTripList = [];

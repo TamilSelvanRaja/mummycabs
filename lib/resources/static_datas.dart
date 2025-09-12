@@ -2,19 +2,13 @@ import 'package:mummy_cabs/resources/images.dart';
 
 final AppImages _images = AppImages();
 
-List adminTitleList = [
-  {"id": 1, "title": "Car's\nDetail", "image": _images.car},
-  {"id": 2, "title": "Driver's\nDetail", "image": _images.driver}
-];
-
 List menuTitleList = [
-  {"id": 1, "title": "Driver's\nDetail", "image": _images.driver},
-  {"id": 2, "title": "Car's\nDetail", "image": _images.car},
-  {"id": 3, "title": "Trip\nList", "image": _images.list1},
-  {"id": 4, "title": "Pending\nList", "image": _images.list2},
+  {"id": 1, "title": "Cars", "image": _images.car},
+  {"id": 2, "title": "Drivers", "image": _images.driver},
+  {"id": 3, "title": "Customers", "image": _images.profile},
 ];
 
-List defaultTime = [
-  {"reg_no": "AM"},
-  {"reg_no": "PM"}
+List menuTitleList1 = [
+  {"id": 1, "title": "Trip\nList", "image": _images.list1},
+  {"id": 2, "title": "Pending\nList", "image": _images.list2},
 ];

@@ -414,7 +414,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
     double fuelamt = fuel.isNotEmpty ? double.parse(fuel) : 0.0;
     double otherexpenceAmt = otherexp.isNotEmpty ? double.parse(otherexp) : 0.0;
 
-    int salaryPercent = int.parse(salaryPercentage);
+    double salaryPercent = double.parse(salaryPercentage);
     double driversalary = salaryPercent / 100 * overAllOperatorAmt;
     double roundedSalary = (driversalary * 100).roundToDouble() / 100;
     double balanceamount = overAllCashAmt - roundedSalary - fuelamt - otherexpenceAmt;
