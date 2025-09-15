@@ -38,6 +38,9 @@ class _PendingListPageState extends State<PendingListPage> {
         providers: [
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
+            Future.delayed(const Duration(seconds: 1), () {
+              controller.getpendingtripList();
+            });
 
             return controller;
           })
@@ -51,12 +54,12 @@ class _PendingListPageState extends State<PendingListPage> {
             child: Column(
               children: [
                 Expanded(
-                    child: pref.pendingTripList.isNotEmpty
+                    child: appController.pendingtripsList.isNotEmpty
                         ? ListView.builder(
                             padding: const EdgeInsets.all(0),
-                            itemCount: pref.pendingTripList.length,
+                            itemCount: appController.pendingtripsList.length,
                             itemBuilder: (context, index) {
-                              dynamic currentData = pref.pendingTripList[index];
+                              dynamic currentData = appController.pendingtripsList[index];
                               return cardData(index, currentData);
                             })
                         : Center(child: UIHelper.titleTxtStyle("Data not found")))
@@ -150,9 +153,9 @@ class _PendingListPageState extends State<PendingListPage> {
                   UIHelper.verticalSpaceMedium,
                   Center(
                     child: UIHelper().actionButton("Submit", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
-                      Map<String, dynamic> reqData = Map.from(currentData);
-                      reqData['service_id'] = "new_trip";
-                      AppController().newTripStart(reqData);
+                      Map<String, dynamic> reqData = {'service_id': "submit_trip", "trip_id": "${currentData['_id']}"};
+
+                      AppController().tripSubmission(reqData);
                     }),
                   ),
                   UIHelper.verticalSpaceSmall,
@@ -168,16 +171,9 @@ class _PendingListPageState extends State<PendingListPage> {
                   IconButton(
                       onPressed: () async {
                         await Get.toNamed(Routes.starttrip, arguments: {"isedit": true, "initdata": currentData});
-                        setState(() {});
+                        Get.back();
                       },
                       icon: Icon(Icons.edit, size: 25, color: _colors.bluecolor)),
-                  IconButton(
-                      onPressed: () async {
-                        Utils().showAlert("W", "Do you want to delete this item?", onComplete: () {
-                          appController.triplocaldelete(int.parse("${currentData['uni_id']}"));
-                        });
-                      },
-                      icon: Icon(Icons.delete, size: 25, color: _colors.redColour)),
                 ],
               ))
         ],

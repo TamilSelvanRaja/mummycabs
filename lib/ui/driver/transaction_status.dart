@@ -111,7 +111,7 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
                       if (currentData['add_deduct_type'] == "Deduct Amount") ...[
                         rowdata0("Payment Type", " ${currentData['payment_type']}", fntSize: 12, fntclr: _colors.bluecolor),
                       ],
-                      if (currentData['add_deduct_type'] == "Add Amount") ...[
+                      if (currentData['add_reason'] != null && currentData['add_reason'] != "") ...[
                         rowdata0("Reason", " ${currentData['add_reason']}", fntSize: 12, fntclr: _colors.redColour),
                       ],
                       if (currentData['add_deduct_type'] == null) ...[UIHelper.titleTxtStyle("This is a Trip balance amount", fntsize: 10, fntcolor: _colors.redColour)],

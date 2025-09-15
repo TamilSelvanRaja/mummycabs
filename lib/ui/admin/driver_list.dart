@@ -116,7 +116,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                             children: [
                                               UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
                                               rowdata1("Balance", "₹ ${double.parse("${currentData['cart_amt']}").toStringAsFixed(2)}",
-                                                  fntSize: 14, fntclr: int.parse("${currentData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour),
+                                                  fntSize: 14, fntclr: double.parse("${currentData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour),
                                             ],
                                           ),
                                         ),

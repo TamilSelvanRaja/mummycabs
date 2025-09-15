@@ -36,7 +36,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
     if (widget.fieldname == "vehicle_no" || widget.fieldname == "payment_type") {
       keyCode = "reg_no";
       titleText = "reg_no";
-    } else if (widget.fieldname == "customer_id") {
+    } else if (widget.fieldname == "customer_id" || widget.fieldname == "driver_id") {
       keyCode = "_id";
       titleText = "name";
     } else {}

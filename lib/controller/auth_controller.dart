@@ -3,10 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/resources/colors.dart';
-import 'package:mummy_cabs/services/db_healper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
-import 'package:sqflite/sqflite.dart';
 
 class AppController with ChangeNotifier {
   AppController() {
@@ -19,18 +17,13 @@ class AppController with ChangeNotifier {
   String totalcartamount = "";
 
   List tripsList = [];
+  List pendingtripsList = [];
+
   List drivertripsList = [];
   List transactionList = [];
-
   List companytripsList = [];
 
-  var dbHelper = DbHelper();
-  Database? dbClient;
-
-  Future<void> _init() async {
-    dbClient = await dbHelper.db;
-    pref.pendingTripList = await dbClient!.rawQuery('SELECT * FROM pendingList');
-  }
+  Future<void> _init() async {}
 
 //******************************************************************/
 //******************* User Register Function ***********************/
@@ -145,126 +138,28 @@ class AppController with ChangeNotifier {
   }
 
 //******************************************************************/
-//*********************** Trip localsave ***************************/
-//******************************************************************/
-  Future triplocalsave(dynamic postParams) async {
-    var count = 0;
-    dbClient ??= await dbHelper.db;
-
-    count = await dbClient!.rawInsert('''
-  INSERT INTO pendingList (
-    trip_date, vehicle_no, driver_id, ola_cash, ola_operator,
-    uber_cash, uber_operator, rapido_cash, rapido_operator,
-    other_cash, other_operator,duty_desc, total_cash_amt, total_operator_amt,
-    salary_percentage, driver_salary, fuel_amt, other_expences,
-    other_desc, kilometer, balance_amount, per_km
-  )
-  VALUES (
-  "${postParams["trip_date"]}","${postParams["vehicle_no"]}","${postParams["driver_id"]}","${postParams["ola_cash"]}","${postParams["ola_operator"]}",
-    "${postParams["uber_cash"]}","${postParams["uber_operator"]}","${postParams["rapido_cash"]}","${postParams["rapido_operator"]}","${postParams["other_cash"]}",
-    "${postParams["other_operator"]}","${postParams["duty_desc"]}","${postParams["total_cash_amt"]}","${postParams["total_operator_amt"]}","${postParams["salary_percentage"]}",
-    "${postParams["driver_salary"]}","${postParams["fuel_amt"]}","${postParams["other_expences"]}","${postParams["other_desc"]}","${postParams["kilometer"]}",
-    "${postParams["balance_amount"]}","${postParams["per_km"]}"  
-  )
-''');
-
-    if (count > 0) {
-      Get.back();
-      pref.pendingTripList = await dbClient!.rawQuery('SELECT * FROM pendingList');
-      Utils().showToast("Success", "Successfully created.", bgclr: _colors.greenColour);
-    }
-  }
-
-//******************************************************************/
-//********************* Trip local Update **************************/
-//******************************************************************/
-  Future tripLocalUpdate(dynamic postParams) async {
-    dbClient ??= await dbHelper.db;
-
-    int count = await dbClient!.rawUpdate('''
-    UPDATE pendingList SET
-      trip_date = ?,
-      vehicle_no = ?,
-      driver_id = ?,
-      ola_cash = ?,
-      ola_operator = ?,
-      uber_cash = ?,
-      uber_operator = ?,
-      rapido_cash = ?,
-      rapido_operator = ?,
-      duty_desc = ?,
-      other_cash = ?,
-      other_operator = ?,
-      total_cash_amt = ?,
-      total_operator_amt = ?,
-      salary_percentage = ?,
-      driver_salary = ?,
-      fuel_amt = ?,
-      other_expences = ?,
-      other_desc = ?,
-      kilometer = ?,
-      balance_amount = ?,
-      per_km = ?
-    WHERE uni_id = ?
-  ''', [
-      postParams["trip_date"],
-      postParams["vehicle_no"],
-      postParams["driver_id"],
-      postParams["ola_cash"],
-      postParams["ola_operator"],
-      postParams["uber_cash"],
-      postParams["uber_operator"],
-      postParams["rapido_cash"],
-      postParams["rapido_operator"],
-      postParams["duty_desc"],
-      postParams["other_cash"],
-      postParams["other_operator"],
-      postParams["total_cash_amt"],
-      postParams["total_operator_amt"],
-      postParams["salary_percentage"],
-      postParams["driver_salary"],
-      postParams["fuel_amt"],
-      postParams["other_expences"],
-      postParams["other_desc"],
-      postParams["kilometer"],
-      postParams["balance_amount"],
-      postParams["per_km"],
-      int.parse(postParams['uni_id'].toString())
-    ]);
-
-    if (count > 0) {
-      pref.pendingTripList = await dbClient!.rawQuery('SELECT * FROM pendingList');
-      Get.back();
-      Utils().showToast("Success", "Successfully updated.", bgclr: _colors.greenColour);
-      notifyListeners();
-    }
-  }
-
-//******************************************************************/
-//********************** Trip local delete *************************/
-//******************************************************************/
-  Future triplocaldelete(int id) async {
-    var count = 0;
-    dbClient ??= await dbHelper.db;
-    count = await dbClient!.rawDelete('DELETE FROM pendingList WHERE uni_id = ?', [id]);
-    if (count > 0) {
-      pref.pendingTripList = await dbClient!.rawQuery('SELECT * FROM pendingList');
-      Utils().showToast("Deleted", "Trip deleted successfully.", bgclr: _colors.greenColour);
-      notifyListeners();
-    }
-  }
-
-//******************************************************************/
 //******************* NEW Trip Add Function ***********************/
 //******************************************************************/
   Future newTripStart(dynamic postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
-        int id = int.parse(postParams['uni_id'].toString());
-        await dbClient!.rawDelete("DELETE FROM pendingList WHERE uni_id = ?", [id]);
-        pref.pendingTripList = await dbClient!.rawQuery('SELECT * FROM pendingList');
         Get.back();
+      } else {
+        Utils().showToast("Failure", '${responce["message"]}');
+      }
+    }
+  }
+
+  //******************************************************************/
+//******************* NEW Trip Add Function ***********************/
+//******************************************************************/
+  Future tripSubmission(dynamic postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      if (responce["msg"].toString() == "true") {
+        Get.back();
+        Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
       }
@@ -282,6 +177,20 @@ class AppController with ChangeNotifier {
     if (responce != null) {
       tripsList = responce['data'];
       tripdayamount = responce['over_all_amount'].toString();
+      notifyListeners();
+    }
+  }
+
+//******************************************************************/
+//*******************  Get Trip List Function **********************/
+//******************************************************************/
+  Future getpendingtripList() async {
+    pendingtripsList.clear();
+
+    dynamic postParams = {"service_id": "pending_tripList"};
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      pendingtripsList = responce['data'];
       notifyListeners();
     }
   }
@@ -396,12 +305,9 @@ class AppController with ChangeNotifier {
   }
 
   Future apiresponceCallback(postParams, localpath) async {
+    Utils().showProgress();
     try {
-      Utils().showProgress();
-      log("postParams $postParams");
       final responce = await ApiServices().formDataAPIServices(postParams, localpath);
-      log("responce $responce");
-      Utils().hideProgress();
 
       if (responce != null) {
         if (responce["msg"].toString() == "true") {
@@ -413,6 +319,8 @@ class AppController with ChangeNotifier {
       return null;
     } catch (e) {
       Utils().showToast("Failure", "Error : $e");
-    } finally {}
+    } finally {
+      Utils().hideProgress();
+    }
   }
 }

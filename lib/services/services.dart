@@ -147,9 +147,6 @@ class PreferenceService {
   List customersList = [];
   List driversList = [];
 
-  List pendingTripList = [];
-  List starttripList = [];
-
 //// ************ Set User Info ***********\\\\\
   Future<void> setString(String key, String value) async {
     await _storage.write(key: key, value: value);

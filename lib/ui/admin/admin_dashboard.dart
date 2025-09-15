@@ -157,34 +157,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
               setState(() {});
             }
           },
-          child: Stack(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                width: Get.width / 2.5,
-                margin: const EdgeInsets.all(10),
-                decoration: UIHelper.gradientContainer1(25, 0, 0, 25, index == 0 ? _colors.gradient1 : _colors.gradient2, isShadow: true, shadowColor: _colors.greycolor),
-                //     decoration: UIHelper.roundedBorderWithColor(25, 0, 0, 25, _colors.bgClr, isShadow: true, shadowColor: _colors.greycolor),
-                child: Column(
-                  children: [
-                    Image.asset(currentdata['image'], height: 80, width: 80),
-                    UIHelper.verticalSpaceSmall,
-                    UIHelper.titleTxtStyle(currentdata['title'], fntsize: 18, fntcolor: _colors.blackColour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
-                  ],
-                ),
-              ),
-              if (index == 1 && pref.pendingTripList.isNotEmpty)
-                Positioned(
-                  right: 0,
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    alignment: Alignment.center,
-                    decoration: UIHelper.circleWithColorWithShadow(1, _colors.bluecolor, _colors.bluecolor),
-                    child: UIHelper.titleTxtStyle("${pref.pendingTripList.length}", fntcolor: _colors.bgClr, fntWeight: FontWeight.bold),
-                  ),
-                )
-            ],
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            width: Get.width / 2.5,
+            margin: const EdgeInsets.all(10),
+            decoration: UIHelper.gradientContainer1(25, 0, 0, 25, index == 0 ? _colors.gradient1 : _colors.gradient2, isShadow: true, shadowColor: _colors.greycolor),
+            //     decoration: UIHelper.roundedBorderWithColor(25, 0, 0, 25, _colors.bgClr, isShadow: true, shadowColor: _colors.greycolor),
+            child: Column(
+              children: [
+                Image.asset(currentdata['image'], height: 80, width: 80),
+                UIHelper.verticalSpaceSmall,
+                UIHelper.titleTxtStyle(currentdata['title'], fntsize: 18, fntcolor: _colors.blackColour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
+              ],
+            ),
           ),
         );
       },

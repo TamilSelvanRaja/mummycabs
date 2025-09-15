@@ -92,7 +92,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                 "Balance",
                                 "₹ ${double.parse("${initialData['cart_amt']}").toStringAsFixed(2)}",
                                 fntSize: 12,
-                                fntclr: int.parse("${initialData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour,
+                                fntclr: double.parse("${initialData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour,
                               ),
                             ],
                           ),
@@ -178,16 +178,41 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                     children: [
                       Align(
                         alignment: Alignment.centerRight,
-                        child: UIHelper.titleTxtStyle(formatted, fntsize: 10),
+                        child: UIHelper.titleTxtStyle(formatted, fntsize: 12),
                       ),
                       UIHelper.titleTxtStyle("₹ ${currentData['trip_amount']}", fntsize: 14, fntWeight: FontWeight.bold),
                       if (currentData['add_deduct_type'] == "Deduct Amount") ...[
                         rowdata0("Payment Type", " ${currentData['payment_type']}", fntSize: 12, fntclr: _colors.bluecolor),
                       ],
-                      if (currentData['add_deduct_type'] == "Add Amount") ...[
+                      if (currentData['add_reason'] != null && currentData['add_reason'] != "") ...[
                         rowdata0("Reason", " ${currentData['add_reason']}", fntSize: 12, fntclr: _colors.redColour),
                       ],
                       if (currentData['add_deduct_type'] == null) ...[UIHelper.titleTxtStyle("This is a Trip balance amount", fntsize: 10, fntcolor: _colors.redColour)],
+                      UIHelper.verticalSpaceSmall,
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
+                              Map<String, dynamic> postParams = {'service_id': "history_delete", 'history_id': currentData['_id'], 'driver_id': currentData['driver_id']};
+                              await appController.cartAmtUpdateFun(postParams);
+                              Get.back();
+                              await appController.gettransactionList(currentData['driver_id']);
+                            });
+                          },
+                          child: Container(
+                            decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.redColour),
+                            padding: const EdgeInsets.all(5),
+                            width: Get.width / 4,
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: _colors.whiteColour, size: 20),
+                                UIHelper.horizontalSpaceTiny,
+                                UIHelper.titleTxtStyle("Delete", fntsize: 12, fntcolor: _colors.whiteColour, fntWeight: FontWeight.bold)
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -236,8 +261,11 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                           child: Column(children: [
                             const CustomInput(hintText: "Amount", fieldname: "amount", fieldType: "number"),
                             UIHelper.verticalSpaceSmall,
-                            if (title == "Add Amount") const CustomInput(hintText: "Reason", fieldname: "add_reason", fieldType: "text"),
-                            if (title != "Add Amount") CustomDropDown(initList: pref.paymentTypes, hintText: "Payment Type", fieldname: "payment_type", onSelected: (val) {}),
+                            if (title != "Add Amount") ...[
+                              CustomDropDown(initList: pref.paymentTypes, hintText: "Payment Type", fieldname: "payment_type", onSelected: (val) {}),
+                              UIHelper.verticalSpaceSmall,
+                            ],
+                            const CustomInput(hintText: "Reason", fieldname: "add_reason", fieldType: "text"),
                             UIHelper.verticalSpaceMedium,
                             UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () async {
                               if (_formkey.currentState!.saveAndValidate()) {
