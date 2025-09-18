@@ -114,50 +114,60 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                         }))
               ],
             ),
-            UIHelper.verticalSpaceMedium,
-            UIHelper.titleTxtStyle("Select Driver", fntcolor: _colors.primarycolour, fntsize: 18),
             UIHelper.verticalSpaceSmall,
-            SizedBox(
-              height: 120,
-              width: Get.width,
-              child: pref.driversList.isNotEmpty
-                  ? ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: pref.driversList.length,
-                      itemBuilder: (context, index) {
-                        dynamic currentData = pref.driversList[index];
-                        return InkWell(
-                          onTap: () {
-                            selectedDriverid = currentData['_id'].toString();
-                            setState(() {});
-                          },
-                          child: Container(
-                              margin: const EdgeInsets.all(5),
-                              width: 100,
-                              padding: const EdgeInsets.all(5),
-                              decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour,
-                                  borderColor: selectedDriverid == currentData['_id'].toString() ? _colors.primarycolour : _colors.greycolor1,
-                                  borderWidth: selectedDriverid == currentData['_id'].toString() ? 2 : 1),
-                              child: Column(
-                                children: [
-                                  UIHelper.verticalSpaceSmall,
-                                  currentData['imgurl'] != null
-                                      ? CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor: _colors.primarycolour,
-                                          backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
-                                        )
-                                      : Image.asset(_images.profile, height: 50, width: 50),
-                                  UIHelper.verticalSpaceSmall,
-                                  UIHelper.titleTxtStyle(currentData['name'], fntcolor: _colors.primarycolour, fntsize: 12),
-                                ],
-                              )),
-                        );
-                      })
-                  : UIHelper.titleTxtStyle("Driver List is empty.", fntcolor: _colors.redColour, fntsize: 12),
-            ),
+            CustomDropDown(
+                initList: pref.driversList,
+                initValue: selectedDriverid,
+                hintText: "Driver",
+                fieldname: "driver_id",
+                onSelected: (val) {
+                  selectedDriverid = val;
+                  setState(() {});
+                }),
+            // UIHelper.verticalSpaceMedium,
+            // UIHelper.titleTxtStyle("Select Driver", fntcolor: _colors.primarycolour, fntsize: 18),
+            // UIHelper.verticalSpaceSmall,
+            // SizedBox(
+            //   height: 120,
+            //   width: Get.width,
+            //   child: pref.driversList.isNotEmpty
+            //       ? ListView.builder(
+            //           scrollDirection: Axis.horizontal,
+            //           itemCount: pref.driversList.length,
+            //           itemBuilder: (context, index) {
+            //             dynamic currentData = pref.driversList[index];
+            //             return InkWell(
+            //               onTap: () {
+            //                 selectedDriverid = currentData['_id'].toString();
+            //                 setState(() {});
+            //               },
+            //               child: Container(
+            //                   margin: const EdgeInsets.all(5),
+            //                   width: 100,
+            //                   padding: const EdgeInsets.all(5),
+            //                   decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour,
+            //                       borderColor: selectedDriverid == currentData['_id'].toString() ? _colors.primarycolour : _colors.greycolor1,
+            //                       borderWidth: selectedDriverid == currentData['_id'].toString() ? 2 : 1),
+            //                   child: Column(
+            //                     children: [
+            //                       UIHelper.verticalSpaceSmall,
+            //                       currentData['imgurl'] != null
+            //                           ? CircleAvatar(
+            //                               radius: 25,
+            //                               backgroundColor: _colors.primarycolour,
+            //                               backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
+            //                             )
+            //                           : Image.asset(_images.profile, height: 50, width: 50),
+            //                       UIHelper.verticalSpaceSmall,
+            //                       UIHelper.titleTxtStyle(currentData['name'], fntcolor: _colors.primarycolour, fntsize: 12),
+            //                     ],
+            //                   )),
+            //             );
+            //           })
+            //       : UIHelper.titleTxtStyle("Driver List is empty.", fntcolor: _colors.redColour, fntsize: 12),
+            // ),
             UIHelper.verticalSpaceSmall,
-            UIHelper.titleTxtStyle("Amount Details", fntcolor: _colors.primarycolour, fntsize: 18),
+            UIHelper.titleTxtStyle("Other Details", fntcolor: _colors.primarycolour, fntsize: 18),
             UIHelper.verticalSpaceSmall,
             CustomDropDown(
                 initList: pref.customersList,
