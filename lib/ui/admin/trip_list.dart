@@ -111,7 +111,7 @@ class _TripListPageState extends State<TripListPage> {
       {"type": "Others", "cash": "${currentData['other_cash']}", "operator": "${currentData['other_operator']}"},
     ];
     dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
-
+    String fudata = currentData['fuel_details'].toString().replaceAll("/", ", ");
     return GestureDetector(
       onTap: () {
         if (selectedIndex.contains(index)) {
@@ -128,6 +128,7 @@ class _TripListPageState extends State<TripListPage> {
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
@@ -171,6 +172,8 @@ class _TripListPageState extends State<TripListPage> {
                   rowdata1("Driver Salary (${currentData['salary_percentage']}%)", "${currentData['driver_salary']}", "₹"),
                   UIHelper.verticalSpaceSmall,
                   rowdata1("Fuel Amount", "${currentData['fuel_amt']}", "₹"),
+                  UIHelper.verticalSpaceTiny,
+                  UIHelper.titleTxtStyle(fudata, fntcolor: _colors.redColour, fntsize: 12),
                   UIHelper.verticalSpaceSmall,
                   rowdata1("KM", "${currentData['total_operator_amt']}/${currentData['kilometer']} = ${currentData['per_km']}", ""),
                   UIHelper.verticalSpaceSmall,
@@ -186,6 +189,25 @@ class _TripListPageState extends State<TripListPage> {
               ],
             ),
           ),
+          Positioned(
+              right: 5,
+              top: 5,
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () async {
+                        Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
+                          Map<String, dynamic> postParams = {
+                            'service_id': "delete_trip",
+                            'trip_id': currentData['_id'],
+                          };
+                          await appController.deleteTrip(postParams);
+                          appController.gettripList(selectedDate);
+                        });
+                      },
+                      icon: Icon(Icons.delete, size: 25, color: _colors.redColour)),
+                ],
+              ))
         ],
       ),
     );

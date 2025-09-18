@@ -304,6 +304,13 @@ class AppController with ChangeNotifier {
     }
   }
 
+//******************************************************************/
+//***************  Delete Trip Function ****************/
+//******************************************************************/
+  Future deleteTrip(dynamic postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+  }
+
   Future apiresponceCallback(postParams, localpath) async {
     Utils().showProgress();
     try {

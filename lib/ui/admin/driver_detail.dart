@@ -107,12 +107,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                           showAmountDialog("Add Amount", "${initialData['_id']}");
                         }),
                         UIHelper().actionButton("Deduct Amount", 11, Get.width / 3, bgcolour: _colors.bluecolor, onPressed: () {
-                          double cartamt = double.parse("${initialData['cart_amt']}");
-                          if (cartamt > 0) {
-                            showAmountDialog("Deduct Amount", "${initialData['_id']}");
-                          } else {
-                            Utils().showAlert("W", "Cart amount is too low");
-                          }
+                          showAmountDialog("Deduct Amount", "${initialData['_id']}");
                         }),
                       ],
                     )

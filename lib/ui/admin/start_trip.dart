@@ -5,11 +5,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
-import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
+import 'package:mummy_cabs/ui/widgets/fuel_maintain.dart';
 
 class StartTripScreen extends StatefulWidget {
   const StartTripScreen({super.key});
@@ -20,7 +20,6 @@ class StartTripScreen extends StatefulWidget {
 
 class _StartTripScreenState extends State<StartTripScreen> {
   final AppColors _colors = AppColors();
-  final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   bool isEdit = false;
   dynamic initdata = {};
@@ -33,7 +32,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
   String rapidocash = "", rapidooperator = "";
   String othercash = "", otheroperator = "";
   String salaryPercentage = "";
-  String fuel = "";
+  String overallfuel = "";
   String otherexp = "";
   String otherdesc = "";
   String dutydesc = "";
@@ -41,6 +40,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
 
   double overAllCashAmt = 0.0;
   double overAllOperatorAmt = 0.0;
+  List<Map<String, dynamic>> fuelDetailsList = [];
 
   @override
   void initState() {
@@ -48,7 +48,6 @@ class _StartTripScreenState extends State<StartTripScreen> {
     isEdit = Get.arguments['isedit'];
     if (isEdit) {
       initdata = Get.arguments['initdata'];
-      log("initdata $initdata ");
 
       tripDate = initdata["trip_date"].toString();
       vehiclenumber = initdata["vehicle_no"].toString();
@@ -62,13 +61,18 @@ class _StartTripScreenState extends State<StartTripScreen> {
       othercash = initdata["other_cash"].toString();
       otheroperator = initdata["other_operator"].toString();
       salaryPercentage = initdata["salary_percentage"].toString();
-      fuel = initdata["fuel_amt"].toString();
+      overallfuel = initdata["fuel_amt"].toString();
       otherexp = initdata["other_expences"].toString();
       otherdesc = initdata["other_desc"].toString();
       dutydesc = initdata["duty_desc"].toString();
       kilometer = initdata["kilometer"].toString();
       overAllCashAmt = double.parse(initdata["total_cash_amt"].toString());
       overAllOperatorAmt = double.parse(initdata["total_operator_amt"].toString());
+
+      fuelDetailsList = initdata['fuel_details'].toString().split("/").map((item) {
+        var parts = item.split(":");
+        return {"type": parts[0], "amount": int.parse(parts[1])};
+      }).toList();
     }
     setState(() {});
   }
@@ -299,17 +303,6 @@ class _StartTripScreenState extends State<StartTripScreen> {
             ),
             UIHelper.verticalSpaceSmall,
             CustomInput1(
-              hintText: "Fuel",
-              fieldname: "fuel_amt",
-              initValue: fuel,
-              fieldType: "fuel",
-              onchanged: (val) {
-                fuel = val;
-                setState(() {});
-              },
-            ),
-            UIHelper.verticalSpaceSmall,
-            CustomInput1(
               hintText: "Others Expences",
               fieldname: "other_expences",
               initValue: otherexp,
@@ -330,6 +323,41 @@ class _StartTripScreenState extends State<StartTripScreen> {
                 setState(() {});
               },
             ),
+            UIHelper.verticalSpaceSmall,
+            GestureDetector(
+              onTap: () {
+                fuelUpdateDialog();
+              },
+              child: Container(
+                width: Get.width,
+                decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.whiteColour, borderColor: _colors.blackColour),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    UIHelper.titleTxtStyle("Fuel Details", fntsize: 11, fntWeight: FontWeight.bold),
+                    Column(
+                      children: List.generate(fuelDetailsList.length, (index) {
+                        dynamic currentData = fuelDetailsList[index];
+                        return Row(
+                          children: [
+                            UIHelper.titleTxtStyle(currentData['type'] + " :", fntsize: 13),
+                            UIHelper.horizontalSpaceSmall,
+                            UIHelper.titleTxtStyle("${currentData['amount']}", fntsize: 13, fntcolor: _colors.primarycolour, fntWeight: FontWeight.bold),
+                          ],
+                        );
+                      }),
+                    ),
+                    if (overallfuel.isNotEmpty) ...[
+                      Divider(color: _colors.greycolor1),
+                      Center(child: UIHelper.titleTxtStyle(overallfuel, fntcolor: _colors.bluecolor, fntsize: 16, fntWeight: FontWeight.bold))
+                    ]
+                  ],
+                ),
+              ),
+            ),
+            //  FuelMaintanance(),
+            UIHelper.verticalSpaceSmall,
             UIHelper.verticalSpaceMedium,
             Center(
               child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
@@ -380,7 +408,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
   }
 
   dataparsefunction() {
-    double fuelamt = fuel.isNotEmpty ? double.parse(fuel) : 0.0;
+    double fuelamt = overallfuel.isNotEmpty ? double.parse(overallfuel) : 0.0;
     double otherexpenceAmt = otherexp.isNotEmpty ? double.parse(otherexp) : 0.0;
 
     double salaryPercent = double.parse(salaryPercentage);
@@ -391,7 +419,9 @@ class _StartTripScreenState extends State<StartTripScreen> {
     int kminteger = int.parse(kilometer);
     double perkmamt = overAllOperatorAmt / kminteger;
     double roundedperkm = (perkmamt * 100).roundToDouble() / 100;
+    String fuelDetailsStr = fuelDetailsList.map((item) => "${item['type']}:${item['amount']}").join("/");
 
+    print("fuelDetailsStr: $fuelDetailsStr");
     Map<String, dynamic> postParams = {
       "trip_date": tripDate,
       "vehicle_no": vehiclenumber,
@@ -408,6 +438,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
       "total_operator_amt": overAllOperatorAmt,
       "salary_percentage": salaryPercentage,
       "driver_salary": roundedSalary,
+      "fuel_details": fuelDetailsStr,
       "fuel_amt": fuelamt,
       "other_expences": otherexp,
       "other_desc": otherdesc,
@@ -417,5 +448,21 @@ class _StartTripScreenState extends State<StartTripScreen> {
       "per_km": roundedperkm,
     };
     return postParams;
+  }
+
+  Future fuelUpdateDialog() async {
+    await Get.dialog<void>(
+        barrierDismissible: false,
+        FuelMaintanance(
+            initialData: fuelDetailsList,
+            returnData: (value) {
+              fuelDetailsList = value;
+              double oaf = 0;
+              for (var i in fuelDetailsList) {
+                oaf = oaf + double.parse(i['amount']);
+              }
+              overallfuel = oaf.toString();
+              setState(() {});
+            }));
   }
 }

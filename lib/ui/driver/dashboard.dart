@@ -112,6 +112,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
       {"type": "RAPIDO", "cash": "${currentData['rapido_cash']}", "operator": "${currentData['rapido_operator']}"},
       {"type": "Others", "cash": "${currentData['other_cash']}", "operator": "${currentData['other_operator']}"},
     ];
+    String fudata = currentData['fuel_details'].toString().replaceAll("/", ", ");
 
     return GestureDetector(
       onTap: () {
@@ -156,6 +157,8 @@ class _DriverDashboardState extends State<DriverDashboard> {
                   rowdata1("Driver Salary (${currentData['salary_percentage']}%)", "${currentData['driver_salary']}", "₹"),
                   UIHelper.verticalSpaceSmall,
                   rowdata1("Fuel Amount", "${currentData['fuel_amt']}", "₹"),
+                  UIHelper.verticalSpaceTiny,
+                  UIHelper.titleTxtStyle(fudata, fntcolor: _colors.redColour, fntsize: 12),
                   UIHelper.verticalSpaceSmall,
                   rowdata1("KM", "${currentData['total_operator_amt']}/${currentData['kilometer']} = ${currentData['per_km']}", ""),
                   UIHelper.verticalSpaceSmall,
