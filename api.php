@@ -11,8 +11,8 @@ class UserController
     public function __construct()
     {
       // Initialize the database connection
-      $this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
-      //$this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
+      //$this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
+      $this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
     }
 
     public function handleRequest()
@@ -60,6 +60,9 @@ class UserController
                     case 'edit_trip':
                         $this->editTripFunction ($data);
                         break;
+                    case 'delete_trip':
+                        $this-> deleteFunction($data);
+                        break;    
                     case 'cart_amount_update':
                         $this->cartAmountUpdate ($data);
                         break;
@@ -368,7 +371,6 @@ class UserController
         exit;
     }
     
-
     private function newTripaddFunction($data)
     {
         $trip_date= $data['trip_date'];
@@ -387,6 +389,7 @@ class UserController
         $total_operator_amt= $data['total_operator_amt'];
         $salary_percentage= $data['salary_percentage'];
         $driver_salary= $data['driver_salary'];
+        $fuel_details= $data['fuel_details'];
         $fuel_amt= $data['fuel_amt'];
         $other_expences=!empty($data['other_expences']) ? (float)$data['other_expences'] : 0.0;
         $balance_amount= $data['balance_amount'];
@@ -399,12 +402,12 @@ class UserController
        $stmt = $this->db->prepare("
         INSERT INTO trips_list (trip_date,vehicle_no,driver_id,ola_cash,ola_operator,uber_cash,uber_operator,
         rapido_cash,rapido_operator,other_cash,other_operator,duty_desc,total_cash_amt,total_operator_amt,
-        salary_percentage,driver_salary,fuel_amt,other_expences, balance_amount,other_desc,kilometer,per_km,is_pending
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)");
+        salary_percentage,driver_salary,fuel_details,fuel_amt,other_expences, balance_amount,other_desc,kilometer,per_km,is_pending
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)");
 
-        $stmt->bind_param("ssssssssssssssssssssssi",$trip_date,$vehicle_no,$driver_id,$ola_cash,$ola_operator,
+        $stmt->bind_param("sssssssssssssssssssssssi",$trip_date,$vehicle_no,$driver_id,$ola_cash,$ola_operator,
               $uber_cash,$uber_operator,$rapido_cash,$rapido_operator,$other_cash,$other_operator,$duty_desc,$total_cash_amt,
-              $total_operator_amt,$salary_percentage,$driver_salary,$fuel_amt,$other_expences,$balance_amount,
+              $total_operator_amt,$salary_percentage,$driver_salary,$fuel_details,$fuel_amt,$other_expences,$balance_amount,
               $other_desc,$kilometer,$per_km,$is_pending);
 
         $stmt->execute();
@@ -433,6 +436,7 @@ class UserController
         $total_operator_amt= $data['total_operator_amt'];
         $salary_percentage= $data['salary_percentage'];
         $driver_salary= $data['driver_salary'];
+        $fuel_details= $data['fuel_details'];
         $fuel_amt= $data['fuel_amt'];
         $other_expences= $data['other_expences'];
         $balance_amount= $data['balance_amount'];
@@ -444,11 +448,12 @@ class UserController
         // 1. Update Trip details
         $stmt = $this->db->prepare("UPDATE trips_list SET trip_date = ?, vehicle_no = ?, driver_id = ?, ola_cash = ?, 
            ola_operator = ?, uber_cash = ?, uber_operator = ?,rapido_cash = ?, rapido_operator = ?, other_cash = ?,
-           other_operator = ?, total_cash_amt = ?, total_operator_amt = ?,salary_percentage = ?, driver_salary = ?, fuel_amt = ?,
+           other_operator = ?, total_cash_amt = ?, total_operator_amt = ?,salary_percentage = ?, driver_salary = ?,driver_salary = ?,fuel_details =?, fuel_amt = ?,
            other_expences = ?,  balance_amount = ?,other_desc= ?,kilometer= ?,per_km =?,duty_desc = ?,is_pending = ? WHERE _id = ?");
-        $stmt->bind_param("ssssssssssssssssssssssii",$trip_date,$vehicle_no,$driver_id,$ola_cash,$ola_operator,
+        $stmt->bind_param("ssssssssssssssssssssssssii",$trip_date,$vehicle_no,$driver_id,$ola_cash,$ola_operator,
               $uber_cash,$uber_operator,$rapido_cash,$rapido_operator,$other_cash,$other_operator,$total_cash_amt,
-              $total_operator_amt,$salary_percentage,$driver_salary,$fuel_amt,$other_expences,$balance_amount,$other_desc,$kilometer,$per_km,$duty_desc,$is_pending,$trip_id);
+              $total_operator_amt,$salary_percentage,$driver_salary,$driver_salary,$fuel_details,$fuel_amt,
+              $other_expences,$balance_amount,$other_desc,$kilometer,$per_km,$duty_desc,$is_pending,$trip_id);
         $stmt->execute();
         $stmt->close();       
      
@@ -456,6 +461,17 @@ class UserController
         exit;
     }
    
+    private function deleteFunction($data)
+    {
+        $trip_id= $data['trip_id'];
+        $stmt = $this->db->prepare("DELETE FROM trips_list WHERE _id = ?");
+        $stmt->bind_param("s", $trip_id);
+        $stmt->execute();
+        $stmt->close();
+       echo json_encode(['msg' => true, 'message' => 'Trip has been successfully deleted.']);    
+     exit;
+    }
+
     private function cartAmountUpdate($data)
     {
         $driver_id=  $data['driver_id'];
@@ -954,15 +970,15 @@ class UserController
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'tamilselvan1998.pdkt@gmail.com'; 
-        $mail->Password   = 'qzyf kfbw ygmh ejvz';  
+        $mail->Username   = 'mbaasha018@gmail.com'; 
+        $mail->Password   = 'rhtn kcfe prpr khwm';  
         $mail->SMTPSecure = 'ssl';
         $mail->Port       = 465;
 
         // Email settings
-        $mail->setFrom('tamilselvan1998.pdkt@gmail.com', 'Tamilselvan Raja');
-        //$mail->addAddress('manimozhi167@gmail.com');
-        $mail->addAddress('tamilselvan1998.pdkt@gmail.com');
+        $mail->setFrom('mbaasha018@gmail.com', 'Mummy Cabs');
+        $mail->addAddress('manimozhi167@gmail.com');
+        //$mail->addAddress('tamilselvan1998.pdkt@gmail.com');
 
         $mail->isHTML(true);
 
