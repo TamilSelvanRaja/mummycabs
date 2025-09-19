@@ -141,8 +141,10 @@ class _PendingListPageState extends State<PendingListPage> {
                   rowdata1("Driver Salary (${currentData['salary_percentage']}%)", "${currentData['driver_salary']}", "₹"),
                   UIHelper.verticalSpaceSmall,
                   rowdata1("Fuel Amount", "${currentData['fuel_amt']}", "₹"),
-                  UIHelper.verticalSpaceTiny,
-                  UIHelper.titleTxtStyle(fudata, fntcolor: _colors.redColour, fntsize: 12),
+                  if (fudata != "null" && fudata != "") ...[
+                    UIHelper.verticalSpaceTiny,
+                    UIHelper.titleTxtStyle(fudata, fntcolor: _colors.redColour, fntsize: 12),
+                  ],
                   UIHelper.verticalSpaceSmall,
                   rowdata1("KM", "${currentData['total_operator_amt']}/${currentData['kilometer']} = ${currentData['per_km']}", ""),
                   UIHelper.verticalSpaceSmall,
@@ -174,7 +176,7 @@ class _PendingListPageState extends State<PendingListPage> {
                   IconButton(
                       onPressed: () async {
                         await Get.toNamed(Routes.starttrip, arguments: {"isedit": true, "initdata": currentData});
-                        Get.back();
+                        await appController.getpendingtripList();
                       },
                       icon: Icon(Icons.edit, size: 25, color: _colors.bluecolor)),
                   IconButton(

@@ -96,8 +96,8 @@ class InitialBinding implements Bindings {
 //************** Service API Call **************/
 //**********************************************/
 class ApiServices extends GetConnect {
-//  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-  String apiurl = "http://10.163.19.180/mummycabs";
+  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
+  //String apiurl = "http://10.163.19.180/mummycabs";
   ApiServices();
   IOClient ioClient = IOClient();
 

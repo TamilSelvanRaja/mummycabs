@@ -172,8 +172,10 @@ class _TripListPageState extends State<TripListPage> {
                   rowdata1("Driver Salary (${currentData['salary_percentage']}%)", "${currentData['driver_salary']}", "₹"),
                   UIHelper.verticalSpaceSmall,
                   rowdata1("Fuel Amount", "${currentData['fuel_amt']}", "₹"),
-                  UIHelper.verticalSpaceTiny,
-                  UIHelper.titleTxtStyle(fudata, fntcolor: _colors.redColour, fntsize: 12),
+                  if (fudata != "null" && fudata != "") ...[
+                    UIHelper.verticalSpaceTiny,
+                    UIHelper.titleTxtStyle(fudata, fntcolor: _colors.redColour, fntsize: 12),
+                  ],
                   UIHelper.verticalSpaceSmall,
                   rowdata1("KM", "${currentData['total_operator_amt']}/${currentData['kilometer']} = ${currentData['per_km']}", ""),
                   UIHelper.verticalSpaceSmall,

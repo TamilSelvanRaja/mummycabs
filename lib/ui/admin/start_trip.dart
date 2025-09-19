@@ -69,10 +69,12 @@ class _StartTripScreenState extends State<StartTripScreen> {
       overAllCashAmt = double.parse(initdata["total_cash_amt"].toString());
       overAllOperatorAmt = double.parse(initdata["total_operator_amt"].toString());
 
-      fuelDetailsList = initdata['fuel_details'].toString().split("/").map((item) {
-        var parts = item.split(":");
-        return {"type": parts[0], "amount": int.parse(parts[1])};
-      }).toList();
+      if (initdata['fuel_details'] != null && initdata['fuel_details'] != "") {
+        fuelDetailsList = initdata['fuel_details'].toString().split("/").map((item) {
+          var parts = item.split(":");
+          return {"type": parts[0], "amount": int.parse(parts[1])};
+        }).toList();
+      }
     }
     setState(() {});
   }
@@ -360,7 +362,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
             UIHelper.verticalSpaceSmall,
             UIHelper.verticalSpaceMedium,
             Center(
-              child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
+              child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () async {
                 if (tripDate.isEmpty) {
                   Utils().showToast("Warning", "please select Trip date", bgclr: _colors.orangeColour);
                 } else if (vehiclenumber.isEmpty) {
@@ -381,7 +383,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
                   } else {
                     reqData['service_id'] = "new_trip";
                   }
-                  AppController().newTripStart(reqData);
+                  await AppController().newTripStart(reqData);
                 }
               }),
             )
@@ -421,7 +423,6 @@ class _StartTripScreenState extends State<StartTripScreen> {
     double roundedperkm = (perkmamt * 100).roundToDouble() / 100;
     String fuelDetailsStr = fuelDetailsList.map((item) => "${item['type']}:${item['amount']}").join("/");
 
-    print("fuelDetailsStr: $fuelDetailsStr");
     Map<String, dynamic> postParams = {
       "trip_date": tripDate,
       "vehicle_no": vehiclenumber,
