@@ -157,7 +157,7 @@ class _CustomInputState extends State<CustomInput> {
         }
         return null;
       }),
-      inputFormatters: widget.fieldType == "mobile" || widget.fieldType == "number"
+      inputFormatters: widget.fieldType == "mobile"
           ? [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(10),
@@ -259,7 +259,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
 
     if (widget.initValue != null && widget.initValue != "") {
       if (isTimeonly) {
-        initdateTime = DateFormat("hh:mm a").parse(widget.initValue);
+        initdateTime = DateFormat("dd-MM-yyyy hh:mm a").parse(widget.initValue);
       } else {
         initdateTime = DateFormat("dd-MM-yyyy").parse(widget.initValue);
       }
@@ -271,8 +271,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return FormBuilderDateTimePicker(
       name: widget.fieldname,
       initialValue: initdateTime,
-      inputType: isTimeonly ? InputType.time : InputType.date,
-      format: isTimeonly ? DateFormat("hh:mm a") : DateFormat('dd-MM-yyyy'),
+      inputType: isTimeonly ? InputType.both : InputType.date,
+      format: isTimeonly ? DateFormat('dd-MM-yyyy hh:mm a') : DateFormat('dd-MM-yyyy'),
       style: UIHelper.customTxtStyle(_colors.blackColour, 14, FontWeight.w400),
       timePickerInitialEntryMode: TimePickerEntryMode.dial,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -289,7 +289,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
           DateTime inputDate = DateTime.parse(value.toString());
 
           if (isTimeonly) {
-            DateFormat format = DateFormat('hh:mm a');
+            DateFormat format = DateFormat('dd-MM-yyyy hh:mm a');
             String selectedDate = format.format(inputDate);
             widget.onSelected(selectedDate);
           } else {

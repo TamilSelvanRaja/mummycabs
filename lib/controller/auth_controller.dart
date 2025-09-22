@@ -98,8 +98,10 @@ class AppController with ChangeNotifier {
         pref.driversList = responce['data'];
         double amount = double.parse("${responce['total_amount']}");
         totalcartamount = amount.toStringAsFixed(2);
-      } else {
+      } else if (searchkey == "customer_list") {
         pref.customersList = responce['data'];
+      } else {
+        pref.dutyDetails = responce['data'];
       }
       notifyListeners();
     }
@@ -148,6 +150,18 @@ class AppController with ChangeNotifier {
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
       }
+    }
+  }
+
+//******************** New Car Function *************************/
+//******************************************************************/
+  Future dutyDetailsUpdate(postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      Get.back();
+      Utils().showToast("Success", 'Data updated successfully', bgclr: _colors.greenColour);
+      pref.dutyDetails = responce['data'];
+      notifyListeners();
     }
   }
 
@@ -312,6 +326,7 @@ class AppController with ChangeNotifier {
   }
 
   Future apiresponceCallback(postParams, localpath) async {
+    log("$postParams");
     Utils().showProgress();
     try {
       final responce = await ApiServices().formDataAPIServices(postParams, localpath);

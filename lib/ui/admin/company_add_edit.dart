@@ -22,12 +22,10 @@ class CompantTripScreen extends StatefulWidget {
 
 class CompantTripScreenState extends State<CompantTripScreen> {
   final AppColors _colors = AppColors();
-  final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   bool isEdit = false;
   dynamic initdata = {};
 
-  String tripDate = "";
   String vehiclenumber = "";
   String selectedDriverid = "";
   String customerName = "";
@@ -35,7 +33,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   String droppoint = "";
   String pickuptime = "";
   String droptime = "";
-  String amount = "";
+  String km = "";
   String tollAmt = "";
   String driversalarry = "";
   String parkingAmt = "";
@@ -46,11 +44,11 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   @override
   void initState() {
     super.initState();
+    log("${pref.dutyDetails}");
     isEdit = Get.arguments['isedit'];
     if (isEdit) {
       initdata = Get.arguments['initdata'];
 
-      tripDate = initdata["trip_date"].toString();
       vehiclenumber = initdata["vehicle_no"].toString();
       selectedDriverid = initdata["driver_id"].toString();
       customerName = initdata["customer_id"].toString();
@@ -58,7 +56,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       droppoint = initdata["drop_place"].toString();
       pickuptime = initdata["pickup_time"].toString();
       droptime = initdata["drop_time"].toString();
-      amount = initdata["amount"].toString();
+      km = initdata['km'].toString();
       tollAmt = initdata["toll_amt"].toString();
       driversalarry = initdata["driver_salary"].toString();
       parkingAmt = initdata["parking"].toString();
@@ -89,16 +87,47 @@ class CompantTripScreenState extends State<CompantTripScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            CustomDropDown(
+                initList: pref.customersList,
+                initValue: customerName,
+                hintText: "Customer Name",
+                fieldname: "customer_id",
+                onSelected: (val) {
+                  customerName = val;
+                  setState(() {});
+                }),
+            UIHelper.verticalSpaceSmall,
+            CustomDatePicker(
+                initValue: pickuptime,
+                hintText: "Pickup Time",
+                fieldname: "pickup_time",
+                isTimeonly: true,
+                onSelected: (val) {
+                  pickuptime = val;
+                  setState(() {});
+                }),
+            UIHelper.verticalSpaceSmall,
+            CustomDatePicker(
+                initValue: droptime,
+                hintText: "Drop Time",
+                fieldname: "drop_time",
+                isTimeonly: true,
+                onSelected: (val) {
+                  droptime = val;
+                  setState(() {});
+                }),
+            UIHelper.verticalSpaceSmall,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                    child: CustomDatePicker(
-                        initValue: tripDate,
-                        hintText: "Trip Date",
-                        fieldname: "trip_date",
+                    child: CustomDropDown(
+                        initList: pref.driversList,
+                        initValue: selectedDriverid,
+                        hintText: "Driver",
+                        fieldname: "driver_id",
                         onSelected: (val) {
-                          tripDate = val;
+                          selectedDriverid = val;
                           setState(() {});
                         })),
                 UIHelper.horizontalSpaceSmall,
@@ -115,69 +144,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
               ],
             ),
             UIHelper.verticalSpaceSmall,
-            CustomDropDown(
-                initList: pref.driversList,
-                initValue: selectedDriverid,
-                hintText: "Driver",
-                fieldname: "driver_id",
-                onSelected: (val) {
-                  selectedDriverid = val;
-                  setState(() {});
-                }),
-            // UIHelper.verticalSpaceMedium,
-            // UIHelper.titleTxtStyle("Select Driver", fntcolor: _colors.primarycolour, fntsize: 18),
-            // UIHelper.verticalSpaceSmall,
-            // SizedBox(
-            //   height: 120,
-            //   width: Get.width,
-            //   child: pref.driversList.isNotEmpty
-            //       ? ListView.builder(
-            //           scrollDirection: Axis.horizontal,
-            //           itemCount: pref.driversList.length,
-            //           itemBuilder: (context, index) {
-            //             dynamic currentData = pref.driversList[index];
-            //             return InkWell(
-            //               onTap: () {
-            //                 selectedDriverid = currentData['_id'].toString();
-            //                 setState(() {});
-            //               },
-            //               child: Container(
-            //                   margin: const EdgeInsets.all(5),
-            //                   width: 100,
-            //                   padding: const EdgeInsets.all(5),
-            //                   decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour,
-            //                       borderColor: selectedDriverid == currentData['_id'].toString() ? _colors.primarycolour : _colors.greycolor1,
-            //                       borderWidth: selectedDriverid == currentData['_id'].toString() ? 2 : 1),
-            //                   child: Column(
-            //                     children: [
-            //                       UIHelper.verticalSpaceSmall,
-            //                       currentData['imgurl'] != null
-            //                           ? CircleAvatar(
-            //                               radius: 25,
-            //                               backgroundColor: _colors.primarycolour,
-            //                               backgroundImage: NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}"),
-            //                             )
-            //                           : Image.asset(_images.profile, height: 50, width: 50),
-            //                       UIHelper.verticalSpaceSmall,
-            //                       UIHelper.titleTxtStyle(currentData['name'], fntcolor: _colors.primarycolour, fntsize: 12),
-            //                     ],
-            //                   )),
-            //             );
-            //           })
-            //       : UIHelper.titleTxtStyle("Driver List is empty.", fntcolor: _colors.redColour, fntsize: 12),
-            // ),
-            UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle("Other Details", fntcolor: _colors.primarycolour, fntsize: 18),
-            UIHelper.verticalSpaceSmall,
-            CustomDropDown(
-                initList: pref.customersList,
-                initValue: customerName,
-                hintText: "Customer Name",
-                fieldname: "customer_id",
-                onSelected: (val) {
-                  customerName = val;
-                  setState(() {});
-                }),
             UIHelper.verticalSpaceSmall,
             Row(
               children: [
@@ -207,39 +174,13 @@ class CompantTripScreenState extends State<CompantTripScreen> {
               ],
             ),
             UIHelper.verticalSpaceSmall,
-            Row(
-              children: [
-                Expanded(
-                    child: CustomDatePicker(
-                        initValue: pickuptime,
-                        hintText: "Pickup Time",
-                        fieldname: "pickup_time",
-                        isTimeonly: true,
-                        onSelected: (val) {
-                          pickuptime = val;
-                          setState(() {});
-                        })),
-                UIHelper.horizontalSpaceSmall,
-                Expanded(
-                    child: CustomDatePicker(
-                        initValue: droptime,
-                        hintText: "Drop Time",
-                        fieldname: "drop_time",
-                        isTimeonly: true,
-                        onSelected: (val) {
-                          droptime = val;
-                          setState(() {});
-                        })),
-              ],
-            ),
-            UIHelper.verticalSpaceSmall,
-            CustomInput1(
-              hintText: "Premium Amount",
-              initValue: amount,
-              fieldname: "amount",
-              fieldType: "novalidation",
+            CustomInput(
+              hintText: "Kilometers",
+              initValue: km,
+              fieldname: "km",
+              fieldType: "number",
               onchanged: (val) {
-                amount = val;
+                km = val;
                 setState(() {});
               },
             ),
@@ -312,31 +253,38 @@ class CompantTripScreenState extends State<CompantTripScreen> {
             UIHelper.verticalSpaceMedium,
             Center(
               child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
-                if (tripDate.isEmpty) {
-                  Utils().showToast("Warning", "please select Trip date", bgclr: _colors.orangeColour);
+                if (customerName.isEmpty) {
+                  Utils().showToast("Warning", "please enter the customer name", bgclr: _colors.orangeColour);
+                } else if (pickuptime.isEmpty && droptime.isEmpty) {
+                  Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
                 } else if (vehiclenumber.isEmpty) {
                   Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
                 } else if (selectedDriverid.isEmpty) {
                   Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
-                } else if (customerName.isEmpty) {
-                  Utils().showToast("Warning", "please enter the customer name", bgclr: _colors.orangeColour);
                 } else if (pickuppoint.isEmpty && droppoint.isEmpty) {
                   Utils().showToast("Warning", "Location Details missing", bgclr: _colors.orangeColour);
-                } else if (pickuptime.isEmpty && droptime.isEmpty) {
-                  Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
-                } else if (amount.isEmpty) {
-                  Utils().showToast("Warning", "please Enter the amount", bgclr: _colors.orangeColour);
+                } else if (km.isEmpty) {
+                  Utils().showToast("Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
                 } else if (driversalarry.isEmpty) {
                   Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
                 } else {
-                  Map<String, dynamic> reqData = dataparsefunction();
-                  if (isEdit) {
-                    reqData['trip_id'] = initdata['_id'];
-                    reqData['service_id'] = "edit_companytrip";
-                    AppController().newCompanyTripStart(reqData);
+                  final format = DateFormat("dd-MM-yyyy hh:mm a");
+                  DateTime dateTime1 = format.parse(droptime);
+                  DateTime dateTime2 = format.parse(pickuptime);
+                  Duration diff = dateTime1.difference(dateTime2);
+                  int hours = (diff.inMinutes / 60.0).round();
+                  if (hours < 1) {
+                    Utils().showToast("Warning", "please Check the Droptime", bgclr: _colors.redColour);
                   } else {
-                    reqData['service_id'] = "add_companytrip";
-                    AppController().newCompanyTripStart(reqData);
+                    Map<String, dynamic> reqData = dataparsefunction(hours);
+                    if (isEdit) {
+                      reqData['trip_id'] = initdata['_id'];
+                      reqData['service_id'] = "edit_companytrip";
+                      AppController().newCompanyTripStart(reqData);
+                    } else {
+                      reqData['service_id'] = "add_companytrip";
+                      AppController().newCompanyTripStart(reqData);
+                    }
                   }
                 }
               }),
@@ -347,24 +295,39 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     );
   }
 
-  dataparsefunction() {
-    double premiumamtTodouble = double.parse(amount);
+  dataparsefunction(int hours) {
+    double onehrAmt = double.parse("${pref.dutyDetails['hr_amount']}");
+    int hrKm = int.parse("${pref.dutyDetails['per_hr_km']}");
+    double extrakmAmt = double.parse("${pref.dutyDetails['ex_km_amount']}");
+
+    double packageAmount = hours * onehrAmt;
+    int difKm = 0;
+    int maxKm = hours * hrKm;
+    if (maxKm < int.parse(km)) {
+      difKm = int.parse(km) - maxKm;
+    }
+    double extraKmFinalAmt = difKm * extrakmAmt;
+
     double tollTodouble = tollAmt.isNotEmpty ? double.parse(tollAmt) : 0;
     double salaryTodouble = driversalarry.isNotEmpty ? double.parse(driversalarry) : 0;
     double parkingTodouble = parkingAmt.isNotEmpty ? double.parse(parkingAmt) : 0;
     double otheramtTodouble = othrAmt.isNotEmpty ? double.parse(othrAmt) : 0;
     double advanceTodouble = advAmt.isNotEmpty ? double.parse(advAmt) : 0;
-    double balanceAmount = (premiumamtTodouble + tollTodouble + salaryTodouble + parkingTodouble + otheramtTodouble) - advanceTodouble;
+    double balanceAmount = (packageAmount + extraKmFinalAmt + tollTodouble + salaryTodouble + parkingTodouble + otheramtTodouble) - advanceTodouble;
+
     Map<String, dynamic> postParams = {
-      "trip_date": tripDate,
-      "vehicle_no": vehiclenumber,
-      'driver_id': selectedDriverid,
       "customer_id": customerName,
-      "pickup_place": pickuppoint,
-      "drop_place": droppoint,
       "pickup_time": pickuptime,
       "drop_time": droptime,
-      "amount": amount,
+      "vehicle_no": vehiclenumber,
+      'driver_id': selectedDriverid,
+      "pickup_place": pickuppoint,
+      "drop_place": droppoint,
+      "total_hr": hours,
+      "km": km,
+      "extra_km": difKm,
+      "package_amount": packageAmount,
+      "extra_km_amount": extraKmFinalAmt,
       "toll_amt": tollTodouble,
       "driver_salary": salaryTodouble,
       "parking": parkingTodouble,
@@ -373,6 +336,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       "description": otherDesc,
       "balance_amount": balanceAmount
     };
+
     return postParams;
   }
 }

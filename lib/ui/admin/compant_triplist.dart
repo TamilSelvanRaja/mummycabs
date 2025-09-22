@@ -138,12 +138,6 @@ class _CompantTripListState extends State<CompantTripList> {
               ],
             ),
           ),
-          floatingActionButton: IconButton(
-              onPressed: () async {
-                await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": false});
-                appController.getCompanytripList(selectedDate, cusId);
-              },
-              icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
         );
       }),
     );
@@ -159,17 +153,11 @@ class _CompantTripListState extends State<CompantTripList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UIHelper.titleTxtStyle(customer['name'], fntcolor: _colors.primarycolour, fntsize: 14, fntWeight: FontWeight.bold),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  UIHelper.titleTxtStyle("${currentData['trip_date']}", fntcolor: _colors.bluecolor, fntsize: 12, fntWeight: FontWeight.bold),
-                  UIHelper.titleTxtStyle("${currentData['pickup_time']} - ${currentData['drop_time']}", fntcolor: _colors.bluecolor, fntsize: 10, fntWeight: FontWeight.bold),
-                ],
-              )
+              UIHelper.titleTxtStyle("${currentData['pickup_time']} (to) ${currentData['drop_time']}", fntcolor: _colors.bluecolor, fntsize: 10, fntWeight: FontWeight.bold),
             ],
           ),
           Divider(color: _colors.greycolor1),
@@ -193,17 +181,20 @@ class _CompantTripListState extends State<CompantTripList> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  rowwidget("Amount", "${currentData['amount']}"),
+                  rowwidget1("Package Hour", "${currentData['total_hr']}"),
+                  rowwidget1("Extra Km", "${currentData['extra_km']}"),
                   rowwidget("Toll Amount", "${currentData['toll_amt']}"),
                   rowwidget("Others", "${currentData['other_amount']}"),
+                  rowwidget("Advance", "${currentData['advance_amt']}", txtClr: _colors.greenColour),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  rowwidget1("Total Km", "${currentData['km']}"),
+                  rowwidget1("Extra Km", "${currentData['extra_km_amount']}"),
                   rowwidget("Driver Salary", "${currentData['driver_salary']}"),
                   rowwidget("Parking", "${currentData['parking']}"),
-                  rowwidget("Advance", "${currentData['advance_amt']}", txtClr: _colors.greenColour),
                 ],
               )
             ],
@@ -240,6 +231,15 @@ class _CompantTripListState extends State<CompantTripList> {
       children: [
         UIHelper.titleTxtStyle("$title", fntcolor: _colors.greycolor, fntsize: 13),
         UIHelper.titleTxtStyle(" : ₹ $value", fntcolor: txtClr, fntsize: 13, fntWeight: FontWeight.bold),
+      ],
+    );
+  }
+
+  Widget rowwidget1(title, value, {Color txtClr = Colors.black}) {
+    return Row(
+      children: [
+        UIHelper.titleTxtStyle("$title", fntcolor: _colors.greycolor, fntsize: 13),
+        UIHelper.titleTxtStyle(" : $value", fntcolor: txtClr, fntsize: 13, fntWeight: FontWeight.bold),
       ],
     );
   }

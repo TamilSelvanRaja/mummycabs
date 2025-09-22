@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_month_picker/flutter_custom_month_picker.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -22,6 +23,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   String inputDate = "";
+  final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
+
   String cusId = "";
   @override
   void initState() {
@@ -35,6 +38,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     await AppController().getcarList("car_list");
     await AppController().getcarList("drivers_list");
     await AppController().getcarList("customer_list");
+    await AppController().getcarList("duty_details_get");
     setState(() {});
   }
 
@@ -72,16 +76,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
       ),
-      floatingActionButton: InkWell(
-        onTap: () async {
-          await Get.toNamed(Routes.starttrip, arguments: {"isedit": false});
-          setState(() {});
-        },
-        child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: UIHelper.circleWithColorWithShadow(1, _colors.primarycolour, _colors.primarycolour),
-            child: Icon(Icons.directions_car_outlined, size: 40, color: _colors.bgClr)),
-      ),
+      floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(2, (index) {
+            return GestureDetector(
+              onTap: () async {
+                if (index == 0) {
+                  await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": false});
+                } else {
+                  await Get.toNamed(Routes.starttrip, arguments: {"isedit": false});
+                }
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: UIHelper.circleWithColorWithShadow(1, _colors.primarycolour, _colors.primarycolour),
+                      child: Icon(index == 0 ? Icons.add_business_outlined : Icons.directions_car_outlined, size: 40, color: _colors.bgClr)),
+                  UIHelper.titleTxtStyle(index == 0 ? "Company Trip" : "Drivers Trip", fntsize: 12, fntcolor: _colors.primarycolour, txtAlign: TextAlign.center, fntWeight: FontWeight.bold),
+                ],
+              ),
+            );
+          })),
     );
   }
 
@@ -184,6 +201,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
           inputDate = "";
           cusId = "";
           fgbottomsheet(i);
+        } else if (i == 2) {
+          dutydetailsEditDialog();
         } else {
           Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
             pref.cleanAllPreferences();
@@ -216,7 +235,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
           child: itemWidget("Customer Reports", 1, Icons.receipt_long_sharp),
         ),
         PopupMenuItem<String>(
-          child: itemWidget("Logout", 2, Icons.logout_rounded),
+          child: itemWidget("Settings", 2, Icons.settings),
+        ),
+        PopupMenuItem<String>(
+          child: itemWidget("Logout", 3, Icons.logout_rounded),
         ),
       ],
       elevation: 8.0,
@@ -353,5 +375,65 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ]);
       },
     );
+  }
+
+  Future dutydetailsEditDialog() async {
+    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
+      return MediaQuery.removeViewInsets(
+          removeBottom: true,
+          context: context,
+          child: AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              backgroundColor: _colors.bgClr,
+              insetPadding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                        height: 50,
+                        decoration: UIHelper.roundedBorderWithColor(16, 16, 0, 0, _colors.primarycolour),
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          children: [
+                            Expanded(child: UIHelper.titleTxtStyle("Add New Car", fntcolor: _colors.bgClr, fntsize: 18)),
+                            InkWell(
+                              onTap: (() {
+                                Get.back();
+                              }),
+                              child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
+                            ),
+                          ],
+                        )),
+                    UIHelper.verticalSpaceMedium,
+                    FormBuilder(
+                      key: _formkey,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(children: [
+                            CustomInput(hintText: "One Hour Amount", initValue: pref.dutyDetails['hr_amount'], fieldname: "hr_amount", fieldType: "number"),
+                            UIHelper.verticalSpaceSmall,
+                            CustomInput(hintText: "Extra Amount per KM", initValue: pref.dutyDetails['ex_km_amount'], fieldname: "ex_km_amount", fieldType: "number"),
+                            UIHelper.verticalSpaceMedium,
+                            CustomInput(hintText: "Maximum KM per hour", initValue: pref.dutyDetails['per_hr_km'], fieldname: "per_hr_km", fieldType: "number"),
+                            UIHelper.verticalSpaceMedium,
+                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
+                              if (_formkey.currentState!.saveAndValidate()) {
+                                Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
+                                postParams['uid'] = pref.dutyDetails["_id"];
+                                postParams['service_id'] = "duty_details_edit";
+                                AppController().dutyDetailsUpdate(postParams);
+                              }
+                            }),
+                          ])),
+                    ),
+                    UIHelper.verticalSpaceMedium,
+                  ],
+                ),
+              )));
+    }));
   }
 }
