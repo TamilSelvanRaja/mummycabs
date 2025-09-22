@@ -11,8 +11,8 @@ class UserController
     public function __construct()
     {
       // Initialize the database connection
-      //$this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
-      $this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
+      $this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
+      //$this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
     }
 
     public function handleRequest()
@@ -101,7 +101,16 @@ class UserController
                         break;
                     case 'history_delete':
                         $this->historydelete ($data);
-                        break;           
+                        break;
+                    case 'duty_details_add':
+                        $this->adminDutyDetailsAdd ($data);
+                        break;
+                    case 'duty_details_edit':
+                        $this->adminDutyDetailsEdit ($data);
+                        break;
+                    case 'duty_details_get':
+                        $this->adminDutyDetailsget ($data);
+                        break;                   
                     default:
                         echo json_encode(['msg' => false, 'message' => 'Invalid service_id']);
                         break;
@@ -616,7 +625,6 @@ class UserController
 
     private function companyTripaddFunction($data)
     {
-        $trip_date= $data['trip_date'];
         $vehicle_no= $data['vehicle_no'];
         $driver_id=  $data['driver_id'];
         $customer_id= $data['customer_id'];
@@ -624,7 +632,11 @@ class UserController
         $drop_place= $data['drop_place'];
         $pickup_time= $data['pickup_time'];
         $drop_time= $data['drop_time'];
-        $amount= $data['amount'];
+        $total_hr= $data['total_hr'];
+        $package_amount= $data['package_amount'];
+        $km= $data['km'];
+        $extra_km= $data['extra_km'];
+        $extra_km_amount= $data['extra_km_amount'];
         $toll_amt= $data['toll_amt'];
         $driver_salary= $data['driver_salary'];
         $parking= $data['parking'];
@@ -632,15 +644,17 @@ class UserController
         $description= $data['description'];
         $advance_amt= $data['advance_amt'];
         $balance_amount= $data['balance_amount'];
-        
-       // 1. Insert company trip
+       
+       
+        // 1. Insert company trip
        $stmt = $this->db->prepare("
-        INSERT INTO company_trips (trip_date,vehicle_no,driver_id,customer_id,pickup_place,drop_place,
-        pickup_time,drop_time,amount,toll_amt,
-        driver_salary,parking,other_amount,description,advance_amt,balance_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        INSERT INTO company_trips (km,vehicle_no,driver_id,customer_id,pickup_place,drop_place,
+        pickup_time,drop_time,total_hr,package_amount,toll_amt,extra_km,extra_km_amount,
+        driver_salary,parking,other_amount,description,advance_amt,balance_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $stmt->bind_param("ssssssssssssssss",$trip_date,$vehicle_no,$driver_id,$customer_id,
-              $pickup_place,$drop_place,$pickup_time,$drop_time,$amount, $toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount);
+        $stmt->bind_param("sssssssssssssssssss",$km,$vehicle_no,$driver_id,$customer_id,
+              $pickup_place,$drop_place,$pickup_time,$drop_time,$total_hr,$package_amount,$extra_km,$extra_km_amount,
+              $toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount);
 
         if ($stmt->execute()) {
         $insertedId = $stmt->insert_id;
@@ -660,7 +674,6 @@ class UserController
     private function companyTripeditFunction($data)
     {
         $trip_id= $data['trip_id'];
-        $trip_date= $data['trip_date'];
         $vehicle_no= $data['vehicle_no'];
         $driver_id=  $data['driver_id'];
         $customer_id= $data['customer_id'];
@@ -668,7 +681,11 @@ class UserController
         $drop_place= $data['drop_place'];
         $pickup_time= $data['pickup_time'];
         $drop_time= $data['drop_time'];
-        $amount= $data['amount'];
+        $total_hr= $data['total_hr'];
+        $package_amount= $data['package_amount'];
+        $km= $data['km'];
+        $extra_km= $data['extra_km'];
+        $extra_km_amount= $data['extra_km_amount'];
         $toll_amt= $data['toll_amt'];
         $driver_salary= $data['driver_salary'];
         $parking= $data['parking'];
@@ -678,12 +695,13 @@ class UserController
         $balance_amount= $data['balance_amount'];
 
         // 1. Update Company Trip details
-        $stmt = $this->db->prepare("UPDATE company_trips SET trip_date = ?, vehicle_no = ?, driver_id = ?, customer_id = ?, 
-           pickup_place = ?, drop_place = ?, pickup_time = ?,drop_time = ?, amount = ?,
+        $stmt = $this->db->prepare("UPDATE company_trips SET km = ?, vehicle_no = ?, driver_id = ?, customer_id = ?, 
+           pickup_place = ?, drop_place = ?, pickup_time = ?,drop_time = ?,total_hr = ?, package_amount = ?, extra_km = ?, extra_km_amount = ?,
            toll_amt = ? , driver_salary = ? , parking = ? , other_amount = ? , description = ? , advance_amt = ? , balance_amount = ?
            WHERE _id = ?");
-        $stmt->bind_param("ssssssssssssssssi",$trip_date,$vehicle_no,$driver_id,$customer_id,$pickup_place,
-              $drop_place,$pickup_time,$drop_time,$amount,$toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount,$trip_id);
+        $stmt->bind_param("sssssssssssssssssssi",$km,$vehicle_no,$driver_id,$customer_id,$pickup_place,
+              $drop_place,$pickup_time,$drop_time, $total_hr,$package_amount,$extra_km, $extra_km_amount, 
+              $toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount,$trip_id);
         if ($stmt->execute()) {
         $res = $this->db->query("SELECT * FROM company_trips WHERE _id = $trip_id");
         if ($res) {
@@ -959,6 +977,68 @@ class UserController
           echo json_encode(['msg' => true, 'data' => $triplisttemp]);
         } 
         $stmt->close();  
+        exit;
+    }
+    
+    private function adminDutyDetailsAdd($data)
+    {
+        $hr_amount = $data['hr_amount'];
+        $ex_km_amount = $data['ex_km_amount'];
+        $per_hr_km	=$data['per_hr_km'];
+       
+        $stmt = $this->db->prepare("INSERT INTO admin_duty_details (hr_amount, ex_km_amount, per_hr_km) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $hr_amount, $ex_km_amount, $per_hr_km);
+        if ($stmt->execute()) {
+        echo json_encode(['msg' => true, 'message' => 'Registration Success']);
+          $this->db->commit();
+         } else {
+        echo json_encode(['msg' => false, 'message' => 'Registration failed']);
+        $this->db->rollback();
+        }
+
+        $stmt->close();
+        exit;
+    }
+
+    private function adminDutyDetailsEdit($data)
+    {
+         $uid = $data['uid'];
+        $hr_amount = $data['hr_amount'];
+        $ex_km_amount = $data['ex_km_amount'];
+        $per_hr_km	=$data['per_hr_km'];   
+      
+        $stmt1 = $this->db->prepare("UPDATE admin_duty_details SET hr_amount = ?, ex_km_amount = ?, per_hr_km = ? WHERE _id =?");
+        $stmt1->bind_param("sssi",$hr_amount,$ex_km_amount,$per_hr_km,$uid);
+        if ($stmt1->execute()) {
+             $stmt2 = $this->db->prepare("SELECT * FROM admin_duty_details WHERE _id = ?");
+             $stmt2->bind_param("i", $uid);
+             $stmt2->execute();
+            $result = $stmt2->get_result();
+            $updatedRow = $result->fetch_assoc();
+            $stmt2->close();
+
+            echo json_encode(['msg' => true,'data' => $updatedRow ]);
+            $this->db->commit();
+        } else {
+          echo json_encode(['msg' => false, 'message' => 'Admin duty failed']);
+          $this->db->rollback();
+        }
+        $stmt1->close();
+    }
+    
+    private function adminDutyDetailsget($data)
+    {
+        $uid = 1;      
+        $sel_stmt = $this->db->prepare("SELECT * FROM admin_duty_details WHERE _id = ?");
+        $sel_stmt->bind_param('i', $uid);
+        $sel_stmt->execute();
+        $sel_res = $sel_stmt->get_result();       
+        if ($sel_res->num_rows) {
+            $row = $sel_res->fetch_assoc();
+            echo json_encode(['msg' => true, 'data' => $row]);
+        exit;
+        }
+        $sel_stmt->close();
         exit;
     }
     
