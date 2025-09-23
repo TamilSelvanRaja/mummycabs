@@ -92,14 +92,30 @@ body {
             <tr style="background:#ffffff;">
                 <td style="text-align: center; border:1px solid #000;font-size: 12px;"><?= $index+1 ?></td>
                 <td style="text-align: center;padding:6px 6px; border:1px solid #000;font-size: 12px;">
-                    <?= htmlspecialchars($row["trip_date"]) ?></td>
+                    <?= htmlspecialchars($row["pickup_time"]) ?></td>
                 <td style="text-align: center; padding:6px 6px; border:1px solid #000;font-size: 12px;">
                     <?= htmlspecialchars($row["vehicle_no"]) ?></td>
                 <td style="padding:6px 6px; border:1px solid #000;font-size: 12px;">
                     <table style="width:100%;">
                         <tr>
-                            <td>Transport charges</td>
-                            <td>: <?= htmlspecialchars($row["amount"]) ?></td>
+                            <td> <strong
+                                    style="color: #a80f0f;font-size: 14px;"><?= htmlspecialchars($row["pickup_place"]) ?>
+                            </td>
+                            <td> <strong
+                                    style="color: #a80f0f;font-size: 14px;"><?= htmlspecialchars($row["drop_place"]) ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Total Km</td>
+                            <td>: <?= htmlspecialchars($row["km"]) ?></td>
+                        </tr>
+                        <tr>
+                            <td>Extra KM</td>
+                            <td>: <?= htmlspecialchars($row["extra_km"]) ?></td>
+                        </tr>
+                        <tr>
+                            <td>Extra KM Amount</td>
+                            <td>: <?= htmlspecialchars($row["extra_km_amount"]) ?></td>
                         </tr>
                         <tr>
                             <td>Driver Salary</td>

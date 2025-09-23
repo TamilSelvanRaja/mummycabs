@@ -725,10 +725,11 @@ class UserController
     
     private function getTripListFunction($data)
     {
-        $customer_id = $data['customer_id'];
-        $from = explode('-', $data['from_date']);
-        $from_date = $from[1] . '-' . $from[0] . '-01';
-        $to_date = $from[1] . '-' . $from[0] . '-31';
+         $customer_id = $data['customer_id'];
+         $from = explode('-', $data['from_date']);
+         $end = explode('-', $data['to_date']);
+         $from_date = $from[2] . '-' . $from[1] . '-' . $from[0];
+         $to_date = $end[2] . '-' . $end[1] . '-' . $end[0];
 
         $stmt = $this->db->prepare("SELECT * FROM company_trips WHERE customer_id = ? AND DATE(created_date) BETWEEN DATE(?) AND DATE(?)");
         $stmt->bind_param("sss",$customer_id, $from_date, $to_date);
@@ -743,8 +744,10 @@ class UserController
     private function solotripFileGenerate($data)
     {
             $from = explode('-', $data['from_date']);
-            $from_date = $from[1] . '-' . $from[0] . '-01';
-            $to_date = $from[1] . '-' . $from[0] . '-31';
+            $end = explode('-', $data['to_date']);
+            $from_date = $from[2] . '-' . $from[1] . '-' . $from[0];
+            $to_date = $end[2] . '-' . $end[1] . '-' . $end[0];
+         
             $stmt = $this->db->prepare("SELECT t.trip_date,u.name,
             t.vehicle_no,t.ola_operator,t.uber_operator,t.rapido_operator,
             t.other_operator,t.total_cash_amt,t.total_operator_amt,t.salary_percentage,t.driver_salary,
@@ -755,7 +758,7 @@ class UserController
             $result = $stmt->get_result();
             $stmt->close();            
              
-            $solotriplist = $result->fetch_all(MYSQLI_ASSOC);             
+            $solotriplist = $result->fetch_all(MYSQLI_ASSOC);  
             $path1 =  $data['from_date']."_trips_reports.csv";
             //$output = fopen($path1, "w");
             $output = fopen('php://temp', 'r+');
@@ -770,8 +773,13 @@ class UserController
             $csvContent1 = stream_get_contents($output);
             fclose($output);
 
-            $stmt = $this->db->prepare("SELECT t.trip_date,u.name,t.vehicle_no,t.customer_id,t.pickup_place,t.drop_place,t.pickup_time,t.drop_time,t.amount
-            FROM company_trips t INNER JOIN users u ON t.driver_id = u._id WHERE DATE(created_date) BETWEEN DATE(?) AND DATE(?)");
+            $stmt = $this->db->prepare("SELECT u.name AS driver_name,t.vehicle_no,c.name AS customer_name,t.pickup_place,t.drop_place,t.pickup_time,t.drop_time,
+            t.total_hr,t.km,t.extra_km,t.extra_km_amount,t.toll_amt,t.driver_salary,t.parking,t.other_amount,t.advance_amt,t.balance_amount
+            FROM company_trips t 
+            INNER JOIN users u ON t.driver_id = u._id 
+            INNER JOIN customers c ON t.customer_id = c._id
+            WHERE DATE(t.created_date) BETWEEN DATE(?) AND DATE(?)");
+           
             $stmt->bind_param("ss", $from_date, $to_date);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -782,7 +790,8 @@ class UserController
           
             //$output = fopen($path2, "w");
             $output = fopen('php://temp', 'r+');
-            $headertxt = array("Date", "Driver Name","Vehicle Number","Customer Name","Pickup Location","Drop Location","Pickup Time","Drop Time","Amount");
+            $headertxt = array("Driver Name","Vehicle Number","Customer Name","Pickup Location","Drop Location","Pickup Time","Drop Time","Hours","KM","Extra KM",
+            "Extra Km Amt","Toll Amount","Driver Salary","Parking","Others","Advance","Amount");
             //Write header row
             fputcsv($output, $headertxt);
 
@@ -1057,8 +1066,8 @@ class UserController
 
         // Email settings
         $mail->setFrom('mbaasha018@gmail.com', 'Mummy Cabs');
-        $mail->addAddress('manimozhi167@gmail.com');
-        //$mail->addAddress('tamilselvan1998.pdkt@gmail.com');
+        //$mail->addAddress('manimozhi167@gmail.com');
+        $mail->addAddress('tamilselvan1998.pdkt@gmail.com');
 
         $mail->isHTML(true);
 
