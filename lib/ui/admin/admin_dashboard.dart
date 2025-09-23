@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_month_picker/flutter_custom_month_picker.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -22,7 +24,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
-  String inputDate = "";
+  String fromDate = "", toDate = "";
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
 
   String cusId = "";
@@ -55,7 +57,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
             UIHelper.verticalSpaceSmall,
             GestureDetector(
               onTap: () {
-                Get.toNamed(Routes.companyTripList);
+                fromDate = "";
+                toDate = "";
+                cusId = "";
+                fgbottomsheet(1);
+                //
               },
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -197,8 +203,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return InkWell(
       onTap: () {
         Get.back();
-        if (i == 0 || i == 1) {
-          inputDate = "";
+        if (i == 0) {
+          fromDate = "";
+          toDate = "";
           cusId = "";
           fgbottomsheet(i);
         } else if (i == 2) {
@@ -230,9 +237,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
       items: [
         PopupMenuItem<String>(
           child: itemWidget("Trips Reports", 0, Icons.receipt_long_sharp),
-        ),
-        PopupMenuItem<String>(
-          child: itemWidget("Customer Reports", 1, Icons.receipt_long_sharp),
         ),
         PopupMenuItem<String>(
           child: itemWidget("Settings", 2, Icons.settings),
@@ -277,7 +281,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        UIHelper.titleTxtStyle(index == 0 ? "Trips Report" : "Customer Report", fntcolor: _colors.primarycolour, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
+                        UIHelper.titleTxtStyle(index == 0 ? "Trips Report" : "Company Trips", fntcolor: _colors.primarycolour, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
                         InkWell(
                           onTap: () {
                             Get.back();
@@ -291,72 +295,57 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     )),
                 UIHelper.verticalSpaceMedium,
-                Center(
-                  child: GestureDetector(
-                      onTap: () async {
-                        showMonthPicker(context, onSelected: (month, year) async {
-                          String mm = month.toString();
-                          if (mm.length == 1) {
-                            mm = "0$mm";
-                          }
-                          inputDate = '$mm-$year';
-                          //  downloadFilepath = ;
-                          setState(() {});
-                        },
-                            initialSelectedMonth: DateTime.now().month,
-                            initialSelectedYear: DateTime.now().year,
-                            firstYear: 2023,
-                            lastYear: DateTime.now().year,
-                            selectButtonText: 'OK',
-                            cancelButtonText: 'Cancel',
-                            highlightColor: _colors.primarycolour,
-                            textColor: Colors.black,
-                            contentBackgroundColor: Colors.white,
-                            dialogBackgroundColor: Colors.grey[200]);
-                      },
-                      child: Container(
-                        width: Get.width / 2,
-                        decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour, borderWidth: 1, borderColor: _colors.greycolor),
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.calendar_month, size: 20, color: _colors.greycolor),
-                            UIHelper.horizontalSpaceSmall,
-                            UIHelper.titleTxtStyle(inputDate.isNotEmpty ? inputDate : "Select Month"),
-                          ],
-                        ),
-                      )),
-                ),
                 if (index == 1) ...[
+                  Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      width: Get.width,
+                      child: CustomDropDown(
+                          initList: pref.customersList,
+                          initValue: cusId,
+                          hintText: "Customer Name",
+                          fieldname: "customer_id",
+                          onSelected: (val) {
+                            cusId = val;
+                            setState(() {});
+                          })),
                   UIHelper.verticalSpaceSmall,
-                  Center(
-                    child: SizedBox(
-                        width: Get.width / 2,
-                        child: CustomDropDown(
-                            initList: pref.customersList,
-                            initValue: cusId,
-                            hintText: "Customer Name",
-                            fieldname: "customer_id",
-                            onSelected: (val) {
-                              cusId = val;
-                              setState(() {});
-                            })),
-                  )
                 ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: CustomDatePicker(
+                              hintText: "Start Date",
+                              fieldname: "pi_time",
+                              onSelected: (val) {
+                                fromDate = val.toString();
+                                setState(() {});
+                              })),
+                      UIHelper.horizontalSpaceSmall,
+                      Expanded(
+                          child: CustomDatePicker(
+                              hintText: "End Date",
+                              fieldname: "pickup_time",
+                              onSelected: (val) {
+                                toDate = val.toString();
+                                setState(() {});
+                              })),
+                    ],
+                  ),
+                ),
                 UIHelper.verticalSpaceMedium,
                 Center(
                   child: InkWell(
                     onTap: () async {
-                      if (inputDate.isNotEmpty) {
+                      if (fromDate.isNotEmpty && toDate.isNotEmpty) {
                         if (index == 0) {
                           Get.back();
-                          await AppController().generateMonthlyReport(inputDate);
+                          await AppController().generateMonthlyReport(fromDate, toDate);
                         } else {
                           if (cusId.isNotEmpty) {
                             Get.back();
-                            await AppController().generateInvoiceReport(inputDate, cusId);
+                            Get.toNamed(Routes.companyTripList, arguments: {"cusId": cusId, "from": fromDate, "to": toDate});
                           }
                         }
                       }
@@ -364,7 +353,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     child: Container(
                       decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.primarycolour),
                       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                      child: UIHelper.titleTxtStyle("Generate Email", fntsize: 16, fntcolor: _colors.bgClr, fntWeight: FontWeight.bold),
+                      child: UIHelper.titleTxtStyle(index == 0 ? "Generate Email" : "Next", fntsize: 16, fntcolor: _colors.bgClr, fntWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -399,7 +388,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         alignment: Alignment.centerRight,
                         child: Row(
                           children: [
-                            Expanded(child: UIHelper.titleTxtStyle("Add New Car", fntcolor: _colors.bgClr, fntsize: 18)),
+                            Expanded(child: UIHelper.titleTxtStyle("Duty Fess", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
                                 Get.back();

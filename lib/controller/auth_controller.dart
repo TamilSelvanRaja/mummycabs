@@ -263,10 +263,10 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //*******************  Get Trip List Function **********************/
 //******************************************************************/
-  Future getCompanytripList(String date, String cusId) async {
+  Future getCompanytripList(String from, String to, String cusId) async {
     companytripsList.clear();
 
-    dynamic postParams = {"service_id": "companytrip_list", "customer_id": cusId, "from_date": date};
+    dynamic postParams = {"service_id": "companytrip_list", "customer_id": cusId, "from_date": from, "to_date": to};
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       companytripsList = responce['data'];
@@ -292,13 +292,10 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //***************  Monthly Report Generate Function ****************/
 //******************************************************************/
-  Future generateMonthlyReport(String monthyear) async {
+  Future generateMonthlyReport(String from, String to) async {
     transactionList.clear();
 
-    dynamic postParams = {
-      "service_id": "file_generate",
-      "from_date": monthyear,
-    };
+    dynamic postParams = {"service_id": "file_generate", "from_date": from, "to_date": to};
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
@@ -308,10 +305,10 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //***************  Monthly Report Generate Function ****************/
 //******************************************************************/
-  Future generateInvoiceReport(String monthyear, String cusid) async {
+  Future generateInvoiceReport(String fromDate, String toDate, String cusid) async {
     transactionList.clear();
 
-    dynamic postParams = {"service_id": "invoice_generate", "from_date": monthyear, "customer_id": cusid};
+    dynamic postParams = {"service_id": "invoice_generate", "from_date": fromDate, "to_date": toDate, "customer_id": cusid};
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);

@@ -277,6 +277,12 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       timePickerInitialEntryMode: TimePickerEntryMode.dial,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       lastDate: DateTime.now(),
+      transitionBuilder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
       decoration: UIHelper.inputDecorateWidget(widget.hintText, null, suffixWidget: const Icon(Icons.date_range)),
       validator: (value) {
         if (value == null) {
