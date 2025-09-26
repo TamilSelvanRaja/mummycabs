@@ -25,7 +25,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   final PreferenceService pref = Get.find<PreferenceService>();
   bool isEdit = false;
   dynamic initdata = {};
-
+  int selectedTypeid = 0;
   String vehiclenumber = "";
   String selectedDriverid = "";
   String customerName = "";
@@ -87,6 +87,24 @@ class CompantTripScreenState extends State<CompantTripScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(2, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      selectedTypeid = index;
+                      setState(() {});
+                    },
+                    child: Row(
+                      children: [
+                        Icon(selectedTypeid == index ? Icons.radio_button_checked : Icons.radio_button_off),
+                        UIHelper.horizontalSpaceTiny,
+                        UIHelper.titleTxtStyle(index == 0 ? "Local" : "Out Station", fntsize: 15, fntWeight: selectedTypeid == index ? FontWeight.bold : FontWeight.normal),
+                      ],
+                    ),
+                  );
+                })),
+            UIHelper.verticalSpaceSmall,
             CustomDropDown(
                 initList: pref.customersList,
                 initValue: customerName,
@@ -255,28 +273,41 @@ class CompantTripScreenState extends State<CompantTripScreen> {
               child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
                 if (customerName.isEmpty) {
                   Utils().showToast("Warning", "please enter the customer name", bgclr: _colors.orangeColour);
-                } else if (pickuptime.isEmpty && droptime.isEmpty) {
-                  Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
-                } else if (vehiclenumber.isEmpty) {
-                  Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
-                } else if (selectedDriverid.isEmpty) {
-                  Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
-                } else if (pickuppoint.isEmpty && droppoint.isEmpty) {
-                  Utils().showToast("Warning", "Location Details missing", bgclr: _colors.orangeColour);
-                } else if (km.isEmpty) {
-                  Utils().showToast("Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
-                } else if (driversalarry.isEmpty) {
-                  Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
-                } else {
-                  final format = DateFormat("dd-MM-yyyy hh:mm a");
-                  DateTime dateTime1 = format.parse(droptime);
-                  DateTime dateTime2 = format.parse(pickuptime);
-                  Duration diff = dateTime1.difference(dateTime2);
-                  int hours = (diff.inMinutes / 60.0).round();
+                }
+                // else if (pickuptime.isEmpty && droptime.isEmpty) {
+                //   Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
+                // } else if (vehiclenumber.isEmpty) {
+                //   Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
+                // } else if (selectedDriverid.isEmpty) {
+                //   Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
+                // } else if (pickuppoint.isEmpty && droppoint.isEmpty) {
+                //   Utils().showToast("Warning", "Location Details missing", bgclr: _colors.orangeColour);
+                // } else if (km.isEmpty) {
+                //   Utils().showToast("Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
+                // } else if (driversalarry.isEmpty) {
+                //   Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
+                // }
+                else {
+                  int hours = 0;
+                  int days = 0;
+                  if (selectedTypeid == 0) {
+                    final format = DateFormat("dd-MM-yyyy hh:mm a");
+                    DateTime dateTime1 = format.parse(droptime);
+                    DateTime dateTime2 = format.parse(pickuptime);
+                    Duration diff = dateTime1.difference(dateTime2);
+                    hours = (diff.inMinutes / 60.0).round();
+                  } else {
+                    final format = DateFormat("dd-MM-yyyy");
+                    DateTime dateTime1 = format.parse(droptime);
+                    DateTime dateTime2 = format.parse(pickuptime);
+                    days = (dateTime1.difference(dateTime2).inDays) + 1;
+                    hours = days * 25;
+                  }
+
                   if (hours < 1) {
                     Utils().showToast("Warning", "please Check the Droptime", bgclr: _colors.redColour);
                   } else {
-                    Map<String, dynamic> reqData = dataparsefunction(hours);
+                    Map<String, dynamic> reqData = dataparsefunction(hours, days);
                     if (isEdit) {
                       reqData['trip_id'] = initdata['_id'];
                       reqData['service_id'] = "edit_companytrip";
@@ -295,7 +326,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     );
   }
 
-  dataparsefunction(int hours) {
+  dataparsefunction(int hours, int days) {
     double onehrAmt = double.parse("${pref.dutyDetails['hr_amount']}");
     int hrKm = int.parse("${pref.dutyDetails['per_hr_km']}");
     double extrakmAmt = double.parse("${pref.dutyDetails['ex_km_amount']}");
@@ -306,6 +337,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     if (maxKm < int.parse(km)) {
       difKm = int.parse(km) - maxKm;
     }
+
     double extraKmFinalAmt = difKm * extrakmAmt;
 
     double tollTodouble = tollAmt.isNotEmpty ? double.parse(tollAmt) : 0;
@@ -316,6 +348,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     double balanceAmount = (packageAmount + extraKmFinalAmt + tollTodouble + salaryTodouble + parkingTodouble + otheramtTodouble) - advanceTodouble;
 
     Map<String, dynamic> postParams = {
+      "type_id": selectedTypeid,
       "customer_id": customerName,
       "pickup_time": pickuptime,
       "drop_time": droptime,
@@ -323,7 +356,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       'driver_id': selectedDriverid,
       "pickup_place": pickuppoint,
       "drop_place": droppoint,
-      "total_hr": hours,
+      "total_hr": selectedTypeid == 0 ? hours : (days * 24),
       "km": km,
       "extra_km": difKm,
       "package_amount": packageAmount,
