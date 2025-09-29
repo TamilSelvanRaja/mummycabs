@@ -6,9 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
-import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
-import 'package:mummy_cabs/resources/static_datas.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
@@ -41,6 +39,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   String othrAmt = "";
   String otherDesc = "";
 
+  String kmamt = "";
   @override
   void initState() {
     super.initState();
@@ -48,7 +47,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     isEdit = Get.arguments['isedit'];
     if (isEdit) {
       initdata = Get.arguments['initdata'];
-
+      selectedTypeid = int.parse("${initdata["type_id"]}");
       vehiclenumber = initdata["vehicle_no"].toString();
       selectedDriverid = initdata["driver_id"].toString();
       customerName = initdata["customer_id"].toString();
@@ -203,6 +202,17 @@ class CompantTripScreenState extends State<CompantTripScreen> {
               },
             ),
             UIHelper.verticalSpaceSmall,
+            CustomInput(
+              hintText: "Amount Per Km",
+              initValue: kmamt,
+              fieldname: "kmamt",
+              fieldType: "number",
+              onchanged: (val) {
+                kmamt = val;
+                setState(() {});
+              },
+            ),
+            UIHelper.verticalSpaceSmall,
             CustomInput1(
               hintText: "Toll Amount",
               initValue: tollAmt,
@@ -273,21 +283,21 @@ class CompantTripScreenState extends State<CompantTripScreen> {
               child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
                 if (customerName.isEmpty) {
                   Utils().showToast("Warning", "please enter the customer name", bgclr: _colors.orangeColour);
-                }
-                // else if (pickuptime.isEmpty && droptime.isEmpty) {
-                //   Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
-                // } else if (vehiclenumber.isEmpty) {
-                //   Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
-                // } else if (selectedDriverid.isEmpty) {
-                //   Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
-                // } else if (pickuppoint.isEmpty && droppoint.isEmpty) {
-                //   Utils().showToast("Warning", "Location Details missing", bgclr: _colors.orangeColour);
-                // } else if (km.isEmpty) {
-                //   Utils().showToast("Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
-                // } else if (driversalarry.isEmpty) {
-                //   Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
-                // }
-                else {
+                } else if (pickuptime.isEmpty && droptime.isEmpty) {
+                  Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
+                } else if (vehiclenumber.isEmpty) {
+                  Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
+                } else if (selectedDriverid.isEmpty) {
+                  Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
+                } else if (pickuppoint.isEmpty && droppoint.isEmpty) {
+                  Utils().showToast("Warning", "Location Details missing", bgclr: _colors.orangeColour);
+                } else if (km.isEmpty) {
+                  Utils().showToast("Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
+                } else if (driversalarry.isEmpty) {
+                  Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
+                } else if (kmamt.isEmpty) {
+                  Utils().showToast("Warning", "please Enter Amount(per km)", bgclr: _colors.orangeColour);
+                } else {
                   int hours = 0;
                   int days = 0;
                   if (selectedTypeid == 0) {
@@ -329,7 +339,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   dataparsefunction(int hours, int days) {
     double onehrAmt = double.parse("${pref.dutyDetails['hr_amount']}");
     int hrKm = int.parse("${pref.dutyDetails['per_hr_km']}");
-    double extrakmAmt = double.parse("${pref.dutyDetails['ex_km_amount']}");
+    double extrakmAmt = double.parse(kmamt);
 
     double packageAmount = hours * onehrAmt;
     int difKm = 0;

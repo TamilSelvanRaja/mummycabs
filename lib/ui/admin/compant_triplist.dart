@@ -121,7 +121,7 @@ class _CompantTripListState extends State<CompantTripList> {
                   rowwidget1("Extra Km", "${currentData['extra_km']}"),
                   rowwidget("Toll Amount", "${currentData['toll_amt']}"),
                   rowwidget("Others", "${currentData['other_amount']}"),
-                  rowwidget("Advance", "${currentData['advance_amt']}", txtClr: _colors.greenColour),
+                  rowwidget1("Type", currentData['type_id'] == 0 ? "Local" : "Outstation", txtClr: _colors.bluecolor),
                 ],
               ),
               Column(
@@ -131,6 +131,7 @@ class _CompantTripListState extends State<CompantTripList> {
                   rowwidget1("Ex.Km Amt", "${currentData['extra_km_amount']}"),
                   rowwidget("Driver Salary", "${currentData['driver_salary']}"),
                   rowwidget("Parking", "${currentData['parking']}"),
+                  rowwidget("Advance", "${currentData['advance_amt']}", txtClr: _colors.greenColour),
                 ],
               )
             ],
