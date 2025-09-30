@@ -15,6 +15,7 @@ class AppController with ChangeNotifier {
   final AppColors _colors = AppColors();
   String tripdayamount = "0";
   String totalcartamount = "";
+  String pendingHistoryAmount = "0";
 
   List tripsList = [];
   List pendingtripsList = [];
@@ -22,6 +23,8 @@ class AppController with ChangeNotifier {
   List drivertripsList = [];
   List transactionList = [];
   List companytripsList = [];
+
+  List oldtransactionList = [];
 
   Future<void> _init() async {}
 
@@ -256,6 +259,77 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       transactionList = responce['data'];
+      notifyListeners();
+    }
+  }
+
+//******************************************************************/
+//****************  Get Transaction List Function ******************/
+//******************************************************************/
+  Future getoldtransactionList(String driverid) async {
+    oldtransactionList.clear();
+
+    dynamic postParams = {
+      "service_id": "old_pending_list",
+      "driver_id": driverid,
+    };
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      List tempArray = [];
+      for (int i = 0; i < responce['data'].length; i++) {
+        dynamic currentData = responce['data'][i];
+
+        if (i == 0) {
+          currentData['avl_bal'] = currentData['amount'];
+        } else {
+          double temp1 = double.parse("${responce['data'][i - 1]['avl_bal']}");
+
+          if (currentData['type'] == "CR") {
+            double temp2 = temp1 + double.parse("${currentData['amount']}");
+            currentData['avl_bal'] = temp2;
+          } else {
+            double temp2 = temp1 - double.parse("${currentData['amount']}");
+            currentData['avl_bal'] = temp2;
+          }
+        }
+        tempArray.add(currentData);
+      }
+      oldtransactionList = tempArray.reversed.toList();
+
+      pendingHistoryAmount = oldtransactionList.first['avl_bal'].toString();
+      notifyListeners();
+    }
+  }
+
+//******************** Cart Amount Update Function *************************/
+//**************************************************************************/
+  Future oldPendingAdd(postParams) async {
+    oldtransactionList.clear();
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      List tempArray = [];
+      for (int i = 0; i < responce['data'].length; i++) {
+        dynamic currentData = responce['data'][i];
+
+        if (i == 0) {
+          currentData['avl_bal'] = currentData['amount'];
+        } else {
+          double temp1 = double.parse("${responce['data'][i - 1]['avl_bal']}");
+
+          if (currentData['type'] == "CR") {
+            double temp2 = temp1 + double.parse("${currentData['amount']}");
+            currentData['avl_bal'] = temp2;
+          } else {
+            double temp2 = temp1 - double.parse("${currentData['amount']}");
+            currentData['avl_bal'] = temp2;
+          }
+        }
+        tempArray.add(currentData);
+      }
+      oldtransactionList = tempArray.reversed.toList();
+
+      pendingHistoryAmount = oldtransactionList.first['avl_bal'].toString();
+
       notifyListeners();
     }
   }

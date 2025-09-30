@@ -21,6 +21,7 @@ import 'package:mummy_cabs/ui/auth/signin_screen.dart';
 import 'package:mummy_cabs/ui/auth/signup_screen.dart';
 import 'package:mummy_cabs/ui/auth/splash_screen.dart';
 import 'package:mummy_cabs/ui/driver/dashboard.dart';
+import 'package:mummy_cabs/ui/driver/transaction_pending.dart';
 import 'package:mummy_cabs/ui/driver/transaction_status.dart';
 
 //**********************************************/
@@ -48,6 +49,7 @@ class Routes {
 
   static String driverDashboard = '/driverDashboard';
   static String driverTransaction = '/driverTransaction';
+  static String driverOldTransaction = '/driverOldTransaction';
 }
 
 //**********************************************/
@@ -71,6 +73,7 @@ abstract class AppPages {
     pageanimation(Routes.customerList, const CustomerDetails(), Transition.rightToLeftWithFade),
     pageanimation(Routes.companyTripList, const CompantTripList(), Transition.rightToLeftWithFade),
     pageanimation(Routes.companyaddEditTrip, const CompantTripScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverOldTransaction, const PendingTransactionScreen(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {

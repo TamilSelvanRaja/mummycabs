@@ -115,8 +115,8 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
-                                              rowdata1("Balance", "₹ ${double.parse("${currentData['cart_amt']}").toStringAsFixed(2)}",
-                                                  fntSize: 14, fntclr: double.parse("${currentData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour),
+                                              rowdata1("Mobile", "${currentData['mobile']}", fntSize: 14, fntclr: _colors.greenColour),
+                                              rowdata1("Password", "${currentData['password']}", fntSize: 14, fntclr: _colors.redColour),
                                             ],
                                           ),
                                         ),
@@ -135,16 +135,16 @@ class _DriverListScreenState extends State<DriverListScreen> {
                   ),
                 ),
               ),
-              if (searchKey.isEmpty) ...[
-                UIHelper.verticalSpaceSmall,
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  width: Get.width / 2,
-                  alignment: Alignment.center,
-                  decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
-                  child: UIHelper.titleTxtStyle("₹ ${appController.totalcartamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
-                )
-              ],
+              // if (searchKey.isEmpty) ...[
+              //   UIHelper.verticalSpaceSmall,
+              //   Container(
+              //     padding: const EdgeInsets.all(12),
+              //     width: Get.width / 2,
+              //     alignment: Alignment.center,
+              //     decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
+              //     child: UIHelper.titleTxtStyle("₹ ${appController.totalcartamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
+              //   )
+              // ],
               UIHelper.verticalSpaceSmall,
             ],
           );

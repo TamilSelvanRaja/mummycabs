@@ -208,11 +208,13 @@ class _DriverDashboardState extends State<DriverDashboard> {
         Get.back();
         if (i == 0) {
           Get.toNamed(Routes.driverTransaction);
-        } else {
+        } else if (i == 1) {
           Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
             pref.cleanAllPreferences();
             Get.offNamedUntil(Routes.initial, (p) => false);
           });
+        } else {
+          Get.toNamed(Routes.driverOldTransaction);
         }
       },
       child: Row(
@@ -235,6 +237,9 @@ class _DriverDashboardState extends State<DriverDashboard> {
       items: [
         PopupMenuItem<String>(
           child: itemWidget("Transaction Status", 0, Icons.receipt_long_sharp),
+        ),
+        PopupMenuItem<String>(
+          child: itemWidget("Pending Amount", 2, Icons.receipt_long_sharp),
         ),
         PopupMenuItem<String>(
           child: itemWidget("Logout", 1, Icons.logout_rounded),
