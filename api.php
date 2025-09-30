@@ -137,7 +137,7 @@ class UserController
 
     private function getPendingHistory($driver_id)
     {
-        $stmt = $this->db->prepare("SELECT * FROM old_pending WHERE driver_id = ? ORDER BY _id DESC");
+        $stmt = $this->db->prepare("SELECT * FROM old_pending WHERE driver_id = ?");
         $stmt->bind_param("i", $driver_id);
         $stmt->execute();
         $result = $stmt->get_result();
