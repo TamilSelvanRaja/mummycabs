@@ -10,9 +10,11 @@ class UserController
     private $db;
     public function __construct()
     {
-      // Initialize the database connection
+      date_default_timezone_set('Asia/Kolkata');  
       $this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
       //$this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
+       $this->db->query("SET time_zone = '+05:30'");
+
     }
 
     public function handleRequest()
@@ -110,7 +112,16 @@ class UserController
                         break;
                     case 'duty_details_get':
                         $this->adminDutyDetailsget ($data);
-                        break;                   
+                        break;
+                    case 'old_pending_add':
+                        $this->pendingHistoryAdd ($data);
+                        break;  
+                    case 'old_pending_list':
+                        $this->getpendingListHistory($data);   
+                        break;  
+                    case 'delete_pending_history':
+                        $this->deletePendingHistory($data);
+                        break;                    
                     default:
                         echo json_encode(['msg' => false, 'message' => 'Invalid service_id']);
                         break;
@@ -121,6 +132,95 @@ class UserController
         } else {
             echo "SERVER STARTED";
         }
+    }
+
+
+    private function getPendingHistory($driver_id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM old_pending WHERE driver_id = ? ORDER BY _id DESC");
+        $stmt->bind_param("i", $driver_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $datas = $result->fetch_all(MYSQLI_ASSOC);
+         return $datas;
+    }
+
+    private function pendingHistoryAdd($data)
+    {
+       $driver_id = $data['driver_id'];
+       $amount = $data['amount'];
+       $type = $data['type'];
+       $pay_type = "";
+       $add_reason = $data['add_reason'];
+       
+       if(isset($data['payment_type'])){
+        $pay_type= $data['payment_type'];
+       }
+
+       $stmt = $this->db->prepare("
+        INSERT INTO old_pending (driver_id,amount,type,pay_type,add_reason ) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss",$driver_id,$amount,$type,$pay_type,$add_reason );
+        $stmt->execute();
+        $stmt->close();
+       
+        $datas = $this->getPendingHistory($driver_id);
+        $totalcr = 0;
+        $totaldr = 0;
+        foreach ($datas as $row) {
+         if (isset($row['type']) && $row['type']=="CR" ) { 
+         $totalcr += $row['amount'];
+         }else{
+         $totaldr += $row['amount'];
+         }
+        }
+
+        $totalBalance  =  $totalcr-$totaldr;
+        echo json_encode(['msg' => true, 'data' => $datas, 'amount' => $totalBalance]);
+    }
+
+    private function getpendingListHistory($data)
+    {
+       $driver_id = $data['driver_id'];
+    
+       $datas = $this->getPendingHistory($driver_id);
+        $totalcr = 0;
+        $totaldr = 0;
+        foreach ($datas as $row) {
+         if (isset($row['type']) && $row['type']=="CR" ) { 
+         $totalcr += $row['amount'];
+         }else{
+         $totaldr += $row['amount'];
+         }
+        }
+
+        $totalBalance  =  $totalcr-$totaldr;
+        echo json_encode(['msg' => true,'data' => $datas, 'amount' => $totalBalance]);
+    }
+    
+    private function deletePendingHistory($data)
+    {
+        $id= $data['id'];
+        $driver_id = $data['driver_id'];
+        
+        $stmt = $this->db->prepare("DELETE FROM old_pending WHERE _id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+       
+        $datas = $this->getPendingHistory($driver_id);
+        $totalcr = 0;
+        $totaldr = 0;
+        foreach ($datas as $row) {
+         if (isset($row['type']) && $row['type']=="CR" ) { 
+         $totalcr += $row['amount'];
+         }else{
+         $totaldr += $row['amount'];
+         }
+        }
+
+        $totalBalance  =  $totalcr-$totaldr;
+        echo json_encode(['msg' => true,'data' => $datas, 'amount' => $totalBalance]);
+     exit;
     }
 
     private function handleLogin($data)
@@ -644,17 +744,17 @@ class UserController
         $description= $data['description'];
         $advance_amt= $data['advance_amt'];
         $balance_amount= $data['balance_amount'];
-       
+        $type_id =$data['type_id'];
        
         // 1. Insert company trip
        $stmt = $this->db->prepare("
         INSERT INTO company_trips (km,vehicle_no,driver_id,customer_id,pickup_place,drop_place,
         pickup_time,drop_time,total_hr,package_amount,toll_amt,extra_km,extra_km_amount,
-        driver_salary,parking,other_amount,description,advance_amt,balance_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        driver_salary,parking,other_amount,description,advance_amt,balance_amount,type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $stmt->bind_param("sssssssssssssssssss",$km,$vehicle_no,$driver_id,$customer_id,
-              $pickup_place,$drop_place,$pickup_time,$drop_time,$total_hr,$package_amount,$extra_km,$extra_km_amount,
-              $toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount);
+        $stmt->bind_param("sssssssssssssssssssi",$km,$vehicle_no,$driver_id,$customer_id,
+              $pickup_place,$drop_place,$pickup_time,$drop_time,$total_hr,$package_amount, $toll_amt,$extra_km,$extra_km_amount,
+             $driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount,$type_id);
 
         if ($stmt->execute()) {
         $insertedId = $stmt->insert_id;
@@ -693,15 +793,16 @@ class UserController
         $description= $data['description'];
         $advance_amt= $data['advance_amt'];
         $balance_amount= $data['balance_amount'];
+        $type_id =$data['type_id'];
 
         // 1. Update Company Trip details
         $stmt = $this->db->prepare("UPDATE company_trips SET km = ?, vehicle_no = ?, driver_id = ?, customer_id = ?, 
            pickup_place = ?, drop_place = ?, pickup_time = ?,drop_time = ?,total_hr = ?, package_amount = ?, extra_km = ?, extra_km_amount = ?,
-           toll_amt = ? , driver_salary = ? , parking = ? , other_amount = ? , description = ? , advance_amt = ? , balance_amount = ?
+           toll_amt = ? , driver_salary = ? , parking = ? , other_amount = ? , description = ? , advance_amt = ? , balance_amount = ?, type_id = ?
            WHERE _id = ?");
-        $stmt->bind_param("sssssssssssssssssssi",$km,$vehicle_no,$driver_id,$customer_id,$pickup_place,
+        $stmt->bind_param("sssssssssssssssssssii",$km,$vehicle_no,$driver_id,$customer_id,$pickup_place,
               $drop_place,$pickup_time,$drop_time, $total_hr,$package_amount,$extra_km, $extra_km_amount, 
-              $toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount,$trip_id);
+              $toll_amt,$driver_salary,$parking,$other_amount,$description,$advance_amt,$balance_amount,$type_id,$trip_id);
         if ($stmt->execute()) {
         $res = $this->db->query("SELECT * FROM company_trips WHERE _id = $trip_id");
         if ($res) {
@@ -824,7 +925,7 @@ class UserController
         $stmt->fetch();
         $stmt->close();
         
-         $totalBalance = 0;
+        $totalBalance = 0;
         foreach ($resdata as $row) {
          if (isset($row['balance_amount'])) {
          $totalBalance += $row['balance_amount'];
