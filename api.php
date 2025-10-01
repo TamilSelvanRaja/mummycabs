@@ -11,9 +11,9 @@ class UserController
     public function __construct()
     {
       date_default_timezone_set('Asia/Kolkata');  
-      $this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
-      //$this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
-       $this->db->query("SET time_zone = '+05:30'");
+      //$this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
+      $this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
+      $this->db->query("SET time_zone = '+05:30'");
 
     }
 
@@ -632,10 +632,11 @@ class UserController
     {
         $datestr = $data['date'];
         $driver_id = $data['driver_id'];
-        
+        $is_pending = 1;
+
         if($datestr == "All"){
-        $stmt = $this->db->prepare("SELECT * FROM trips_list WHERE driver_id = ? ORDER BY _id DESC");
-        $stmt->bind_param("i", $driver_id);
+        $stmt = $this->db->prepare("SELECT * FROM trips_list WHERE driver_id = ? AND is_pending = ? ORDER BY _id DESC");
+        $stmt->bind_param("ii", $driver_id, $is_pending);
 
         }else{
         $stmt = $this->db->prepare("SELECT * FROM trips_list WHERE  driver_id = ? AND trip_date = ?   ORDER BY _id DESC");
@@ -1167,8 +1168,8 @@ class UserController
 
         // Email settings
         $mail->setFrom('mbaasha018@gmail.com', 'Mummy Cabs');
-        //$mail->addAddress('manimozhi167@gmail.com');
-        $mail->addAddress('tamilselvan1998.pdkt@gmail.com');
+        $mail->addAddress('manimozhi167@gmail.com');
+        //$mail->addAddress('tamilselvan1998.pdkt@gmail.com');
 
         $mail->isHTML(true);
 
