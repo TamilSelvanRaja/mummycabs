@@ -75,76 +75,78 @@ class _DriverListScreenState extends State<DriverListScreen> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  child: ListView.separated(
+                  child: ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: pref.driversList.length,
                     itemBuilder: (context, index) {
                       dynamic currentData = pref.driversList[index];
 
                       return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase())
-                          ? InkWell(
-                              onTap: () async {
-                                await Get.toNamed(Routes.driverdetails, arguments: {"initdata": currentData});
-                                setState(() {});
-                              },
-                              child: SizedBox(
-                                width: Get.width,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                          ? Column(
+                              children: [
+                                InkWell(
+                                  onTap: () async {
+                                    await Get.toNamed(Routes.driverdetails, arguments: {"initdata": currentData});
+                                    setState(() {});
+                                  },
+                                  child: SizedBox(
+                                    width: Get.width,
+                                    child: Column(
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(3),
-                                          decoration: UIHelper.circleWithColorWithShadow(1, _colors.bluecolor1, _colors.bluecolor1),
-                                          child: Container(
-                                            height: 40,
-                                            width: 40,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                  fit: BoxFit.fill,
-                                                  image: currentData['imgurl'] != null ? NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}") : AssetImage(_images.profile),
-                                                )),
-                                          ),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(3),
+                                              decoration: UIHelper.circleWithColorWithShadow(1, _colors.bluecolor1, _colors.bluecolor1),
+                                              child: Container(
+                                                height: 40,
+                                                width: 40,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.fill,
+                                                      image: currentData['imgurl'] != null ? NetworkImage("${ApiServices().apiurl}/${currentData['imgurl']}") : AssetImage(_images.profile),
+                                                    )),
+                                              ),
+                                            ),
+                                            UIHelper.horizontalSpaceMedium,
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
+                                                  rowdata1("Mobile", "${currentData['mobile']}", fntSize: 14, fntclr: _colors.greenColour),
+                                                  rowdata1("Password", "${currentData['password']}", fntSize: 14, fntclr: _colors.redColour),
+                                                ],
+                                              ),
+                                            ),
+                                            Icon(Icons.double_arrow_outlined, size: 20, color: _colors.greycolor)
+                                          ],
                                         ),
-                                        UIHelper.horizontalSpaceMedium,
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
-                                              rowdata1("Mobile", "${currentData['mobile']}", fntSize: 14, fntclr: _colors.greenColour),
-                                              rowdata1("Password", "${currentData['password']}", fntSize: 14, fntclr: _colors.redColour),
-                                            ],
-                                          ),
-                                        ),
-                                        Icon(Icons.double_arrow_outlined, size: 20, color: _colors.greycolor)
+                                        const Divider()
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             )
                           : const SizedBox();
-                    },
-                    separatorBuilder: (context, index) {
-                      return const Divider();
                     },
                   ),
                 ),
               ),
-              // if (searchKey.isEmpty) ...[
-              //   UIHelper.verticalSpaceSmall,
-              //   Container(
-              //     padding: const EdgeInsets.all(12),
-              //     width: Get.width / 2,
-              //     alignment: Alignment.center,
-              //     decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
-              //     child: UIHelper.titleTxtStyle("₹ ${appController.totalcartamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
-              //   )
-              // ],
+              if (searchKey.isEmpty) ...[
+                UIHelper.verticalSpaceSmall,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  width: Get.width / 2,
+                  alignment: Alignment.center,
+                  decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
+                  child: UIHelper.titleTxtStyle("₹ ${appController.totalcartamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
+                )
+              ],
               UIHelper.verticalSpaceSmall,
             ],
           );

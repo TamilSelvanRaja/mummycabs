@@ -295,8 +295,9 @@ class AppController with ChangeNotifier {
         tempArray.add(currentData);
       }
       oldtransactionList = tempArray.reversed.toList();
-
-      pendingHistoryAmount = oldtransactionList.first['avl_bal'].toString();
+      if (oldtransactionList.isNotEmpty) {
+        pendingHistoryAmount = oldtransactionList.first['avl_bal'].toString();
+      }
       notifyListeners();
     }
   }
@@ -312,7 +313,11 @@ class AppController with ChangeNotifier {
         dynamic currentData = responce['data'][i];
 
         if (i == 0) {
-          currentData['avl_bal'] = currentData['amount'];
+          if (currentData['type'] == "CR") {
+            currentData['avl_bal'] = currentData['amount'];
+          } else {
+            currentData['avl_bal'] = 0 - double.parse("${currentData['amount']}");
+          }
         } else {
           double temp1 = double.parse("${responce['data'][i - 1]['avl_bal']}");
 
@@ -327,8 +332,9 @@ class AppController with ChangeNotifier {
         tempArray.add(currentData);
       }
       oldtransactionList = tempArray.reversed.toList();
-
-      pendingHistoryAmount = oldtransactionList.first['avl_bal'].toString();
+      if (oldtransactionList.isNotEmpty) {
+        pendingHistoryAmount = oldtransactionList.first['avl_bal'].toString();
+      }
 
       notifyListeners();
     }

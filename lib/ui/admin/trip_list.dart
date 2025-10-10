@@ -24,6 +24,7 @@ class _TripListPageState extends State<TripListPage> {
   List selectedIndex = [];
   late AppController appController;
   String selectedDate = "";
+  String searchKey = "";
   @override
   void initState() {
     super.initState();
@@ -35,82 +36,82 @@ class _TripListPageState extends State<TripListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _colors.bgClr,
-      appBar: AppBar(
-        backgroundColor: _colors.primarycolour,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Trip List", fntcolor: _colors.bgClr, fntsize: 22),
-      ),
-      body: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) {
-            final controller = AppController();
-            Future.delayed(const Duration(seconds: 1), () {
-              controller.gettripList(selectedDate);
-            });
-            return controller;
-          })
-        ],
-        child: Consumer<AppController>(builder: (context, ref, child) {
-          appController = ref;
-          return Container(
-            padding: const EdgeInsets.all(16),
-            height: Get.height,
-            width: Get.width,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                        flex: 2,
-                        child: CustomDatePicker(
-                            initValue: selectedDate,
-                            hintText: "Trip Date",
-                            fieldname: "trip_date",
-                            onSelected: (val) {
-                              appController.gettripList(val);
-                              selectedDate = val;
-                              setState(() {});
-                            })),
-                    UIHelper.horizontalSpaceSmall,
-                    Expanded(
-                        flex: 2,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
-                          child: UIHelper.titleTxtStyle("₹ ${double.parse(appController.tripdayamount).toStringAsFixed(2)}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
-                        )),
-                  ],
-                ),
-                UIHelper.verticalSpaceSmall,
-                Expanded(
-                    child: appController.tripsList.isNotEmpty
-                        ? ListView.builder(
-                            padding: const EdgeInsets.all(0),
-                            itemCount: appController.tripsList.length,
-                            itemBuilder: (context, index) {
-                              dynamic currentData = appController.tripsList[index];
-                              return cardData(index, currentData);
-                            })
-                        : Center(child: UIHelper.titleTxtStyle("Data not found")))
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) {
+          final controller = AppController();
+          Future.delayed(const Duration(seconds: 1), () {
+            controller.gettripList(selectedDate);
+          });
+          return controller;
+        })
+      ],
+      child: Consumer<AppController>(builder: (context, ref, child) {
+        appController = ref;
+        return Scaffold(
+            backgroundColor: _colors.bgClr,
+            appBar: AppBar(
+              backgroundColor: _colors.primarycolour,
+              iconTheme: IconThemeData(color: _colors.bgClr),
+              title: UIHelper.titleTxtStyle("₹ ${double.parse(appController.tripdayamount).toStringAsFixed(2)}", fntWeight: FontWeight.bold, fntcolor: _colors.bgClr, fntsize: 18),
+              actions: [
+                Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    width: Get.width / 2.3,
+                    child: CustomDatePicker(
+                        initValue: selectedDate,
+                        hintText: "",
+                        fieldname: "trip_date",
+                        onSelected: (val) {
+                          appController.gettripList(val);
+                          selectedDate = val;
+                          setState(() {});
+                        }))
               ],
             ),
-          );
-        }),
-      ),
+            body: Container(
+              padding: const EdgeInsets.all(16),
+              height: Get.height,
+              width: Get.width,
+              child: Column(
+                children: [
+                  CustomInput(
+                    hintText: "Search driver name",
+                    fieldname: "search",
+                    fieldType: "novalidation",
+                    prefixWidget: const Icon(Icons.search),
+                    onchanged: (val) {
+                      searchKey = val.toString();
+                      setState(() {});
+                    },
+                  ),
+                  UIHelper.verticalSpaceSmall,
+                  Expanded(
+                      child: appController.tripsList.isNotEmpty
+                          ? ListView.builder(
+                              padding: const EdgeInsets.all(0),
+                              itemCount: appController.tripsList.length,
+                              itemBuilder: (context, index) {
+                                dynamic currentData = appController.tripsList[index];
+                                dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
+
+                                return user['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) ? cardData(index, currentData, user) : SizedBox();
+                              })
+                          : Center(child: UIHelper.titleTxtStyle("Data not found")))
+                ],
+              ),
+            ));
+      }),
     );
   }
 
-  Widget cardData(int index, dynamic currentData) {
+  Widget cardData(int index, dynamic currentData, dynamic user) {
     List amountList = [
       {"type": "OLA", "cash": "${currentData['ola_cash']}", "operator": "${currentData['ola_operator']}"},
       {"type": "UBER", "cash": "${currentData['uber_cash']}", "operator": "${currentData['uber_operator']}"},
       {"type": "RAPIDO", "cash": "${currentData['rapido_cash']}", "operator": "${currentData['rapido_operator']}"},
       {"type": "Others", "cash": "${currentData['other_cash']}", "operator": "${currentData['other_operator']}"},
     ];
-    dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
     String fudata = currentData['fuel_details'].toString().replaceAll("/", ", ");
     return GestureDetector(
       onTap: () {
