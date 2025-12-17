@@ -47,6 +47,9 @@ class UserController
                     case 'add_new_car':
                         $this->addNewCar($data);
                         break;
+                    case 'car_update':
+                        $this->carUpdate($data);
+                        break;
                     case 'car_deactive':
                         $this->carDeactivate ($data);
                         break;
@@ -420,6 +423,26 @@ class UserController
 
         $stmt->close();
         exit;
+    }
+
+        private function carUpdate($data)
+    {
+        $car_id = $data['_id'];
+        $car_name = $data['car_name'];
+        $reg_no = $data['reg_no'];
+        $rent_amount=$data['rental_amount'];
+        $upperregno = strtoupper($reg_no);
+
+        $stmt1 = $this->db->prepare("UPDATE cars SET car_name=?, reg_no=?,rent_amount=? WHERE _id =?");
+        $stmt1->bind_param("ssss",$car_name,$upperregno,$rent_amount,$car_id);
+        if ($stmt1->execute()) {
+          echo json_encode(['msg' => true, 'message' => 'Car Status Updated']);
+          $this->db->commit();
+        } else {
+          echo json_encode(['msg' => false, 'message' => 'Error']);
+          $this->db->rollback();
+        }
+        $stmt1->close();
     }
 
     private function carDeactivate($data)
