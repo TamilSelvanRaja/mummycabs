@@ -118,7 +118,17 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                 children: [
                                                   UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
                                                   rowdata1("Mobile", "${currentData['mobile']}", fntSize: 14, fntclr: _colors.greenColour),
-                                                  rowdata1("Password", "${currentData['password']}", fntSize: 14, fntclr: _colors.redColour),
+                                                  rowdata1("Password", "${currentData['password']}", fntSize: 14, fntclr: _colors.bluecolor),
+                                                  rowdata1("Status", currentData['active_flag'].toString() == "1" ? "Active" : "Deactive",
+                                                      fntSize: 14, fntclr: currentData['active_flag'].toString() == "1" ? _colors.greenColour : _colors.redColour),
+                                                  UIHelper.verticalSpaceSmall,
+                                                  // Row(
+                                                  //   mainAxisAlignment: MainAxisAlignment.end,
+                                                  //   children: [
+                                                  //     Icon(Icons.edit, color: _colors.primarycolour),
+                                                  //     UIHelper.titleTxtStyle("Edit", fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
+                                                  //   ],
+                                                  // )
                                                 ],
                                               ),
                                             ),

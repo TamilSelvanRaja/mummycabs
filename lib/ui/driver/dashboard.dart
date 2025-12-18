@@ -19,6 +19,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
   late AppController appController;
+  double cartAmount = 0.0;
   List selectedIndex = [];
 
   final PreferenceService pref = Get.find<PreferenceService>();
@@ -31,6 +32,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
           providers: [
             ChangeNotifierProvider(create: (_) {
               final controller = AppController();
+              cartAmount = double.parse("${pref.userdata['cart_amt']}");
               Future.delayed(const Duration(seconds: 1), () {
                 controller.getdrivertripList("All");
               });
@@ -55,7 +57,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
                         alignment: Alignment.center,
                         padding: const EdgeInsets.all(5),
                         decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
-                        child: UIHelper.titleTxtStyle("₹ ${double.parse("${pref.userdata['cart_amt']}").toStringAsFixed(2)}", fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
+                        child: UIHelper.titleTxtStyle("₹ ${cartAmount.toStringAsFixed(2)}", fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -135,10 +137,10 @@ class _DriverDashboardState extends State<DriverDashboard> {
               children: [
                 UIHelper.titleTxtStyle(currentData['vehicle_no'], fntcolor: _colors.textColour, fntsize: 15, fntWeight: FontWeight.bold),
                 UIHelper.titleTxtStyle("Date : ${currentData['trip_date']}", fntcolor: _colors.textColour, fntsize: 15, fntWeight: FontWeight.bold),
-                UIHelper.titleTxtStyle("Amount : ₹ ${currentData['balance_amount']}", fntcolor: _colors.redColour, fntsize: 16, fntWeight: FontWeight.bold),
+                UIHelper.titleTxtStyle("Amount : ₹ ${currentData['totAmt'].toStringAsFixed(2)}", fntcolor: _colors.redColour, fntsize: 16, fntWeight: FontWeight.bold),
                 if (selectedIndex.contains(index)) ...[
                   Divider(color: _colors.primarycolour),
-                  rowdata("Company", "Cash", "Operatot", true, ""),
+                  rowdata("Company", "Cash", "Operator", true, ""),
                   UIHelper.verticalSpaceSmall,
                   Column(
                     children: List.generate(amountList.length, (i) {
@@ -170,7 +172,12 @@ class _DriverDashboardState extends State<DriverDashboard> {
                     Align(alignment: Alignment.centerLeft, child: UIHelper.titleTxtStyle("${currentData['other_desc']}", fntsize: 14, fntcolor: _colors.bluecolor, txtAlign: TextAlign.left)),
                     UIHelper.verticalSpaceSmall,
                   ],
-                  rowdata1("Balance Amount", "${currentData['balance_amount']}", "₹"),
+                  Divider(color: _colors.redColour),
+                  rowdata1("Trip Amount", double.parse(currentData['balance_amount']).toStringAsFixed(2), "₹"),
+                  UIHelper.verticalSpaceSmall,
+                  rowdata1("Pending Amount", currentData['old_pending'].toStringAsFixed(2), "₹"),
+                  UIHelper.verticalSpaceSmall,
+                  rowdata1("Balance Amount", currentData['totAmt'].toStringAsFixed(2), "₹"),
                   UIHelper.verticalSpaceSmall,
                 ]
               ],

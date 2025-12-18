@@ -116,7 +116,8 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       Get.back();
-      pref.carList.add(responce['data']);
+      getcarList("car_list");
+      // pref.carList.add(responce['data']);
       notifyListeners();
     }
   }
@@ -241,7 +242,22 @@ class AppController with ChangeNotifier {
     };
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      drivertripsList = responce['data'];
+      List resdata = responce['data'];
+
+      double pendingAmount = double.parse("${pref.userdata['cart_amt']}");
+      for (var i in resdata) {
+        double currentBalanceAmount = double.parse("${i['balance_amount']}");
+        if (pendingAmount > 0) {
+          double tempvalue = pendingAmount - currentBalanceAmount;
+          i['old_pending'] = tempvalue;
+          pendingAmount = tempvalue;
+        } else {
+          i['old_pending'] = 0;
+        }
+        i['totAmt'] = currentBalanceAmount + i['old_pending'];
+      }
+
+      drivertripsList = resdata;
       notifyListeners();
     }
   }

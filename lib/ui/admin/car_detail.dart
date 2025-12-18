@@ -58,7 +58,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     )),
                     IconButton(
                         onPressed: () {
-                          showCarAddDialog();
+                          showCarAddDialog(false, {});
                         },
                         icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
                   ],
@@ -80,17 +80,20 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                     Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
                                     Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'].toString().toUpperCase(), fntsize: 14)),
                                     Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'].toString().toUpperCase(), fntsize: 14)),
-                                    Expanded(
-                                        flex: 1,
-                                        child: GestureDetector(
-                                            onTap: () {
-                                              Utils().showAlert("De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
-                                                  onComplete: () {
-                                                Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": isactive == "1" ? 0 : 1};
-                                                appController.deactivatecar(postParams);
-                                              });
-                                            },
-                                            child: isactive == "1" ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour))),
+                                    GestureDetector(
+                                        onTap: () {
+                                          Utils().showAlert("De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
+                                              onComplete: () {
+                                            Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": isactive == "1" ? 0 : 1};
+                                            appController.deactivatecar(postParams);
+                                          });
+                                        },
+                                        child: isactive == "1" ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour)),
+                                    IconButton(
+                                        onPressed: () {
+                                          showCarAddDialog(true, currentData);
+                                        },
+                                        icon: Icon(size: 20, color: _colors.primarycolour, Icons.edit)),
                                   ],
                                 ),
                                 const Divider()
@@ -108,7 +111,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     );
   }
 
-  Future showCarAddDialog() async {
+  Future showCarAddDialog(bool isEdit, dynamic cardata) async {
     await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
       return MediaQuery.removeViewInsets(
           removeBottom: true,
@@ -130,7 +133,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         alignment: Alignment.centerRight,
                         child: Row(
                           children: [
-                            Expanded(child: UIHelper.titleTxtStyle("Add New Car", fntcolor: _colors.bgClr, fntsize: 18)),
+                            Expanded(child: UIHelper.titleTxtStyle(isEdit ? "Edit car details" : "Add New Car", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
                                 Get.back();
@@ -145,17 +148,23 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Column(children: [
-                            const CustomInput(hintText: "Car Name", fieldname: "car_name", fieldType: "car_name"),
+                            CustomInput(hintText: "Car Name", initValue: !isEdit ? "" : cardata['car_name'], fieldname: "car_name", fieldType: "car_name"),
                             UIHelper.verticalSpaceSmall,
-                            const CustomInput(hintText: "Register Number", fieldname: "reg_no", fieldType: "reg_no"),
+                            CustomInput(hintText: "Register Number", initValue: !isEdit ? "" : cardata['reg_no'], fieldname: "reg_no", fieldType: "reg_no"),
                             UIHelper.verticalSpaceMedium,
-                            const CustomInput(hintText: "Rent Amount", fieldname: "rental_amount", fieldType: "rental_amount"),
+                            CustomInput(hintText: "Rent Amount", initValue: !isEdit ? "" : cardata['rent_amount'], fieldname: "rental_amount", fieldType: "rental_amount"),
                             UIHelper.verticalSpaceMedium,
-                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
+                            UIHelper().actionButton(isEdit ? "Update" : "Submit", 16, Get.width / 3, onPressed: () {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
-                                postParams['service_id'] = "add_new_car";
-                                appController.newaddcar(postParams);
+                                if (isEdit) {
+                                  postParams['service_id'] = "car_update";
+                                  postParams['_id'] = cardata['_id'];
+                                  appController.newaddcar(postParams);
+                                } else {
+                                  postParams['service_id'] = "add_new_car";
+                                  appController.newaddcar(postParams);
+                                }
                               }
                             }),
                           ])),

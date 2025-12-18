@@ -146,14 +146,15 @@ class UIHelper {
         shape: BoxShape.circle,
         border: Border.all(width: borderWidth, color: borderColor),
         gradient: LinearGradient(
-            colors: [
-              backgroundColor,
-              backgroundColor2,
-            ],
-            begin: const FractionalOffset(0.0, 0.0),
-            end: const FractionalOffset(1.0, 0.0),
-            stops: const [0.0, 1.0],
-            tileMode: TileMode.clamp),
+          colors: [
+            backgroundColor,
+            backgroundColor2,
+          ],
+          begin: const FractionalOffset(0.0, 0.0),
+          end: const FractionalOffset(1.0, 0.0),
+          stops: const [0.0, 1.0],
+          tileMode: TileMode.clamp,
+        ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
