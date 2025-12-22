@@ -11,7 +11,7 @@ class UserController
     public function __construct()
     {
       date_default_timezone_set('Asia/Kolkata');  
-      //$this->db = new mysqli('localhost', 'root', '', 'mummy_cabs_db1');
+      //$this->db = new mysqli('localhost', 'root', '', 'u249479749_mummy_cabs_db');
       $this->db = new mysqli('localhost', 'u249479749_mummy', 'Mummycabs@123', 'u249479749_mummy_cabs_db');
       $this->db->query("SET time_zone = '+05:30'");
 
@@ -41,6 +41,9 @@ class UserController
                     case 'user_deactivate':
                         $this->userDeactivate($data);
                         break;
+                    case 'driver_update':
+                        $this->driversUpdate($data);
+                        break;    
                     case 'drivers_list':
                         $this->driversList($data);
                         break;
@@ -361,11 +364,31 @@ class UserController
         $stmt1->close();
     }
    
+    private function driversUpdate($data)
+    {
+     $user_id = $data['_id'];
+     $name = $data['name'];  
+     $mobile = $data['mobile'];  
+     $password = $data['password'];    
+      
+        $stmt1 = $this->db->prepare("UPDATE users SET name =?, mobile =?, password =? WHERE _id =?");
+        $stmt1->bind_param("ssss",$name,$mobile,$password,$user_id);
+            if ($stmt1->execute()) {
+            echo json_encode(['msg' => true, 'message' => 'User Status Updated']);
+            $this->db->commit();
+        } else {
+            echo json_encode(['msg' => false, 'message' => 'Error']);
+            $this->db->rollback();
+        }
+        $stmt1->close();
+    }
+
     private function driversList($data)
     {
            $role = "Driver";
-           $stmt = $this->db->prepare("SELECT * FROM users  WHERE role =?");
-           $stmt->bind_param("s",$role);
+           $active_flag = 1;
+           $stmt = $this->db->prepare("SELECT * FROM users  WHERE role =? AND active_flag=?");
+           $stmt->bind_param("si",$role,$active_flag);
            $stmt->execute();
             $result = $stmt->get_result();
 
