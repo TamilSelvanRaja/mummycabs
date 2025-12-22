@@ -117,7 +117,6 @@ class AppController with ChangeNotifier {
     if (responce != null) {
       Get.back();
       getcarList("car_list");
-      // pref.carList.add(responce['data']);
       notifyListeners();
     }
   }
@@ -128,6 +127,27 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       await getcarList("car_list");
+      notifyListeners();
+    }
+  }
+
+//******************** New Car Function *************************/
+//******************************************************************/
+  Future deactivatedrivers(postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      await getcarList("drivers_list");
+      notifyListeners();
+    }
+  }
+
+//******************** New Car Function *************************/
+//******************************************************************/
+  Future driverupdate(postParams) async {
+    final responce = await apiresponceCallback(postParams, "");
+    if (responce != null) {
+      Get.back();
+      getcarList("drivers_list");
       notifyListeners();
     }
   }

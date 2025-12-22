@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -6,6 +9,7 @@ import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
+import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class DriverListScreen extends StatefulWidget {
@@ -20,6 +24,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
   final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   late AppController appController;
+  final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   String searchKey = "";
 
   @override
@@ -119,16 +124,25 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                   UIHelper.titleTxtStyle(currentData['name'], fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
                                                   rowdata1("Mobile", "${currentData['mobile']}", fntSize: 14, fntclr: _colors.greenColour),
                                                   rowdata1("Password", "${currentData['password']}", fntSize: 14, fntclr: _colors.bluecolor),
-                                                  rowdata1("Status", currentData['active_flag'].toString() == "1" ? "Active" : "Deactive",
-                                                      fntSize: 14, fntclr: currentData['active_flag'].toString() == "1" ? _colors.greenColour : _colors.redColour),
                                                   UIHelper.verticalSpaceSmall,
-                                                  // Row(
-                                                  //   mainAxisAlignment: MainAxisAlignment.end,
-                                                  //   children: [
-                                                  //     Icon(Icons.edit, color: _colors.primarycolour),
-                                                  //     UIHelper.titleTxtStyle("Edit", fntWeight: FontWeight.bold, fntsize: 14, fntcolor: _colors.primarycolour),
-                                                  //   ],
-                                                  // )
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: [
+                                                      IconButton(
+                                                          onPressed: () {
+                                                            showCarAddDialog(currentData);
+                                                          },
+                                                          icon: Icon(Icons.edit, size: 20, color: _colors.primarycolour)),
+                                                      IconButton(
+                                                          onPressed: () {
+                                                            Utils().showAlert("De", "Do you want to delete driver \n\"${currentData['name']}\" ?", onComplete: () {
+                                                              Map<String, dynamic> postParams = {'service_id': "user_deactivate", "_id": currentData['_id'], "active_flag": 0};
+                                                              appController.deactivatedrivers(postParams);
+                                                            });
+                                                          },
+                                                          icon: Icon(Icons.delete, size: 20, color: _colors.redColour)),
+                                                    ],
+                                                  )
                                                 ],
                                               ),
                                             ),
@@ -173,5 +187,65 @@ class _DriverListScreenState extends State<DriverListScreen> {
         Expanded(flex: 3, child: UIHelper.titleTxtStyle(t2, fntsize: fntSize, fntcolor: fntclr, fntWeight: FontWeight.bold)),
       ],
     );
+  }
+
+  Future showCarAddDialog(dynamic currentdata) async {
+    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
+      return MediaQuery.removeViewInsets(
+          removeBottom: true,
+          context: context,
+          child: AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              backgroundColor: _colors.bgClr,
+              insetPadding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                        height: 50,
+                        decoration: UIHelper.roundedBorderWithColor(16, 16, 0, 0, _colors.primarycolour),
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          children: [
+                            Expanded(child: UIHelper.titleTxtStyle("Edit Driver", fntcolor: _colors.bgClr, fntsize: 18)),
+                            InkWell(
+                              onTap: (() {
+                                Get.back();
+                              }),
+                              child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
+                            ),
+                          ],
+                        )),
+                    UIHelper.verticalSpaceMedium,
+                    FormBuilder(
+                      key: _formkey,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(children: [
+                            CustomInput(hintText: "Name", initValue: currentdata['name'], fieldname: "name", fieldType: "name"),
+                            UIHelper.verticalSpaceSmall,
+                            CustomInput(hintText: "Mobile", initValue: currentdata['mobile'], fieldname: "mobile", fieldType: "mobile"),
+                            UIHelper.verticalSpaceMedium,
+                            CustomInput(hintText: "Password", initValue: currentdata['password'], fieldname: "password", fieldType: "text"),
+                            UIHelper.verticalSpaceMedium,
+                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
+                              if (_formkey.currentState!.saveAndValidate()) {
+                                Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
+                                postParams['service_id'] = "driver_update";
+                                postParams['_id'] = currentdata['_id'];
+                                appController.driverupdate(postParams);
+                              }
+                            }),
+                          ])),
+                    ),
+                    UIHelper.verticalSpaceMedium,
+                  ],
+                ),
+              )));
+    }));
   }
 }

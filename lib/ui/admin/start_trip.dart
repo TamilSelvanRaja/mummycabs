@@ -72,7 +72,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
       if (initdata['fuel_details'] != null && initdata['fuel_details'] != "") {
         fuelDetailsList = initdata['fuel_details'].toString().split("/").map((item) {
           var parts = item.split(":");
-          return {"type": parts[0], "amount": int.parse(parts[1])};
+          return {"type": parts[0], "amount": double.parse(parts[1])};
         }).toList();
       }
     }
