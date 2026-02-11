@@ -21,6 +21,7 @@ import 'package:mummy_cabs/ui/auth/signin_screen.dart';
 import 'package:mummy_cabs/ui/auth/signup_screen.dart';
 import 'package:mummy_cabs/ui/auth/splash_screen.dart';
 import 'package:mummy_cabs/ui/driver/dashboard.dart';
+import 'package:mummy_cabs/ui/driver/satement.dart';
 import 'package:mummy_cabs/ui/driver/transaction_pending.dart';
 import 'package:mummy_cabs/ui/driver/transaction_status.dart';
 
@@ -50,6 +51,7 @@ class Routes {
   static String driverDashboard = '/driverDashboard';
   static String driverTransaction = '/driverTransaction';
   static String driverOldTransaction = '/driverOldTransaction';
+  static String driverStatement = '/driverStatement';
 }
 
 //**********************************************/
@@ -74,6 +76,7 @@ abstract class AppPages {
     pageanimation(Routes.companyTripList, const CompantTripList(), Transition.rightToLeftWithFade),
     pageanimation(Routes.companyaddEditTrip, const CompantTripScreen(), Transition.rightToLeftWithFade),
     pageanimation(Routes.driverOldTransaction, const PendingTransactionScreen(), Transition.rightToLeftWithFade),
+    pageanimation(Routes.driverStatement, const StatementScreen(), Transition.rightToLeftWithFade),
   ];
 
   static GetPage pageanimation(routename, redirectto, animateStyle) {
@@ -100,7 +103,7 @@ class InitialBinding implements Bindings {
 //**********************************************/
 class ApiServices extends GetConnect {
   String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-  //String apiurl = "http://10.163.19.180/mummycabs";
+  // String apiurl = "http://10.163.19.180/mummycabs";
   ApiServices();
   IOClient ioClient = IOClient();
 

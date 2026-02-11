@@ -294,7 +294,29 @@ class AppController with ChangeNotifier {
     };
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      transactionList = responce['data'];
+      List tempArray1 = responce['data'].reversed.toList();
+      List tempArray = [];
+      for (int i = 0; i < tempArray1.length; i++) {
+        dynamic currentData = tempArray1[i];
+        bool isDr = currentData['add_deduct_type'] == "Deduct Amount";
+        currentData['type'] = isDr ? "DR" : "CR";
+
+        if (i == 0) {
+          currentData['avl_bal'] = currentData['trip_amount'];
+        } else {
+          double temp1 = double.parse("${tempArray1[i - 1]['avl_bal']}");
+
+          if (currentData['type'] == "DR") {
+            double temp2 = temp1 - double.parse("${currentData['trip_amount']}");
+            currentData['avl_bal'] = temp2;
+          } else {
+            double temp2 = temp1 + double.parse("${currentData['trip_amount']}");
+            currentData['avl_bal'] = temp2;
+          }
+        }
+        tempArray.add(currentData);
+      }
+      transactionList = tempArray.reversed.toList();
       notifyListeners();
     }
   }

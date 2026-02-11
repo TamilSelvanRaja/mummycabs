@@ -220,6 +220,8 @@ class _DriverDashboardState extends State<DriverDashboard> {
             pref.cleanAllPreferences();
             Get.offNamedUntil(Routes.initial, (p) => false);
           });
+        } else if (i == 4) {
+          Get.toNamed(Routes.driverStatement);
         } else {
           Get.toNamed(Routes.driverOldTransaction);
         }
@@ -244,6 +246,9 @@ class _DriverDashboardState extends State<DriverDashboard> {
       items: [
         PopupMenuItem<String>(
           child: itemWidget("Transaction Status", 0, Icons.receipt_long_sharp),
+        ),
+        PopupMenuItem<String>(
+          child: itemWidget("Statement", 4, Icons.receipt_long_sharp),
         ),
         PopupMenuItem<String>(
           child: itemWidget("Pending Amount", 2, Icons.receipt_long_sharp),
