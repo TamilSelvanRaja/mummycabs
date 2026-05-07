@@ -6,7 +6,6 @@ import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
-import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class CustomerDetails extends StatefulWidget {
@@ -22,6 +21,19 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   final PreferenceService pref = Get.find<PreferenceService>();
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   String searchKey = "";
+
+  List customersList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  Future initialize() async {
+    customersList = await pref.getArrayData("customersList");
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +80,9 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   child: ListView.builder(
-                    itemCount: pref.customersList.length,
+                    itemCount: customersList.length,
                     itemBuilder: (context, index) {
-                      dynamic currentData = pref.customersList[index];
+                      dynamic currentData = customersList[index];
                       return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) || currentData['reg_no'].toString().toLowerCase().contains(searchKey.toLowerCase())
                           ? Column(
                               children: [

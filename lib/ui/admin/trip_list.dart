@@ -69,36 +69,38 @@ class _TripListPageState extends State<TripListPage> {
                         }))
               ],
             ),
-            body: Container(
-              padding: const EdgeInsets.all(16),
-              height: Get.height,
-              width: Get.width,
-              child: Column(
-                children: [
-                  CustomInput(
-                    hintText: "Search driver name",
-                    fieldname: "search",
-                    fieldType: "novalidation",
-                    prefixWidget: const Icon(Icons.search),
-                    onchanged: (val) {
-                      searchKey = val.toString();
-                      setState(() {});
-                    },
-                  ),
-                  UIHelper.verticalSpaceSmall,
-                  Expanded(
-                      child: appController.tripsList.isNotEmpty
-                          ? ListView.builder(
-                              padding: const EdgeInsets.all(0),
-                              itemCount: appController.tripsList.length,
-                              itemBuilder: (context, index) {
-                                dynamic currentData = appController.tripsList[index];
-                                dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
+            body: Center(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                height: Get.height,
+                width: 600,
+                child: Column(
+                  children: [
+                    CustomInput(
+                      hintText: "Search driver name",
+                      fieldname: "search",
+                      fieldType: "novalidation",
+                      prefixWidget: const Icon(Icons.search),
+                      onchanged: (val) {
+                        searchKey = val.toString();
+                        setState(() {});
+                      },
+                    ),
+                    UIHelper.verticalSpaceSmall,
+                    Expanded(
+                        child: appController.tripsList.isNotEmpty
+                            ? ListView.builder(
+                                padding: const EdgeInsets.all(0),
+                                itemCount: appController.tripsList.length,
+                                itemBuilder: (context, index) {
+                                  dynamic currentData = appController.tripsList[index];
+                                  dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
 
-                                return user['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) ? cardData(index, currentData, user) : SizedBox();
-                              })
-                          : Center(child: UIHelper.titleTxtStyle("Data not found")))
-                ],
+                                  return user['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) ? cardData(index, currentData, user) : const SizedBox();
+                                })
+                            : Center(child: UIHelper.titleTxtStyle("Data not found")))
+                  ],
+                ),
               ),
             ));
       }),
@@ -126,7 +128,7 @@ class _TripListPageState extends State<TripListPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(15),
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
             decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

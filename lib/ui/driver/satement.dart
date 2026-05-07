@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +19,19 @@ class _StatementScreenState extends State<StatementScreen> {
   final PreferenceService pref = Get.find<PreferenceService>();
   late AppController appController;
   List tempList = [];
+
+  dynamic userdata = {};
   @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  Future initialize() async {
+    userdata = await pref.getjsonData("userdata");
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +49,7 @@ class _StatementScreenState extends State<StatementScreen> {
             ChangeNotifierProvider(create: (_) {
               final controller = AppController();
               Future.delayed(const Duration(milliseconds: 600), () {
-                controller.gettransactionList("${pref.userdata['_id']}");
+                controller.gettransactionList("${userdata['_id']}");
               });
               return controller;
             })

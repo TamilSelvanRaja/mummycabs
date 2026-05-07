@@ -45,13 +45,17 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
-      body: Column(
-        children: [
-          const Spacer(),
-          UIHelper.titleTxtStyle("Mummy\nCab's", fntcolor: _colors.primarycolour, fntsize: 50, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
-          const Spacer(),
-          Center(child: AnimatedContainer(duration: const Duration(seconds: 1), height: isShowjeep ? 40 : Get.width, width: isShowjeep ? 40 : Get.width, child: Image.asset(_images.jeep))),
-        ],
+      body: SizedBox(
+        width: Get.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            UIHelper.titleTxtStyle("Mummy Cab's", fntcolor: _colors.primarycolour, fntsize: 70, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
+            UIHelper.verticalSpaceSmall,
+            Image.asset(_images.loader, height: 200, width: 200),
+          ],
+        ),
       ),
     );
   }

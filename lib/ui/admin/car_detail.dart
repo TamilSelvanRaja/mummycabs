@@ -24,89 +24,99 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   String searchKey = "";
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
       appBar: AppBar(
         backgroundColor: _colors.primarycolour,
-        centerTitle: true,
         iconTheme: IconThemeData(color: _colors.bgClr),
         title: UIHelper.titleTxtStyle("Car's Detail", fntcolor: _colors.bgClr, fntsize: 22),
       ),
-      body: MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => AppController())],
-        child: Consumer<AppController>(builder: (context, ref, child) {
-          appController = ref;
-          return Column(
-            children: [
-              Container(
-                height: 50,
-                width: Get.width,
-                margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: CustomInput(
-                      hintText: "Search name or register number",
-                      fieldname: "search",
-                      fieldType: "novalidation",
-                      prefixWidget: const Icon(Icons.search),
-                      onchanged: (val) {
-                        searchKey = val.toString();
-                        setState(() {});
-                      },
-                    )),
-                    IconButton(
-                        onPressed: () {
-                          showCarAddDialog(false, {});
-                        },
-                        icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: ListView.builder(
-                    itemCount: pref.carList.length,
-                    itemBuilder: (context, index) {
-                      dynamic currentData = pref.carList[index];
-                      String isactive = currentData['active_flag'].toString();
-                      return currentData['car_name'].toString().toLowerCase().contains(searchKey.toLowerCase()) || currentData['reg_no'].toString().toLowerCase().contains(searchKey.toLowerCase())
-                          ? Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
-                                    Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'].toString().toUpperCase(), fntsize: 14)),
-                                    Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'].toString().toUpperCase(), fntsize: 14)),
-                                    GestureDetector(
-                                        onTap: () {
-                                          Utils().showAlert("De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
-                                              onComplete: () {
-                                            Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": isactive == "1" ? 0 : 1};
-                                            appController.deactivatecar(postParams);
-                                          });
-                                        },
-                                        child: isactive == "1" ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour)),
-                                    IconButton(
-                                        onPressed: () {
-                                          showCarAddDialog(true, currentData);
-                                        },
-                                        icon: Icon(size: 20, color: _colors.primarycolour, Icons.edit)),
-                                  ],
-                                ),
-                                const Divider()
-                              ],
-                            )
-                          : const SizedBox();
-                    },
+      body: Center(
+        child: SizedBox(
+          width: 600,
+          child: MultiProvider(
+            providers: [ChangeNotifierProvider(create: (_) => AppController())],
+            child: Consumer<AppController>(builder: (context, ref, child) {
+              appController = ref;
+              appController.initialize();
+              return Column(
+                children: [
+                  Container(
+                    height: 50,
+                    width: Get.width,
+                    margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: CustomInput(
+                          hintText: "Search name or register number",
+                          fieldname: "search",
+                          fieldType: "novalidation",
+                          prefixWidget: const Icon(Icons.search),
+                          onchanged: (val) {
+                            searchKey = val.toString();
+                            setState(() {});
+                          },
+                        )),
+                        IconButton(
+                            onPressed: () {
+                              showCarAddDialog(false, {});
+                            },
+                            icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-            ],
-          );
-        }),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: ListView.builder(
+                        itemCount: appController.admin_carList.length,
+                        itemBuilder: (context, index) {
+                          dynamic currentData = appController.admin_carList[index];
+                          String isactive = currentData['active_flag'].toString();
+                          return currentData['car_name'].toString().toLowerCase().contains(searchKey.toLowerCase()) || currentData['reg_no'].toString().toLowerCase().contains(searchKey.toLowerCase())
+                              ? Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
+                                        Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['car_name'].toString().toUpperCase(), fntsize: 14)),
+                                        Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'].toString().toUpperCase(), fntsize: 14)),
+                                        GestureDetector(
+                                            onTap: () {
+                                              Utils().showAlert("De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
+                                                  onComplete: () {
+                                                Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": isactive == "1" ? 0 : 1};
+                                                appController.deactivatecar(postParams);
+                                              });
+                                            },
+                                            child: isactive == "1" ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour)),
+                                        IconButton(
+                                            onPressed: () {
+                                              showCarAddDialog(true, currentData);
+                                            },
+                                            icon: Icon(size: 20, color: _colors.primarycolour, Icons.edit)),
+                                      ],
+                                    ),
+                                    const Divider()
+                                  ],
+                                )
+                              : const SizedBox();
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+        ),
       ),
     );
   }

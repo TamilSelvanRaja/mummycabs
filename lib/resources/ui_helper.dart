@@ -5,18 +5,18 @@ final AppColors _colors = AppColors();
 
 class UIHelper {
   // Vertically Space Provider
-  static const Widget verticalSpaceTiny = SizedBox(height: 4.0);
-  static const Widget verticalSpaceSmall = SizedBox(height: 10.0);
-  static const Widget verticalSpaceMedium = SizedBox(height: 20.0);
-  static const Widget verticalSpaceMedium2 = SizedBox(height: 30.0);
-  static const Widget verticalSpaceLarge = SizedBox(height: 60.0);
+  static const Widget verticalSpaceTiny = SizedBox(height: 10);
+  static const Widget verticalSpaceSmall = SizedBox(height: 20.0);
+  static const Widget verticalSpaceMedium = SizedBox(height: 30.0);
+  static const Widget verticalSpaceMedium2 = SizedBox(height: 50.0);
+  static const Widget verticalSpaceLarge = SizedBox(height: 70.0);
   static const Widget verticalSpaceVeryLarge = SizedBox(height: 130.00);
 
 // Horizontal Space provider
-  static const Widget horizontalSpaceTiny = SizedBox(width: 5.0);
-  static const Widget horizontalSpaceSmall = SizedBox(width: 10.0);
-  static const Widget horizontalSpaceMedium = SizedBox(width: 20.0);
-  static const Widget horizontalSpaceMedium2 = SizedBox(width: 30.0);
+  static const Widget horizontalSpaceTiny = SizedBox(width: 10.0);
+  static const Widget horizontalSpaceSmall = SizedBox(width: 20.0);
+  static const Widget horizontalSpaceMedium = SizedBox(width: 30.0);
+  static const Widget horizontalSpaceMedium2 = SizedBox(width: 50.0);
   static const Widget horizontalSpaceLarge = SizedBox(width: 40.0);
 
 // Input Box Style Provider

@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
@@ -31,7 +28,6 @@ class _PendingListPageState extends State<PendingListPage> {
       backgroundColor: _colors.bgClr,
       appBar: AppBar(
         backgroundColor: _colors.primarycolour,
-        centerTitle: true,
         iconTheme: IconThemeData(color: _colors.bgClr),
         title: UIHelper.titleTxtStyle("Pending Trip List", fntcolor: _colors.bgClr, fntsize: 22),
       ),
@@ -48,23 +44,25 @@ class _PendingListPageState extends State<PendingListPage> {
         ],
         child: Consumer<AppController>(builder: (context, ref, child) {
           appController = ref;
-          return Container(
-            padding: const EdgeInsets.all(10),
-            height: Get.height,
-            width: Get.width,
-            child: Column(
-              children: [
-                Expanded(
-                    child: appController.pendingtripsList.isNotEmpty
-                        ? ListView.builder(
-                            padding: const EdgeInsets.all(0),
-                            itemCount: appController.pendingtripsList.length,
-                            itemBuilder: (context, index) {
-                              dynamic currentData = appController.pendingtripsList[index];
-                              return cardData(index, currentData);
-                            })
-                        : Center(child: UIHelper.titleTxtStyle("Data not found")))
-              ],
+          return Center(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              height: Get.height,
+              width: 600,
+              child: Column(
+                children: [
+                  Expanded(
+                      child: appController.pendingtripsList.isNotEmpty
+                          ? ListView.builder(
+                              padding: const EdgeInsets.all(0),
+                              itemCount: appController.pendingtripsList.length,
+                              itemBuilder: (context, index) {
+                                dynamic currentData = appController.pendingtripsList[index];
+                                return cardData(index, currentData);
+                              })
+                          : Center(child: UIHelper.titleTxtStyle("Data not found")))
+                ],
+              ),
             ),
           );
         }),

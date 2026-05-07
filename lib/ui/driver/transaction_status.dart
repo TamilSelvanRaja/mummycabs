@@ -18,6 +18,17 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
   final AppColors _colors = AppColors();
   final PreferenceService pref = Get.find<PreferenceService>();
   late AppController appController;
+  dynamic userdata = {};
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  Future initialize() async {
+    userdata = await pref.getjsonData("userdata");
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +45,7 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
             Future.delayed(const Duration(milliseconds: 600), () {
-              controller.gettransactionList("${pref.userdata['_id']}");
+              controller.gettransactionList("${userdata['_id']}");
             });
             return controller;
           })
@@ -56,7 +67,7 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(5),
                       decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
-                      child: UIHelper.titleTxtStyle("₹ ${double.parse("${pref.userdata['cart_amt']}").toStringAsFixed(2)}", fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
+                      child: UIHelper.titleTxtStyle("₹ ${double.parse("${userdata['cart_amt']}").toStringAsFixed(2)}", fntcolor: _colors.textColour, fntsize: 12, fntWeight: FontWeight.bold),
                     ),
                   ],
                 ),

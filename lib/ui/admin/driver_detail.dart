@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
-import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
@@ -20,7 +19,6 @@ class DriverDetailsScreen extends StatefulWidget {
 
 class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   final AppColors _colors = AppColors();
-  final AppImages _images = AppImages();
   final PreferenceService pref = Get.find<PreferenceService>();
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   late AppController appController;
@@ -237,7 +235,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                     Expanded(flex: 2, child: UIHelper.titleTxtStyle("₹ ${currentData['avl_bal']}", fntsize: 12, fntWeight: FontWeight.bold)),
                   ],
                 ),
-                currentData['pay_type'] != "" ? UIHelper.titleTxtStyle("${currentData['pay_type']}", fntsize: 12, fntcolor: _colors.orangeColour) : SizedBox(),
+                currentData['pay_type'] != "" ? UIHelper.titleTxtStyle("${currentData['pay_type']}", fntsize: 12, fntcolor: _colors.orangeColour) : const SizedBox(),
                 UIHelper.titleTxtStyle("${currentData['add_reason']}", fntsize: 12, fntcolor: _colors.bluecolor)
               ],
             ),

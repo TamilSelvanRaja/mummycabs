@@ -21,8 +21,18 @@ class _DriverDashboardState extends State<DriverDashboard> {
   late AppController appController;
   double cartAmount = 0.0;
   List selectedIndex = [];
-
   final PreferenceService pref = Get.find<PreferenceService>();
+  dynamic userdata = {};
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  Future initialize() async {
+    userdata = await pref.getjsonData("userdata");
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +42,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
           providers: [
             ChangeNotifierProvider(create: (_) {
               final controller = AppController();
-              cartAmount = double.parse("${pref.userdata['cart_amt']}");
+              cartAmount = double.parse("${userdata['cart_amt']}");
               Future.delayed(const Duration(seconds: 1), () {
                 controller.getdrivertripList("All");
               });
@@ -95,13 +105,13 @@ class _DriverDashboardState extends State<DriverDashboard> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            pref.userdata['imgurl'] != null
+            userdata['imgurl'] != null
                 ? CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage("${ApiServices().apiurl}/${pref.userdata['imgurl']}"),
+                    backgroundImage: NetworkImage("${ApiServices().apiurl}/${userdata['imgurl']}"),
                   )
                 : Image.asset(_images.driver, height: 50, width: 50),
-            UIHelper.titleTxtStyle("${pref.userdata['name']}", fntcolor: _colors.bgClr, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
+            UIHelper.titleTxtStyle("${userdata['name']}", fntcolor: _colors.bgClr, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
             InkWell(onTap: () => _showPopupMenu(), child: Icon(Icons.menu_rounded, size: 30, color: _colors.whiteColour)),
           ],
         ));

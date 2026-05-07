@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/animation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/io_client.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
@@ -93,19 +93,17 @@ abstract class AppPages {
 class InitialBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(PreferenceService());
-    Get.put(ApiServices());
+    Get.lazyPut<PreferenceService>(() => PreferenceService(), fenix: true);
+    Get.lazyPut<ApiServices>(() => ApiServices(), fenix: true);
   }
 }
 
 //**********************************************/
 //************** Service API Call **************/
 //**********************************************/
-class ApiServices extends GetConnect {
-  String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-  // String apiurl = "http://10.163.19.180/mummycabs";
-  ApiServices();
-  IOClient ioClient = IOClient();
+class ApiServices {
+  //String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
+  String apiurl = "http://10.163.19.180/mummycabs";
 
   Future formDataAPIServices(Map<String, dynamic> requestJson, String localPath) async {
     try {
@@ -123,7 +121,7 @@ class ApiServices extends GetConnect {
       }
 
       // Send request via IOClient
-      var streamedResponse = await ioClient.send(request);
+      var streamedResponse = await request.send();
       var responseString = await streamedResponse.stream.bytesToString();
 
       if (streamedResponse.statusCode == 200) {
@@ -142,16 +140,13 @@ class ApiServices extends GetConnect {
 //**********************************************/
 class PreferenceService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  dynamic userdata = {};
   List paymentTypes = [
     {"reg_no": "Cash"},
     {"reg_no": "G-pay"},
     {"reg_no": "Phone Pay"},
     {"reg_no": "Paytm"}
   ];
-  List carList = [];
-  List customersList = [];
-  List driversList = [];
+
   Map dutyDetails = {};
 
 //// ************ Set User Info ***********\\\\\
@@ -166,6 +161,30 @@ class PreferenceService {
       return getStr;
     }
     return '';
+  }
+
+  Future setjsonData(key, value) async {
+    await Hive.openBox('mummycabs');
+    var box = Hive.box('mummycabs');
+    await box.put(key, value);
+  }
+
+  Future getjsonData(key) async {
+    await Hive.openBox('mummycabs');
+    var box = Hive.box('mummycabs');
+    return await box.get(key, defaultValue: {});
+  }
+
+  Future setArrayData(key, value) async {
+    await Hive.openBox('mummycabs');
+    var box = Hive.box('mummycabs');
+    await box.put(key, value);
+  }
+
+  Future getArrayData(key) async {
+    await Hive.openBox('mummycabs');
+    var box = Hive.box('mummycabs');
+    return await box.get(key, defaultValue: {});
   }
 
 //// ************ Clear the local Storage ***********\\\\\

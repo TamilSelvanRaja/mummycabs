@@ -52,13 +52,15 @@ class Utils {
     );
   }
 
-  getDriverdetails(userid) {
-    dynamic user1 = pref.driversList.where((e) => e["_id"].toString() == userid).toList().first;
+  getDriverdetails(userid) async {
+    List sourceDriverList = await pref.getArrayData("driversList");
+    dynamic user1 = sourceDriverList.where((e) => e["_id"].toString() == userid).toList().first;
     return user1;
   }
 
-  getCustomerrdetails(userid) {
-    dynamic user1 = pref.customersList.where((e) => e["_id"].toString() == userid).toList().first;
+  getCustomerrdetails(userid) async {
+    List sourcecustomersList = await pref.getArrayData("customersList");
+    dynamic user1 = sourcecustomersList.where((e) => e["_id"].toString() == userid).toList().first;
     return user1;
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -12,6 +10,9 @@ class AppController with ChangeNotifier {
   }
 
   final PreferenceService pref = Get.find<PreferenceService>();
+  List admin_deriverList = [];
+  List admin_carList = [];
+
   final AppColors _colors = AppColors();
   String tripdayamount = "0";
   String totalcartamount = "";
@@ -19,14 +20,18 @@ class AppController with ChangeNotifier {
 
   List tripsList = [];
   List pendingtripsList = [];
-
   List drivertripsList = [];
   List transactionList = [];
   List companytripsList = [];
-
   List oldtransactionList = [];
 
   Future<void> _init() async {}
+
+  Future initialize() async {
+    admin_deriverList = await pref.getArrayData("driversList");
+    admin_carList = await pref.getArrayData("carList");
+    notifyListeners();
+  }
 
 //******************************************************************/
 //******************* User Register Function ***********************/
@@ -51,7 +56,7 @@ class AppController with ChangeNotifier {
   Future loginFunction(postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      pref.userdata = responce['data'];
+      await pref.setjsonData("userdata", responce['data']);
       await pref.setString("mobile", responce['data']['mobile']);
       await pref.setString("password", responce['data']['password']);
 
@@ -72,7 +77,7 @@ class AppController with ChangeNotifier {
   Future cartAmountGet(postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      pref.userdata = responce['data'];
+      await pref.setjsonData("userdata", responce['data']);
       notifyListeners();
     }
   }
@@ -96,13 +101,13 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       if (searchkey == "car_list") {
-        pref.carList = responce['data'];
+        await pref.setArrayData("carList", responce['data']);
       } else if (searchkey == "drivers_list") {
-        pref.driversList = responce['data'];
+        await pref.setArrayData("driversList", responce['data']);
         double amount = double.parse("${responce['total_amount']}");
         totalcartamount = amount.toStringAsFixed(2);
       } else if (searchkey == "customer_list") {
-        pref.customersList = responce['data'];
+        await pref.setArrayData("customersList", responce['data']);
       } else {
         pref.dutyDetails = responce['data'];
       }
@@ -158,7 +163,7 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       Get.back();
-      pref.customersList.add(responce['data']);
+      await pref.setArrayData("customersList", responce['data']);
       notifyListeners();
     }
   }
@@ -240,7 +245,9 @@ class AppController with ChangeNotifier {
     if (responce != null) {
       Get.back();
       Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
-      for (var i in pref.driversList) {
+      List sourceDriverList = await pref.getArrayData("driversList");
+
+      for (var i in sourceDriverList) {
         if (i["_id"].toString() == postParams['driver_id'].toString()) {
           i['cart_amt'] = "${responce['amount']}";
         }
@@ -254,17 +261,17 @@ class AppController with ChangeNotifier {
 //******************************************************************/
   Future getdrivertripList(String date) async {
     drivertripsList.clear();
-
+    dynamic userdata = await pref.getjsonData("userdata");
     dynamic postParams = {
       "service_id": "trip_list_driver",
-      "driver_id": pref.userdata["_id"],
+      "driver_id": userdata["_id"],
       "date": date,
     };
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       List resdata = responce['data'];
 
-      double pendingAmount = double.parse("${pref.userdata['cart_amt']}");
+      double pendingAmount = double.parse("${userdata['cart_amt']}");
       for (var i in resdata) {
         double currentBalanceAmount = double.parse("${i['balance_amount']}");
         if (pendingAmount > 0) {
@@ -457,15 +464,13 @@ class AppController with ChangeNotifier {
 //***************  Delete Trip Function ****************/
 //******************************************************************/
   Future deleteTrip(dynamic postParams) async {
-    final responce = await apiresponceCallback(postParams, "");
+    await apiresponceCallback(postParams, "");
   }
 
   Future apiresponceCallback(postParams, localpath) async {
-    log("$postParams");
-    Utils().showProgress();
+    //  Utils().showProgress();
     try {
       final responce = await ApiServices().formDataAPIServices(postParams, localpath);
-
       if (responce != null) {
         if (responce["msg"].toString() == "true") {
           return responce;
@@ -477,7 +482,7 @@ class AppController with ChangeNotifier {
     } catch (e) {
       Utils().showToast("Failure", "Error : $e");
     } finally {
-      Utils().hideProgress();
+      //  Utils().hideProgress();
     }
   }
 }

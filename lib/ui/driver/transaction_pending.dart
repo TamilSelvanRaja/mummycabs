@@ -18,6 +18,17 @@ class _PendingTransactionScreenState extends State<PendingTransactionScreen> {
   final AppColors _colors = AppColors();
   final PreferenceService pref = Get.find<PreferenceService>();
   late AppController appController;
+  dynamic userdata = {};
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  Future initialize() async {
+    userdata = await pref.getjsonData("userdata");
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +45,7 @@ class _PendingTransactionScreenState extends State<PendingTransactionScreen> {
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
             Future.delayed(const Duration(milliseconds: 600), () {
-              controller.getoldtransactionList("${pref.userdata['_id']}");
+              controller.getoldtransactionList("${userdata['_id']}");
             });
             return controller;
           })
@@ -105,7 +116,7 @@ class _PendingTransactionScreenState extends State<PendingTransactionScreen> {
                     Expanded(flex: 2, child: UIHelper.titleTxtStyle("₹ ${currentData['avl_bal']}", fntsize: 12, fntWeight: FontWeight.bold)),
                   ],
                 ),
-                currentData['pay_type'] != "" ? UIHelper.titleTxtStyle("${currentData['pay_type']}", fntsize: 12, fntcolor: _colors.orangeColour) : SizedBox(),
+                currentData['pay_type'] != "" ? UIHelper.titleTxtStyle("${currentData['pay_type']}", fntsize: 12, fntcolor: _colors.orangeColour) : const SizedBox(),
                 UIHelper.titleTxtStyle("${currentData['add_reason']}", fntsize: 12, fntcolor: _colors.bluecolor)
               ],
             ));
