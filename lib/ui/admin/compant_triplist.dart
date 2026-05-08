@@ -4,7 +4,6 @@ import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
-import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class CompantTripList extends StatefulWidget {
@@ -21,14 +20,6 @@ class _CompantTripListState extends State<CompantTripList> {
   late AppController appController;
 
   String fromDate = "", toDate = "", cusId = "";
-  @override
-  void initState() {
-    super.initState();
-    fromDate = Get.arguments['from'];
-    toDate = Get.arguments['to'];
-    cusId = Get.arguments['cusId'];
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +28,7 @@ class _CompantTripListState extends State<CompantTripList> {
         ChangeNotifierProvider(create: (_) {
           final controller = AppController();
           Future.delayed(const Duration(seconds: 1), () {
-            controller.getCompanytripList(fromDate, toDate, cusId);
+            //  controller.getCompanytripList(fromDate, toDate, cusId);
           });
           return controller;
         })
@@ -60,19 +51,33 @@ class _CompantTripListState extends State<CompantTripList> {
                     icon: const Icon(Icons.mail, size: 25))
             ],
           ),
-          body: Container(
-            padding: const EdgeInsets.all(10),
-            height: Get.height,
-            width: Get.width,
-            child: appController.companytripsList.isNotEmpty
-                ? ListView.builder(
-                    padding: const EdgeInsets.all(0),
-                    itemCount: appController.companytripsList.length,
-                    itemBuilder: (context, index) {
-                      dynamic currentData = appController.companytripsList[index];
-                      return cardData(index, currentData);
-                    })
-                : Center(child: UIHelper.titleTxtStyle("Data not found")),
+          body: Center(
+            child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
+                width: Get.width / 2,
+                child: Column(
+                  children: [
+                    Container(
+                      width: Get.width,
+                      height: 100,
+                      alignment: Alignment.center,
+                      decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                      child: UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: appController.companytripsList.isNotEmpty
+                          ? ListView.builder(
+                              padding: const EdgeInsets.all(0),
+                              itemCount: appController.companytripsList.length,
+                              itemBuilder: (context, index) {
+                                dynamic currentData = appController.companytripsList[index];
+                                return cardData(index, currentData);
+                              })
+                          : Center(child: UIHelper.titleTxtStyle("Data not found")),
+                    ),
+                  ],
+                )),
           ),
         );
       }),

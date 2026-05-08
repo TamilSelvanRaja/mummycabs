@@ -38,14 +38,12 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //******************* User Register Function ***********************/
 //******************************************************************/
-  Future userregister(dynamic postParams, String localpath, bool issignup) async {
+  Future userregister(dynamic postParams, String localpath) async {
     final responce = await apiresponceCallback(postParams, localpath);
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
         Get.back();
-        if (issignup) {
-          Utils().showToast("Success", responce['message'], bgclr: _colors.greenColour);
-        }
+        Utils().showToast("Success", responce['message'], bgclr: _colors.greenColour);
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
       }

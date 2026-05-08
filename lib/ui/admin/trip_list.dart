@@ -137,7 +137,7 @@ class _TripListPageState extends State<TripListPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(15),
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
             decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,8 +204,8 @@ class _TripListPageState extends State<TripListPage> {
             ),
           ),
           Positioned(
-              right: 5,
-              top: 5,
+              right: 30,
+              top: 15,
               child: Row(
                 children: [
                   IconButton(

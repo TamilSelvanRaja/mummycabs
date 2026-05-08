@@ -23,9 +23,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final PreferenceService pref = Get.find<PreferenceService>();
   String fromDate = "", toDate = "";
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
-  List customersList = [];
-  String cusId = "";
-  int selectedIndex = 0;
 
   List<String> contentMenu = ["Driver Trip", "Company Trip", "Trips Report", "Settings", "Logout"];
 
@@ -42,7 +39,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
     await AppController().getcarList("drivers_list");
     await AppController().getcarList("customer_list");
     await AppController().getcarList("duty_details_get");
-    customersList = await pref.getArrayData("customersList");
     setState(() {});
   }
 
@@ -64,9 +60,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 UIHelper.verticalSpaceMedium2,
                 GestureDetector(
                   onTap: () {
-                    fromDate = "";
-                    toDate = "";
-                    cusId = "";
+                    Get.toNamed(Routes.companyTripList);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -480,7 +474,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             } else if (index == 2) {
               fromDate = "";
               toDate = "";
-              cusId = "";
+
               reportmailDialog();
             } else if (index == 3) {
               dutydetailsEditDialog();

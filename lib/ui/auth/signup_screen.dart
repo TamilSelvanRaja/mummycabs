@@ -22,12 +22,6 @@ class _SignupScreenState extends State<SignupScreen> {
   ImageController imageController = ImageController();
   final AppColors _colors = AppColors();
   String profileUrl = "";
-  bool? isSignup;
-  @override
-  void initState() {
-    super.initState();
-    isSignup = Get.arguments["isSignup"];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +42,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     const Spacer(),
                     UIHelper.titleTxtStyle("Welcome !", fntcolor: _colors.primarycolour, fntsize: 22, fntWeight: FontWeight.bold),
-                    UIHelper.titleTxtStyle(isSignup! ? "Signup to your account" : "Register a new Driver", fntcolor: _colors.primarycolour, fntsize: 20),
+                    UIHelper.titleTxtStyle("Register a new Driver", fntcolor: _colors.primarycolour, fntsize: 20),
                     UIHelper.verticalSpaceMedium,
                     GestureDetector(
                       onTap: () async {
@@ -102,7 +96,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
                         postParams['service_id'] = "register";
                         postParams['role'] = "Driver";
-                        AppController().userregister(postParams, profileUrl, isSignup!);
+                        AppController().userregister(postParams, profileUrl);
                       }
                     }),
                     const Spacer(),
