@@ -12,6 +12,7 @@ class AppController with ChangeNotifier {
   final PreferenceService pref = Get.find<PreferenceService>();
   List admin_deriverList = [];
   List admin_carList = [];
+  List admin_customerList = [];
 
   final AppColors _colors = AppColors();
   String tripdayamount = "0";
@@ -30,6 +31,7 @@ class AppController with ChangeNotifier {
   Future initialize() async {
     admin_deriverList = await pref.getArrayData("driversList");
     admin_carList = await pref.getArrayData("carList");
+    admin_customerList = await pref.getArrayData("customersList");
     notifyListeners();
   }
 
@@ -484,5 +486,15 @@ class AppController with ChangeNotifier {
     } finally {
       //  Utils().hideProgress();
     }
+  }
+
+  getDriverdetails(userid) {
+    dynamic user1 = admin_deriverList.where((e) => e["_id"].toString() == userid).toList().first;
+    return user1;
+  }
+
+  getCustomerrdetails(userid) {
+    dynamic user1 = admin_customerList.where((e) => e["_id"].toString() == userid).toList().first;
+    return user1;
   }
 }

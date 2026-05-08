@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
@@ -26,17 +28,13 @@ class _PendingListPageState extends State<PendingListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
-      appBar: AppBar(
-        backgroundColor: _colors.primarycolour,
-        iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Pending Trip List", fntcolor: _colors.bgClr, fntsize: 22),
-      ),
       body: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
             Future.delayed(const Duration(seconds: 1), () {
               controller.getpendingtripList();
+              controller.initialize();
             });
 
             return controller;
@@ -46,15 +44,22 @@ class _PendingListPageState extends State<PendingListPage> {
           appController = ref;
           return Center(
             child: Container(
-              padding: const EdgeInsets.all(10),
-              height: Get.height,
-              width: 600,
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              width: Get.width / 2,
+              decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
               child: Column(
                 children: [
+                  Container(
+                    width: Get.width,
+                    height: 100,
+                    alignment: Alignment.center,
+                    decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                    child: UIHelper.titleTxtStyle("Pending List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
+                  ),
                   Expanded(
                       child: appController.pendingtripsList.isNotEmpty
                           ? ListView.builder(
-                              padding: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                               itemCount: appController.pendingtripsList.length,
                               itemBuilder: (context, index) {
                                 dynamic currentData = appController.pendingtripsList[index];
@@ -77,7 +82,7 @@ class _PendingListPageState extends State<PendingListPage> {
       {"type": "RAPIDO", "cash": "${currentData['rapido_cash']}", "operator": "${currentData['rapido_operator']}"},
       {"type": "Others", "cash": "${currentData['other_cash']}", "operator": "${currentData['other_operator']}"},
     ];
-    dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
+    dynamic user = appController.getDriverdetails("${currentData['driver_id']}");
     String fudata = currentData['fuel_details'].toString().replaceAll("/", ", ");
     return GestureDetector(
       onTap: () {

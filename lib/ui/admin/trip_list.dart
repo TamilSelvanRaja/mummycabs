@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -41,6 +43,7 @@ class _TripListPageState extends State<TripListPage> {
         ChangeNotifierProvider(create: (_) {
           final controller = AppController();
           Future.delayed(const Duration(seconds: 1), () {
+            controller.initialize();
             controller.gettripList(selectedDate);
           });
           return controller;
@@ -50,43 +53,50 @@ class _TripListPageState extends State<TripListPage> {
         appController = ref;
         return Scaffold(
             backgroundColor: _colors.bgClr,
-            appBar: AppBar(
-              backgroundColor: _colors.primarycolour,
-              iconTheme: IconThemeData(color: _colors.bgClr),
-              title: UIHelper.titleTxtStyle("₹ ${double.parse(appController.tripdayamount).toStringAsFixed(2)}", fntWeight: FontWeight.bold, fntcolor: _colors.bgClr, fntsize: 18),
-              actions: [
-                Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    width: Get.width / 2.3,
-                    child: CustomDatePicker(
-                        initValue: selectedDate,
-                        hintText: "",
-                        fieldname: "trip_date",
-                        onSelected: (val) {
-                          appController.gettripList(val);
-                          selectedDate = val;
-                          setState(() {});
-                        }))
-              ],
-            ),
             body: Center(
               child: Container(
-                padding: const EdgeInsets.all(16),
-                height: Get.height,
-                width: 600,
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                width: Get.width / 2,
+                decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
                 child: Column(
                   children: [
-                    CustomInput(
-                      hintText: "Search driver name",
-                      fieldname: "search",
-                      fieldType: "novalidation",
-                      prefixWidget: const Icon(Icons.search),
-                      onchanged: (val) {
-                        searchKey = val.toString();
-                        setState(() {});
-                      },
+                    Container(
+                      width: Get.width,
+                      height: 100,
+                      alignment: Alignment.center,
+                      decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                      child: UIHelper.titleTxtStyle("Trip List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
                     ),
-                    UIHelper.verticalSpaceSmall,
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: CustomInput(
+                              hintText: "Search driver name",
+                              fieldname: "search",
+                              fieldType: "novalidation",
+                              prefixWidget: const Icon(Icons.search),
+                              onchanged: (val) {
+                                searchKey = val.toString();
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                          UIHelper.horizontalSpaceMedium,
+                          Expanded(
+                              child: CustomDatePicker(
+                                  initValue: selectedDate,
+                                  hintText: "",
+                                  fieldname: "trip_date",
+                                  onSelected: (val) {
+                                    appController.gettripList(val);
+                                    selectedDate = val;
+                                    setState(() {});
+                                  }))
+                        ],
+                      ),
+                    ),
                     Expanded(
                         child: appController.tripsList.isNotEmpty
                             ? ListView.builder(
@@ -94,8 +104,7 @@ class _TripListPageState extends State<TripListPage> {
                                 itemCount: appController.tripsList.length,
                                 itemBuilder: (context, index) {
                                   dynamic currentData = appController.tripsList[index];
-                                  dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
-
+                                  dynamic user = appController.getDriverdetails("${currentData['driver_id']}");
                                   return user['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) ? cardData(index, currentData, user) : const SizedBox();
                                 })
                             : Center(child: UIHelper.titleTxtStyle("Data not found")))

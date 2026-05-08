@@ -34,15 +34,11 @@ class _DriverListScreenState extends State<DriverListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
-      appBar: AppBar(
-        backgroundColor: _colors.primarycolour,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Drivers List", fntcolor: _colors.bgClr, fntsize: 22),
-      ),
       body: Center(
-        child: SizedBox(
-          width: 600,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
+          width: Get.width / 2,
           child: MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) {
@@ -58,6 +54,13 @@ class _DriverListScreenState extends State<DriverListScreen> {
               appController.initialize();
               return Column(
                 children: [
+                  Container(
+                    width: Get.width,
+                    height: 100,
+                    alignment: Alignment.center,
+                    decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                    child: UIHelper.titleTxtStyle("Drivers Details", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
+                  ),
                   Container(
                     height: 50,
                     width: Get.width,
@@ -172,6 +175,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     UIHelper.verticalSpaceSmall,
                     Container(
                       padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.symmetric(horizontal: 30),
                       width: Get.width / 2,
                       alignment: Alignment.center,
                       decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),

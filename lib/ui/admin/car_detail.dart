@@ -32,14 +32,11 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
-      appBar: AppBar(
-        backgroundColor: _colors.primarycolour,
-        iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Car's Detail", fntcolor: _colors.bgClr, fntsize: 22),
-      ),
       body: Center(
-        child: SizedBox(
-          width: 600,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
+          width: Get.width / 2,
           child: MultiProvider(
             providers: [ChangeNotifierProvider(create: (_) => AppController())],
             child: Consumer<AppController>(builder: (context, ref, child) {
@@ -47,6 +44,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               appController.initialize();
               return Column(
                 children: [
+                  Container(
+                    width: Get.width,
+                    height: 100,
+                    alignment: Alignment.center,
+                    decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                    child: UIHelper.titleTxtStyle("Car Details", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
+                  ),
                   Container(
                     height: 50,
                     width: Get.width,

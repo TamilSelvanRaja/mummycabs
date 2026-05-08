@@ -80,8 +80,8 @@ class _CompantTripListState extends State<CompantTripList> {
   }
 
   Widget cardData(int index, dynamic currentData) {
-    dynamic user = Utils().getDriverdetails("${currentData['driver_id']}");
-    dynamic customer = Utils().getCustomerrdetails("${currentData['customer_id']}");
+    dynamic user = appController.getDriverdetails("${currentData['driver_id']}");
+    dynamic customer = appController.getCustomerrdetails("${currentData['customer_id']}");
     return Container(
       padding: const EdgeInsets.all(15),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),

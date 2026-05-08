@@ -51,16 +51,4 @@ class Utils {
       CustomAlert(title: contentType, message: message, onBackPress: onBackPress ?? () {}, onClickOK: onComplete ?? () {}, subTitle: subTitle ?? ""),
     );
   }
-
-  getDriverdetails(userid) async {
-    List sourceDriverList = await pref.getArrayData("driversList");
-    dynamic user1 = sourceDriverList.where((e) => e["_id"].toString() == userid).toList().first;
-    return user1;
-  }
-
-  getCustomerrdetails(userid) async {
-    List sourcecustomersList = await pref.getArrayData("customersList");
-    dynamic user1 = sourcecustomersList.where((e) => e["_id"].toString() == userid).toList().first;
-    return user1;
-  }
 }

@@ -22,87 +22,83 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   String searchKey = "";
 
-  List customersList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    initialize();
-  }
-
-  Future initialize() async {
-    customersList = await pref.getArrayData("customersList");
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _colors.bgClr,
-      appBar: AppBar(
-        backgroundColor: _colors.primarycolour,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: _colors.bgClr),
-        title: UIHelper.titleTxtStyle("Customer's Detail", fntcolor: _colors.bgClr, fntsize: 22),
-      ),
-      body: MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => AppController())],
-        child: Consumer<AppController>(builder: (context, ref, child) {
-          appController = ref;
-          return Column(
-            children: [
-              Container(
-                height: 50,
-                width: Get.width,
-                margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: CustomInput(
-                      hintText: "Search name",
-                      fieldname: "search",
-                      fieldType: "novalidation",
-                      prefixWidget: const Icon(Icons.search),
-                      onchanged: (val) {
-                        searchKey = val.toString();
-                        setState(() {});
-                      },
-                    )),
-                    IconButton(
-                        onPressed: () {
-                          showAddCustomer();
-                        },
-                        icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: ListView.builder(
-                    itemCount: customersList.length,
-                    itemBuilder: (context, index) {
-                      dynamic currentData = customersList[index];
-                      return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) || currentData['reg_no'].toString().toLowerCase().contains(searchKey.toLowerCase())
-                          ? Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
-                                    Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['name'].toString().toUpperCase(), fntsize: 14)),
-                                  ],
-                                ),
-                                const Divider()
-                              ],
-                            )
-                          : const SizedBox();
-                    },
+      body: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
+          width: Get.width / 2,
+          child: MultiProvider(
+            providers: [ChangeNotifierProvider(create: (_) => AppController())],
+            child: Consumer<AppController>(builder: (context, ref, child) {
+              appController = ref;
+              appController.initialize();
+              return Column(
+                children: [
+                  Container(
+                    width: Get.width,
+                    height: 100,
+                    alignment: Alignment.center,
+                    decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                    child: UIHelper.titleTxtStyle("Customer's Detail", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
                   ),
-                ),
-              ),
-            ],
-          );
-        }),
+                  Container(
+                    height: 50,
+                    width: Get.width,
+                    margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: CustomInput(
+                          hintText: "Search name",
+                          fieldname: "search",
+                          fieldType: "novalidation",
+                          prefixWidget: const Icon(Icons.search),
+                          onchanged: (val) {
+                            searchKey = val.toString();
+                            setState(() {});
+                          },
+                        )),
+                        IconButton(
+                            onPressed: () {
+                              showAddCustomer();
+                            },
+                            icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: ListView.builder(
+                        itemCount: appController.admin_customerList.length,
+                        itemBuilder: (context, index) {
+                          dynamic currentData = appController.admin_customerList[index];
+                          return currentData['name'].toString().toLowerCase().contains(searchKey.toLowerCase()) || currentData['reg_no'].toString().toLowerCase().contains(searchKey.toLowerCase())
+                              ? Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(flex: 1, child: UIHelper.titleTxtStyle("${index + 1}", fntsize: 14)),
+                                        Expanded(flex: 3, child: UIHelper.titleTxtStyle(currentData['name'].toString().toUpperCase(), fntsize: 14)),
+                                      ],
+                                    ),
+                                    const Divider()
+                                  ],
+                                )
+                              : const SizedBox();
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+        ),
       ),
     );
   }
