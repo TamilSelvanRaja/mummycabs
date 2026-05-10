@@ -5,6 +5,7 @@ import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
+import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class DriverTransactionScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class DriverTransactionScreen extends StatefulWidget {
 
 class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   late AppController appController;
   dynamic userdata = {};
   @override
@@ -26,7 +27,7 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
   }
 
   Future initialize() async {
-    userdata = await pref.getjsonData("userdata");
+    userdata = await PreferenceService().getjsonData("userdata");
     setState(() {});
   }
 
@@ -107,7 +108,7 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
               Align(
                 alignment: isAlignright ? Alignment.centerRight : Alignment.centerLeft,
                 child: Container(
-                  width: Get.width / 1.5,
+                  width: Utils().getWidgetWidth(context) / 1.5,
                   padding: const EdgeInsets.all(10),
                   decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.2) : _colors.redColour.withOpacity(0.2)),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),

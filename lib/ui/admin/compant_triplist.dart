@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
+import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class CompantTripList extends StatefulWidget {
@@ -15,7 +18,7 @@ class CompantTripList extends StatefulWidget {
 
 class _CompantTripListState extends State<CompantTripList> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
 
   late AppController appController;
 
@@ -55,11 +58,11 @@ class _CompantTripListState extends State<CompantTripList> {
             child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 16),
                 decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
-                width: Get.width / 2,
+                width: Utils().getWidgetWidth(context) / 2,
                 child: Column(
                   children: [
                     Container(
-                      width: Get.width,
+                      width: Utils().getWidgetWidth(context),
                       height: 100,
                       alignment: Alignment.center,
                       decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
@@ -152,7 +155,7 @@ class _CompantTripListState extends State<CompantTripList> {
               rowwidget("Balance", "${currentData['balance_amount']}", txtClr: _colors.redColour),
               GestureDetector(
                 onTap: () async {
-                  await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": true, "initdata": currentData});
+                   context.push(Routes.companyaddEditTrip, extra: {"isedit": true, "initdata": currentData});
                   appController.getCompanytripList(fromDate, toDate, cusId);
                 },
                 child: Container(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/utils.dart';
 
 class CustomAlert extends StatefulWidget {
   final dynamic onClickOK;
@@ -61,7 +63,7 @@ class _CustomAlertState extends State<CustomAlert> {
                         alignment: Alignment.centerRight,
                         child: InkWell(
                           onTap: (() {
-                            Get.back();
+                             context.pop();;
                             widget.onBackPress();
                           }),
                           child: Icon(Icons.close_rounded, size: 30, color: _colors.whiteColour),
@@ -87,8 +89,8 @@ class _CustomAlertState extends State<CustomAlert> {
             UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle(widget.message, fntcolor: _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
             UIHelper.verticalSpaceMedium,
-            UIHelper().actionButton(widget.title == "S" || widget.title == "F" ? "Ok" : "Yes", 16, Get.width / 4, onPressed: () {
-              Get.back();
+            UIHelper().actionButton(widget.title == "S" || widget.title == "F" ? "Ok" : "Yes", 16, Utils().getWidgetWidth(context) / 4, onPressed: () {
+               context.pop();;
               widget.onClickOK();
             }),
             UIHelper.verticalSpaceMedium

@@ -20,7 +20,7 @@ class CompantTripScreen extends StatefulWidget {
 
 class CompantTripScreenState extends State<CompantTripScreen> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   bool isEdit = false;
   dynamic initdata = {};
   int selectedTypeid = 0;
@@ -72,9 +72,9 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   }
 
   Future initialize() async {
-    driversLists = await pref.getArrayData("driversList");
-    carList = await pref.getArrayData("carList");
-    customersList = await pref.getArrayData("customersList");
+    driversLists = await PreferenceService().getArrayData("driversList");
+    carList = await PreferenceService().getArrayData("carList");
+    customersList = await PreferenceService().getArrayData("customersList");
     setState(() {});
   }
 
@@ -87,13 +87,13 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     return Center(
       child: FormBuilder(
         child: Container(
-          width: Get.width / 2,
+          width: Utils().getWidgetWidth(context) / 2,
           margin: const EdgeInsets.symmetric(vertical: 16),
           decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
           child: Column(
             children: [
               Container(
-                width: Get.width,
+                width: Utils().getWidgetWidth(context),
                 height: 100,
                 alignment: Alignment.center,
                 decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
@@ -297,7 +297,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                     ),
                     UIHelper.verticalSpaceMedium,
                     Center(
-                      child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
+                      child: UIHelper().actionButton("Next", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () {
                         if (customerName.isEmpty) {
                           Utils().showToast("Warning", "please enter the customer name", bgclr: _colors.orangeColour);
                         } else if (pickuptime.isEmpty && droptime.isEmpty) {
@@ -338,10 +338,10 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                             if (isEdit) {
                               reqData['trip_id'] = initdata['_id'];
                               reqData['service_id'] = "edit_companytrip";
-                              AppController().newCompanyTripStart(reqData);
+                              AppController().newCompanyTripStart(context,reqData);
                             } else {
                               reqData['service_id'] = "add_companytrip";
-                              AppController().newCompanyTripStart(reqData);
+                              AppController().newCompanyTripStart(context,reqData);
                             }
                           }
                         }
@@ -358,8 +358,8 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   }
 
   dataparsefunction(int hours, int days) {
-    double onehrAmt = double.parse("${pref.dutyDetails['hr_amount']}");
-    int hrKm = int.parse("${pref.dutyDetails['per_hr_km']}");
+    double onehrAmt = double.parse("${PreferenceService().dutyDetails['hr_amount']}");
+    int hrKm = int.parse("${PreferenceService().dutyDetails['per_hr_km']}");
     double extrakmAmt = double.parse(kmamt);
 
     double packageAmount = hours * onehrAmt;

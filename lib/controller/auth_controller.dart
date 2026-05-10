@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/resources/colors.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 
@@ -9,8 +11,7 @@ class AppController with ChangeNotifier {
     _init();
   }
 
-  final PreferenceService pref = Get.find<PreferenceService>();
-  List admin_deriverList = [];
+   List admin_deriverList = [];
   List admin_carList = [];
   List admin_customerList = [];
 
@@ -29,20 +30,20 @@ class AppController with ChangeNotifier {
   Future<void> _init() async {}
 
   Future initialize() async {
-    admin_deriverList = await pref.getArrayData("driversList");
-    admin_carList = await pref.getArrayData("carList");
-    admin_customerList = await pref.getArrayData("customersList");
+    admin_deriverList = await PreferenceService().getArrayData("driversList");
+    admin_carList = await PreferenceService().getArrayData("carList");
+    admin_customerList = await PreferenceService().getArrayData("customersList");
     notifyListeners();
   }
 
 //******************************************************************/
 //******************* User Register Function ***********************/
 //******************************************************************/
-  Future userregister(dynamic postParams, String localpath) async {
+  Future userregister(BuildContext context, dynamic postParams, String localpath) async {
     final responce = await apiresponceCallback(postParams, localpath);
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
-        Get.back();
+         context.pop();
         Utils().showToast("Success", responce['message'], bgclr: _colors.greenColour);
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
@@ -53,21 +54,21 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //******************** User Login Function *************************/
 //******************************************************************/
-  Future loginFunction(postParams) async {
+  Future loginFunction(BuildContext context, postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      await pref.setjsonData("userdata", responce['data']);
-      await pref.setString("mobile", responce['data']['mobile']);
-      await pref.setString("password", responce['data']['password']);
+      await PreferenceService().setjsonData("userdata", responce['data']);
+      await PreferenceService().setString("mobile", responce['data']['mobile']);
+      await PreferenceService().setString("password", responce['data']['password']);
 
       if (responce['data']['role'] == "Admin") {
-        Get.offNamedUntil(Routes.adminDashboard, (p) => false);
+       context.go (Routes.adminDashboard);
       } else {
-        Get.offNamedUntil(Routes.driverDashboard, (p) => false);
+        context.go(Routes.driverDashboard);
       }
     } else {
-      pref.cleanAllPreferences();
-      Get.offNamedUntil(Routes.initial, (p) => false);
+      PreferenceService().cleanAllPreferences();
+       context.go(Routes.initial);
     }
   }
 
@@ -77,7 +78,7 @@ class AppController with ChangeNotifier {
   Future cartAmountGet(postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      await pref.setjsonData("userdata", responce['data']);
+      await PreferenceService().setjsonData("userdata", responce['data']);
       notifyListeners();
     }
   }
@@ -85,10 +86,10 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //***************** Forgot Password Function ***********************/
 //******************************************************************/
-  Future forgotpassword(postParams) async {
+  Future forgotpassword(BuildContext context, postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
+       context.pop();
       Utils().showToast("Success", responce['message'], bgclr: _colors.greenColour);
     }
   }
@@ -101,15 +102,15 @@ class AppController with ChangeNotifier {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       if (searchkey == "car_list") {
-        await pref.setArrayData("carList", responce['data']);
+        await PreferenceService().setArrayData("carList", responce['data']);
       } else if (searchkey == "drivers_list") {
-        await pref.setArrayData("driversList", responce['data']);
+        await PreferenceService().setArrayData("driversList", responce['data']);
         double amount = double.parse("${responce['total_amount']}");
         totalcartamount = amount.toStringAsFixed(2);
       } else if (searchkey == "customer_list") {
-        await pref.setArrayData("customersList", responce['data']);
+        await PreferenceService().setArrayData("customersList", responce['data']);
       } else {
-        pref.dutyDetails = responce['data'];
+        PreferenceService().dutyDetails = responce['data'];
       }
       notifyListeners();
     }
@@ -117,10 +118,10 @@ class AppController with ChangeNotifier {
 
 //******************** New Car Function *************************/
 //******************************************************************/
-  Future newaddcar(postParams) async {
+  Future newaddcar(BuildContext context, postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
+       context.pop();
       getcarList("car_list");
       notifyListeners();
     }
@@ -148,10 +149,10 @@ class AppController with ChangeNotifier {
 
 //******************** New Car Function *************************/
 //******************************************************************/
-  Future driverupdate(postParams) async {
+  Future driverupdate(BuildContext context,postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
+       context.pop();
       getcarList("drivers_list");
       notifyListeners();
     }
@@ -159,11 +160,11 @@ class AppController with ChangeNotifier {
 
 //******************** New Customer Function *************************/
 //******************************************************************/
-  Future newcustomeradd(postParams) async {
+  Future newcustomeradd(BuildContext context,postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
-      await pref.setArrayData("customersList", responce['data']);
+       context.pop();
+      await PreferenceService().setArrayData("customersList", responce['data']);
       notifyListeners();
     }
   }
@@ -171,11 +172,11 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //******************* NEW Trip Add Function ***********************/
 //******************************************************************/
-  Future newTripStart(dynamic postParams) async {
+  Future newTripStart(BuildContext context,dynamic postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
-        Get.back();
+         context.pop();
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
       }
@@ -184,12 +185,12 @@ class AppController with ChangeNotifier {
 
 //******************** New Car Function *************************/
 //******************************************************************/
-  Future dutyDetailsUpdate(postParams) async {
+  Future dutyDetailsUpdate(BuildContext context,postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
+       context.pop();
       Utils().showToast("Success", 'Data updated successfully', bgclr: _colors.greenColour);
-      pref.dutyDetails = responce['data'];
+      PreferenceService().dutyDetails = responce['data'];
       notifyListeners();
     }
   }
@@ -197,11 +198,11 @@ class AppController with ChangeNotifier {
   //******************************************************************/
 //******************* NEW Trip Add Function ***********************/
 //******************************************************************/
-  Future tripSubmission(dynamic postParams) async {
+  Future tripSubmission(BuildContext context,dynamic postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
-        Get.back();
+         context.pop();
         Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
@@ -240,12 +241,12 @@ class AppController with ChangeNotifier {
 
 //******************** Cart Amount Update Function *************************/
 //**************************************************************************/
-  Future cartAmtUpdateFun(postParams) async {
+  Future cartAmtUpdateFun(BuildContext context,postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
+       context.pop();
       Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
-      List sourceDriverList = await pref.getArrayData("driversList");
+      List sourceDriverList = await PreferenceService().getArrayData("driversList");
 
       for (var i in sourceDriverList) {
         if (i["_id"].toString() == postParams['driver_id'].toString()) {
@@ -261,7 +262,7 @@ class AppController with ChangeNotifier {
 //******************************************************************/
   Future getdrivertripList(String date) async {
     drivertripsList.clear();
-    dynamic userdata = await pref.getjsonData("userdata");
+    dynamic userdata = await PreferenceService().getjsonData("userdata");
     dynamic postParams = {
       "service_id": "trip_list_driver",
       "driver_id": userdata["_id"],
@@ -423,11 +424,11 @@ class AppController with ChangeNotifier {
 //******************************************************************/
 //******************* NEW Trip Add Function ***********************/
 //******************************************************************/
-  Future newCompanyTripStart(dynamic postParams) async {
+  Future newCompanyTripStart(BuildContext context,dynamic postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
       if (responce["msg"].toString() == "true") {
-        Get.back();
+         context.pop();
       } else {
         Utils().showToast("Failure", '${responce["message"]}');
       }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
+import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class CustomerDetails extends StatefulWidget {
@@ -18,7 +20,7 @@ class CustomerDetails extends StatefulWidget {
 class _CustomerDetailsState extends State<CustomerDetails> {
   final AppColors _colors = AppColors();
   late AppController appController;
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   String searchKey = "";
 
@@ -30,7 +32,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 16),
           decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
-          width: Get.width / 2,
+          width: Utils().getWidgetWidth(context) / 2,
           child: MultiProvider(
             providers: [ChangeNotifierProvider(create: (_) => AppController())],
             child: Consumer<AppController>(builder: (context, ref, child) {
@@ -39,7 +41,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
               return Column(
                 children: [
                   Container(
-                    width: Get.width,
+                    width: Utils().getWidgetWidth(context),
                     height: 100,
                     alignment: Alignment.center,
                     decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
@@ -47,7 +49,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                   ),
                   Container(
                     height: 50,
-                    width: Get.width,
+                    width: Utils().getWidgetWidth(context),
                     margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
                     child: Row(
                       children: [
@@ -128,7 +130,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             Expanded(child: UIHelper.titleTxtStyle("New Customer", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                Get.back();
+                                 context.pop();;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -142,11 +144,11 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                           child: Column(children: [
                             const CustomInput(hintText: "Customer Name", fieldname: "name", fieldType: "cus_name"),
                             UIHelper.verticalSpaceMedium,
-                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
+                            UIHelper().actionButton("Submit", 16, Utils().getWidgetWidth(context) / 3, onPressed: () {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
                                 postParams['service_id'] = "new_customer";
-                                appController.newcustomeradd(postParams);
+                                appController.newcustomeradd(context,postParams);
                               }
                             }),
                           ])),

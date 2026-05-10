@@ -18,7 +18,7 @@ class StartTripScreen extends StatefulWidget {
 
 class _StartTripScreenState extends State<StartTripScreen> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   bool isEdit = false;
   dynamic initdata = {};
 
@@ -81,8 +81,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
   }
 
   Future initialize() async {
-    driverLists = await pref.getArrayData("driversList");
-    carList = await pref.getArrayData("carList");
+    driverLists = await PreferenceService().getArrayData("driversList");
+    carList = await PreferenceService().getArrayData("carList");
     setState(() {});
   }
 
@@ -95,13 +95,13 @@ class _StartTripScreenState extends State<StartTripScreen> {
     return Center(
       child: FormBuilder(
         child: Container(
-          width: Get.width / 2,
+          width: Utils().getWidgetWidth(context) / 2,
           margin: const EdgeInsets.symmetric(vertical: 16),
           decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
           child: Column(
             children: [
               Container(
-                width: Get.width,
+                width: Utils().getWidgetWidth(context),
                 height: 100,
                 alignment: Alignment.center,
                 decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
@@ -344,7 +344,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
                         fuelUpdateDialog();
                       },
                       child: Container(
-                        width: Get.width,
+                        width: Utils().getWidgetWidth(context),
                         decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.whiteColour, borderColor: _colors.blackColour),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                         child: Column(
@@ -375,7 +375,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
                     UIHelper.verticalSpaceSmall,
                     UIHelper.verticalSpaceMedium,
                     Center(
-                      child: UIHelper().actionButton("Next", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () async {
+                      child: UIHelper().actionButton("Next", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () async {
                         if (tripDate.isEmpty) {
                           Utils().showToast("Warning", "please select Trip date", bgclr: _colors.orangeColour);
                         } else if (vehiclenumber.isEmpty) {
@@ -396,7 +396,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
                           } else {
                             reqData['service_id'] = "new_trip";
                           }
-                          await AppController().newTripStart(reqData);
+                          await AppController().newTripStart(context,reqData);
                         }
                       }),
                     )

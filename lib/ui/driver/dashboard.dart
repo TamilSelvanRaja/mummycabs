@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +23,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
   late AppController appController;
   double cartAmount = 0.0;
   List selectedIndex = [];
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   dynamic userdata = {};
   @override
   void initState() {
@@ -30,7 +32,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
   }
 
   Future initialize() async {
-    userdata = await pref.getjsonData("userdata");
+    userdata = await PreferenceService().getjsonData("userdata");
     setState(() {});
   }
 
@@ -90,7 +92,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
         floatingActionButton: IconButton(
             onPressed: () async {
               appController.getdrivertripList("All");
-              dynamic postParams = {"service_id": "login", "mobile": await pref.getString("mobile"), "password": await pref.getString("password")};
+              dynamic postParams = {"service_id": "login", "mobile": await PreferenceService().getString("mobile"), "password": await PreferenceService().getString("password")};
               AppController().cartAmountGet(postParams);
             },
             icon: Icon(size: 40, color: _colors.primarycolour, Icons.replay_circle_filled_outlined)));
@@ -98,7 +100,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
 
   Widget customAppBar() {
     return Container(
-        width: Get.width,
+        width: Utils().getWidgetWidth(context),
         padding: const EdgeInsets.fromLTRB(16, 35, 16, 10),
         color: _colors.primarycolour,
         alignment: Alignment.center,
@@ -139,7 +141,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
         children: [
           Container(
             padding: const EdgeInsets.all(15),
-            width: Get.width,
+            width: Utils().getWidgetWidth(context),
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.whiteColour, isShadow: true, shadowColor: _colors.primarycolour),
             child: Column(
@@ -222,18 +224,18 @@ class _DriverDashboardState extends State<DriverDashboard> {
   itemWidget(title, int i, IconData icon) {
     return InkWell(
       onTap: () {
-        Get.back();
+         context.pop();;
         if (i == 0) {
-          Get.toNamed(Routes.driverTransaction);
+          context.push(Routes.driverTransaction);
         } else if (i == 1) {
           Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
-            pref.cleanAllPreferences();
-            Get.offNamedUntil(Routes.initial, (p) => false);
+            PreferenceService().cleanAllPreferences();
+            context.go(Routes.initial);
           });
         } else if (i == 4) {
-          Get.toNamed(Routes.driverStatement);
+          context.push(Routes.driverStatement);
         } else {
-          Get.toNamed(Routes.driverOldTransaction);
+          context.push(Routes.driverOldTransaction);
         }
       },
       child: Row(

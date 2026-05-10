@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/utils.dart';
 
 class NoInternet extends StatelessWidget {
   NoInternet({super.key});
@@ -13,7 +14,7 @@ class NoInternet extends StatelessWidget {
     return Scaffold(
       backgroundColor: _colors.bgClr,
       body: SizedBox(
-        width: Get.width,
+        width: Utils().getWidgetWidth(context),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

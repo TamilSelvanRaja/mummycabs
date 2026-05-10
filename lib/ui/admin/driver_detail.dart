@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -19,7 +20,7 @@ class DriverDetailsScreen extends StatefulWidget {
 
 class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   late AppController appController;
   int selectedHistory = 0;
@@ -60,7 +61,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                       setState(() {});
                     },
                     child: Container(
-                      width: Get.width / 2,
+                      width: Utils().getWidgetWidth(context) / 2,
                       alignment: Alignment.center,
                       decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.primarycolour : _colors.greycolor1),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -94,11 +95,11 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                           fntWeight: FontWeight.bold,
                           fntcolor: double.parse("${initialData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour),
                       const Spacer(),
-                      UIHelper().actionButton("Add", 11, Get.width / 4, bgcolour: _colors.redColour, onPressed: () {
+                      UIHelper().actionButton("Add", 11, Utils().getWidgetWidth(context) / 4, bgcolour: _colors.redColour, onPressed: () {
                         showAmountDialog("Add Amount", "${initialData['_id']}");
                       }),
                       UIHelper.horizontalSpaceSmall,
-                      UIHelper().actionButton("Deduct", 11, Get.width / 4, bgcolour: _colors.greenColour, onPressed: () {
+                      UIHelper().actionButton("Deduct", 11, Utils().getWidgetWidth(context) / 4, bgcolour: _colors.greenColour, onPressed: () {
                         showAmountDialog("Deduct Amount", "${initialData['_id']}");
                       }),
                     ],
@@ -149,7 +150,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
               Align(
                 alignment: isAlignright ? Alignment.centerRight : Alignment.centerLeft,
                 child: Container(
-                  width: Get.width / 1.5,
+                  width: Utils().getWidgetWidth(context) / 1.5,
                   padding: const EdgeInsets.all(10),
                   decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.2) : _colors.redColour.withOpacity(0.2)),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -174,15 +175,15 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                           onTap: () {
                             Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
                               Map<String, dynamic> postParams = {'service_id': "history_delete", 'history_id': currentData['_id'], 'driver_id': currentData['driver_id']};
-                              await appController.cartAmtUpdateFun(postParams);
-                              Get.back();
+                              await appController.cartAmtUpdateFun(context,postParams);
+                               context.pop();;
                               await appController.gettransactionList(currentData['driver_id']);
                             });
                           },
                           child: Container(
                             decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.redColour),
                             padding: const EdgeInsets.all(5),
-                            width: Get.width / 4,
+                            width: Utils().getWidgetWidth(context) / 4,
                             child: Row(
                               children: [
                                 Icon(Icons.delete, color: _colors.whiteColour, size: 20),
@@ -273,7 +274,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                             Expanded(child: UIHelper.titleTxtStyle(title, fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                Get.back();
+                                 context.pop();;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -288,23 +289,23 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                             const CustomInput(hintText: "Amount", fieldname: "amount", fieldType: "number"),
                             UIHelper.verticalSpaceSmall,
                             if (title != "Add Amount") ...[
-                              CustomDropDown(initList: pref.paymentTypes, hintText: "Payment Type", fieldname: "payment_type", onSelected: (val) {}),
+                              CustomDropDown(initList: PreferenceService().paymentTypes, hintText: "Payment Type", fieldname: "payment_type", onSelected: (val) {}),
                               UIHelper.verticalSpaceSmall,
                             ],
                             const CustomInput(hintText: "Reason", fieldname: "add_reason", fieldType: "text"),
                             UIHelper.verticalSpaceMedium,
-                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () async {
+                            UIHelper().actionButton("Submit", 16, Utils().getWidgetWidth(context) / 3, onPressed: () async {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
                                 if (selectedHistory == 0) {
                                   postParams['service_id'] = "cart_amount_update";
                                   postParams['driver_id'] = id;
                                   postParams['type'] = title;
-                                  await appController.cartAmtUpdateFun(postParams);
-                                  Get.back();
+                                  await appController.cartAmtUpdateFun(context,postParams);
+                                   context.pop();;
                                   await appController.gettransactionList(id);
                                 } else {
-                                  Get.back();
+                                   context.pop();;
                                   postParams['service_id'] = "old_pending_add";
                                   postParams['driver_id'] = id;
                                   postParams['type'] = title == "Add Amount" ? "CR" : "DR";

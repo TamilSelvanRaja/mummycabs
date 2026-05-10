@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
-import 'package:mummy_cabs/services/services.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
+import 'package:mummy_cabs/services/utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,17 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+  
     return Scaffold(
       backgroundColor: _colors.bgClr,
       body: Center(
         child: SizedBox(
-          height: Get.height,
+          height: Utils().getWidgetHeight(context),
           width: 600,
           child: SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.all(16),
-              height: Get.height,
-              width: Get.width,
+              height: Utils().getWidgetHeight(context),
+              width: Utils().getWidgetWidth(context),
               child: FormBuilder(
                 key: _formKey,
                 child: Column(
@@ -51,17 +53,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: InkWell(
                             onTap: () {
-                              Get.toNamed(Routes.password);
+                              context.push(Routes.password);
                             },
                             child: UIHelper.titleTxtStyle("Forgot password?", fntcolor: _colors.bluecolor, fntsize: 14))),
                     UIHelper.verticalSpaceMedium,
-                    UIHelper().actionButton("Login", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () async {
+                    UIHelper().actionButton("Login", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () async {
                       dynamic postParams = {
                         "service_id": "login",
                         "mobile": "8608335666",
                         "password": "Mani@123#",
                       };
-                      AppController().loginFunction(postParams);
+                      AppController().loginFunction(context,postParams);
 
                       // if (_formKey.currentState!.saveAndValidate()) {
                       //   Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
@@ -77,8 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         UIHelper.titleTxtStyle("Dont have an account?", fntcolor: _colors.bluecolor, fntsize: 14),
                         InkWell(
                             onTap: () {
-                              Get.toNamed(Routes.signup, arguments: {"isSignup": true});
-                            },
+                               context.push(Routes.signup, extra:{"isSignup": true} );
+                           },
                             child: UIHelper.titleTxtStyle(" Register here", fntcolor: _colors.bluecolor, fntsize: 14, fntWeight: FontWeight.bold)),
                       ],
                     ),

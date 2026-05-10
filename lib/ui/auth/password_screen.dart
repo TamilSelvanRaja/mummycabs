@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:get/get.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
@@ -26,13 +25,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: _colors.bgClr,
       body: Center(
         child: SizedBox(
-          height: Get.height,
+          height: Utils().getWidgetHeight(context),
           width: 600,
           child: SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.all(16),
-              height: Get.height,
-              width: Get.width,
+              height: Utils().getWidgetHeight(context),
+              width: Utils().getWidgetWidth(context),
               child: FormBuilder(
                 key: _formKey,
                 child: Column(
@@ -49,12 +48,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     UIHelper.verticalSpaceMedium,
                     CustomInput(hintText: "Confirm Password", fieldname: "confirmpassword", fieldType: "password", onchanged: (value) {}, isPassword: true, prefixWidget: const Icon(Icons.lock)),
                     UIHelper.verticalSpaceMedium,
-                    UIHelper().actionButton("Submit", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
+                    UIHelper().actionButton("Submit", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () {
                       if (_formKey.currentState!.saveAndValidate()) {
                         Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
                         if (postParams['password'] == postParams['confirmpassword']) {
                           postParams['service_id'] = "forgot_password";
-                          AppController().forgotpassword(postParams);
+                          AppController().forgotpassword(context,postParams);
                         } else {
                           Utils().showAlert("W", "Password does not match");
                         }

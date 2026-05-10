@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/utils.dart';
 
 class FuelMaintanance extends StatefulWidget {
   const FuelMaintanance({super.key, required this.returnData, required this.initialData});
@@ -52,7 +54,7 @@ class _FuelMaintananceState extends State<FuelMaintanance> {
                 borderRadius: BorderRadius.circular(16.0),
               ),
               content: SizedBox(
-                width: Get.width * 0.9,
+                width: Utils().getWidgetWidth(context) * 0.9,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -70,7 +72,7 @@ class _FuelMaintananceState extends State<FuelMaintanance> {
                           InkWell(
                             onTap: () {
                               rows.clear();
-                              Get.back();
+                               context.pop();;
                             },
                             child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                           ),
@@ -165,10 +167,10 @@ class _FuelMaintananceState extends State<FuelMaintanance> {
                           }
                         }
                         widget.returnData(resarray);
-                        Get.back();
+                         context.pop();;
                       },
                       child: Container(
-                        width: Get.width / 2,
+                        width: Utils().getWidgetWidth(context) / 2,
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                         decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.primarycolour),
                         alignment: Alignment.center,

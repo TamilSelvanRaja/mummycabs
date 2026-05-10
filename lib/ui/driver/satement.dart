@@ -16,7 +16,7 @@ class StatementScreen extends StatefulWidget {
 
 class _StatementScreenState extends State<StatementScreen> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   late AppController appController;
   List tempList = [];
 
@@ -28,7 +28,7 @@ class _StatementScreenState extends State<StatementScreen> {
   }
 
   Future initialize() async {
-    userdata = await pref.getjsonData("userdata");
+    userdata = await PreferenceService().getjsonData("userdata");
     setState(() {});
   }
 

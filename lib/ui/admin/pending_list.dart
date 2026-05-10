@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +22,7 @@ class PendingListPage extends StatefulWidget {
 class _PendingListPageState extends State<PendingListPage> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   List selectedIndex = [];
   late AppController appController;
 
@@ -45,12 +47,12 @@ class _PendingListPageState extends State<PendingListPage> {
           return Center(
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 16),
-              width: Get.width / 2,
+              width: Utils().getWidgetWidth(context) / 2,
               decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
               child: Column(
                 children: [
                   Container(
-                    width: Get.width,
+                    width: Utils().getWidgetWidth(context),
                     height: 100,
                     alignment: Alignment.center,
                     decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
@@ -160,10 +162,10 @@ class _PendingListPageState extends State<PendingListPage> {
                   rowdata1("Balance Amount", "${currentData['balance_amount']}", "₹"),
                   UIHelper.verticalSpaceMedium,
                   Center(
-                    child: UIHelper().actionButton("Submit", 18, Get.width / 2, bgcolour: _colors.primarycolour, onPressed: () {
+                    child: UIHelper().actionButton("Submit", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () {
                       Map<String, dynamic> reqData = {'service_id': "submit_trip", "trip_id": "${currentData['_id']}"};
 
-                      AppController().tripSubmission(reqData);
+                      AppController().tripSubmission(context,reqData);
                     }),
                   ),
                   UIHelper.verticalSpaceSmall,
@@ -178,7 +180,7 @@ class _PendingListPageState extends State<PendingListPage> {
                 children: [
                   IconButton(
                       onPressed: () async {
-                        await Get.toNamed(Routes.starttrip, arguments: {"isedit": true, "initdata": currentData});
+                         context.push(Routes.starttrip, extra: {"isedit": true, "initdata": currentData});
                         await appController.getpendingtripList();
                       },
                       icon: Icon(Icons.edit, size: 25, color: _colors.bluecolor)),

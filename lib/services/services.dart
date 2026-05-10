@@ -1,109 +1,18 @@
 import 'dart:convert';
 
-import 'package:flutter/animation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:mummy_cabs/services/utils.dart';
-import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
-import 'package:mummy_cabs/ui/admin/car_detail.dart';
-import 'package:mummy_cabs/ui/admin/compant_triplist.dart';
-import 'package:mummy_cabs/ui/admin/company_add_edit.dart';
-import 'package:mummy_cabs/ui/admin/customers_list.dart';
-import 'package:mummy_cabs/ui/admin/driver_detail.dart';
-import 'package:mummy_cabs/ui/admin/driver_list.dart';
-import 'package:mummy_cabs/ui/admin/pending_list.dart';
-import 'package:mummy_cabs/ui/admin/start_trip.dart';
-import 'package:mummy_cabs/ui/admin/trip_list.dart';
-import 'package:mummy_cabs/ui/auth/password_screen.dart';
-import 'package:mummy_cabs/ui/auth/signin_screen.dart';
-import 'package:mummy_cabs/ui/auth/signup_screen.dart';
-import 'package:mummy_cabs/ui/auth/splash_screen.dart';
-import 'package:mummy_cabs/ui/driver/dashboard.dart';
-import 'package:mummy_cabs/ui/driver/satement.dart';
-import 'package:mummy_cabs/ui/driver/transaction_pending.dart';
-import 'package:mummy_cabs/ui/driver/transaction_status.dart';
 
-//**********************************************/
-//************** Routes String *****************/
-//**********************************************/
-class Routes {
-  static String initial = '/';
-  static String login = '/login';
-  static String signup = '/signup';
-  static String password = '/password';
-
-  static String adminDashboard = '/adminDashboard';
-  static String starttrip = '/starttrip';
-  static String cardetails = '/cardetails';
-  static String driverdetails = '/driverdetails';
-  static String driverlist = '/driverlist';
-
-  static String triplist = '/triplist';
-  static String pendingtriplist = '/pendingtriplist';
-  static String cartList = '/cartList';
-
-  static String customerList = '/customerList';
-  static String companyTripList = '/companyTripList';
-  static String companyaddEditTrip = '/companyaddEditTrip';
-
-  static String driverDashboard = '/driverDashboard';
-  static String driverTransaction = '/driverTransaction';
-  static String driverOldTransaction = '/driverOldTransaction';
-  static String driverStatement = '/driverStatement';
-}
-
-//**********************************************/
-//************** App Redirect Pages ************/
-//**********************************************/
-abstract class AppPages {
-  static final pages = [
-    GetPage(name: Routes.initial, page: () => const SplashScreen()),
-    pageanimation(Routes.login, const LoginScreen(), Transition.fadeIn),
-    pageanimation(Routes.signup, const SignupScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.password, const ForgotPasswordScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.adminDashboard, const AdminDashboard(), Transition.downToUp),
-    pageanimation(Routes.starttrip, const StartTripScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.cardetails, const CarDetailsScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverlist, const DriverListScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverdetails, const DriverDetailsScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.triplist, const TripListPage(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.pendingtriplist, const PendingListPage(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverDashboard, const DriverDashboard(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverTransaction, const DriverTransactionScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.customerList, const CustomerDetails(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.companyTripList, const CompantTripList(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.companyaddEditTrip, const CompantTripScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverOldTransaction, const PendingTransactionScreen(), Transition.rightToLeftWithFade),
-    pageanimation(Routes.driverStatement, const StatementScreen(), Transition.rightToLeftWithFade),
-  ];
-
-  static GetPage pageanimation(routename, redirectto, animateStyle) {
-    return GetPage(
-      name: routename,
-      page: () => redirectto,
-      transition: animateStyle,
-      transitionDuration: const Duration(milliseconds: 700),
-      curve: Curves.easeInOut,
-    );
-  }
-}
-
-class InitialBinding implements Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut<PreferenceService>(() => PreferenceService(), fenix: true);
-    Get.lazyPut<ApiServices>(() => ApiServices(), fenix: true);
-  }
-}
 
 //**********************************************/
 //************** Service API Call **************/
 //**********************************************/
 class ApiServices {
   //String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-  String apiurl = "http://10.163.19.180/mummycabs";
+ //Sing apiurl = "http://10.163.19.180/mummycabs";
+  String apiurl = "http://192.168.1.4/mummy_cabs";   
 
   Future formDataAPIServices(Map<String, dynamic> requestJson, String localPath) async {
     try {

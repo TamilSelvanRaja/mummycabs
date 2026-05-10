@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/static_datas.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 
@@ -20,7 +22,7 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   String fromDate = "", toDate = "";
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
 
@@ -50,7 +52,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
-            width: Get.width / 1.5,
+            width: Utils().getWidgetWidth(context) / 1.5,
             child: Column(
               children: [
                 UIHelper.verticalSpaceMedium2,
@@ -60,11 +62,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 UIHelper.verticalSpaceMedium2,
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.companyTripList);
+                    context.go(Routes.companyTripList);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),
-                    width: Get.width,
+                    width: Utils().getWidgetWidth(context),
                     margin: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.lightgreen, isShadow: true, shadowColor: Colors.black12),
                     child: Row(
@@ -107,12 +109,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
           child: GestureDetector(
             onTap: () async {
               if (index == 0) {
-                Get.toNamed(Routes.cardetails);
+                context.go(Routes.cardetails);
               } else if (index == 1) {
-                Get.toNamed(Routes.driverlist);
+                context.go(Routes.driverlist);
               } else {
-                await Get.toNamed(Routes.customerList);
-                setState(() {});
+                 context.go(Routes.customerList);
+               
               }
             },
             child: Column(
@@ -120,7 +122,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Container(
                     padding: const EdgeInsets.all(10),
                     margin: const EdgeInsets.symmetric(horizontal: 8),
-                    width: Get.width / 4,
+                    width: Utils().getWidgetWidth(context) / 4,
                     decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour, isShadow: true, shadowColor: Colors.black12),
                     child: Column(
                       children: [
@@ -151,11 +153,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
           child: GestureDetector(
             onTap: () async {
               if (index == 0) {
-                Get.toNamed(Routes.triplist);
+                context.go(Routes.triplist);
               } else {
-                await Get.toNamed(Routes.pendingtriplist);
-                setState(() {});
-              }
+                 context.go(Routes.pendingtriplist);
+               }
             },
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -225,7 +226,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             Expanded(child: UIHelper.titleTxtStyle("Trips Report", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                Get.back();
+                                 context.pop();;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -252,9 +253,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 setState(() {});
                               }),
                           UIHelper.verticalSpaceMedium,
-                          UIHelper().actionButton("Generate Email", 16, Get.width / 3, onPressed: () async {
+                          UIHelper().actionButton("Generate Email", 16, Utils().getWidgetWidth(context) / 3, onPressed: () async {
                             if (fromDate.isNotEmpty && toDate.isNotEmpty) {
-                              Get.back();
+                               context.pop();;
                               await AppController().generateMonthlyReport(fromDate, toDate);
                             }
                           }),
@@ -267,123 +268,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               )));
     }));
   }
-
-  // Future fgbottomsheet() {
-  //   return showModalBottomSheet(
-  //     backgroundColor: _colors.whiteColour,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(20),
-  //         topRight: Radius.circular(20),
-  //       ),
-  //     ),
-  //     context: context,
-  //     builder: (context) {
-  //       return Wrap(children: [
-  //         StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-  //           return Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               UIHelper.verticalSpaceSmall,
-  //               Center(
-  //                 child: Container(
-  //                   height: Get.height / 80,
-  //                   width: Get.width / 5,
-  //                   decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, _colors.greycolor),
-  //                 ),
-  //               ),
-  //               UIHelper.verticalSpaceMedium,
-  //               Padding(
-  //                   padding: const EdgeInsets.symmetric(horizontal: 16),
-  //                   child: Row(
-  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                     children: [
-  //                       UIHelper.titleTxtStyle("Trips Report" , fntcolor: _colors.primarycolour, fntsize: 20, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
-  //                       InkWell(
-  //                         onTap: () {
-  //                           Get.back();
-  //                         },
-  //                         child: Icon(
-  //                           Icons.cancel_outlined,
-  //                           color: _colors.redColour,
-  //                           size: 30,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   )),
-  //               UIHelper.verticalSpaceMedium,
-  //               if (index == 1) ...[
-  //                 Container(
-  //                     padding: const EdgeInsets.symmetric(horizontal: 16),
-  //                     width: Get.width,
-  //                     child: CustomDropDown(
-  //                         initList: customersList,
-  //                         initValue: cusId,
-  //                         hintText: "Customer Name",
-  //                         fieldname: "customer_id",
-  //                         onSelected: (val) {
-  //                           cusId = val;
-  //                           setState(() {});
-  //                         })),
-  //                 UIHelper.verticalSpaceSmall,
-  //               ],
-  //               Padding(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 16),
-  //                 child: Row(
-  //                   children: [
-  //                     Expanded(
-  //                         child: CustomDatePicker(
-  //                             hintText: "Start Date",
-  //                             fieldname: "pi_time",
-  //                             onSelected: (val) {
-  //                               fromDate = val.toString();
-  //                               setState(() {});
-  //                             })),
-  //                     UIHelper.horizontalSpaceSmall,
-  //                     Expanded(
-  //                         child: CustomDatePicker(
-  //                             hintText: "End Date",
-  //                             fieldname: "pickup_time",
-  //                             onSelected: (val) {
-  //                               toDate = val.toString();
-  //                               setState(() {});
-  //                             })),
-  //                   ],
-  //                 ),
-  //               ),
-  //               UIHelper.verticalSpaceMedium,
-  //               Center(
-  //                 child: InkWell(
-  //                   onTap: () async {
-  //                     if (fromDate.isNotEmpty && toDate.isNotEmpty) {
-  //                       if (index == 0) {
-  //                         Get.back();
-  //                         await AppController().generateMonthlyReport(fromDate, toDate);
-  //                       } else {
-  //                         if (cusId.isNotEmpty) {
-  //                           Get.back();
-  //                           Get.toNamed(Routes.companyTripList, arguments: {"cusId": cusId, "from": fromDate, "to": toDate});
-  //                         }
-  //                       }
-  //                     }
-  //                   },
-  //                   child: Container(
-  //                     decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.primarycolour),
-  //                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-  //                     child: UIHelper.titleTxtStyle(index == 0 ? "Generate Email" : "Next", fntsize: 16, fntcolor: _colors.bgClr, fntWeight: FontWeight.bold),
-  //                   ),
-  //                 ),
-  //               ),
-  //               UIHelper.verticalSpaceMedium,
-  //             ],
-  //           );
-  //         }),
-  //       ]);
-  //     },
-  //   );
-  // }
 
   Future dutydetailsEditDialog() async {
     await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
@@ -410,7 +294,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             Expanded(child: UIHelper.titleTxtStyle("Duty Fess", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                Get.back();
+                                 context.pop();;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -422,18 +306,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Column(children: [
-                            CustomInput(hintText: "One Hour Amount", initValue: pref.dutyDetails['hr_amount'], fieldname: "hr_amount", fieldType: "number"),
+                            CustomInput(hintText: "One Hour Amount", initValue: PreferenceService().dutyDetails['hr_amount'], fieldname: "hr_amount", fieldType: "number"),
                             UIHelper.verticalSpaceSmall,
-                            CustomInput(hintText: "Extra Amount per KM", initValue: pref.dutyDetails['ex_km_amount'], fieldname: "ex_km_amount", fieldType: "number"),
+                            CustomInput(hintText: "Extra Amount per KM", initValue: PreferenceService().dutyDetails['ex_km_amount'], fieldname: "ex_km_amount", fieldType: "number"),
                             UIHelper.verticalSpaceMedium,
-                            CustomInput(hintText: "Maximum KM per hour", initValue: pref.dutyDetails['per_hr_km'], fieldname: "per_hr_km", fieldType: "number"),
+                            CustomInput(hintText: "Maximum KM per hour", initValue: PreferenceService().dutyDetails['per_hr_km'], fieldname: "per_hr_km", fieldType: "number"),
                             UIHelper.verticalSpaceMedium,
-                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () {
+                            UIHelper().actionButton("Submit", 16, Utils().getWidgetWidth(context) / 3, onPressed: () {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
-                                postParams['uid'] = pref.dutyDetails["_id"];
+                                postParams['uid'] = PreferenceService().dutyDetails["_id"];
                                 postParams['service_id'] = "duty_details_edit";
-                                AppController().dutyDetailsUpdate(postParams);
+                                AppController().dutyDetailsUpdate(context, postParams);
                               }
                             }),
                           ])),
@@ -449,7 +333,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return AppBar(
       toolbarHeight: 90,
       elevation: 0,
-      backgroundColor: _colors.primarycolour,
+       automaticallyImplyLeading: false,
+     backgroundColor: _colors.primarycolour,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -468,9 +353,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: InkWell(
           onTap: () async {
             if (index == 0) {
-              await Get.toNamed(Routes.starttrip, arguments: {"isedit": false});
+               context.go(Routes.starttrip, extra: {"isedit": false});
             } else if (index == 1) {
-              await Get.toNamed(Routes.companyaddEditTrip, arguments: {"isedit": false});
+               context.go(Routes.companyaddEditTrip, extra: {"isedit": false});
             } else if (index == 2) {
               fromDate = "";
               toDate = "";
@@ -480,8 +365,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
               dutydetailsEditDialog();
             } else {
               Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
-                pref.cleanAllPreferences();
-                Get.offNamedUntil(Routes.initial, (p) => false);
+                PreferenceService().cleanAllPreferences();
+                context.go(Routes.initial);
               });
             }
           },

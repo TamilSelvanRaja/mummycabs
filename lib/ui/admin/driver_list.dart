@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
+import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +22,7 @@ class DriverListScreen extends StatefulWidget {
 class _DriverListScreenState extends State<DriverListScreen> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   late AppController appController;
   final GlobalKey<FormBuilderState> _formkey = GlobalKey<FormBuilderState>();
   String searchKey = "";
@@ -38,7 +40,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 16),
           decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
-          width: Get.width / 2,
+          width: Utils().getWidgetWidth(context) / 2,
           child: MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) {
@@ -55,7 +57,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
               return Column(
                 children: [
                   Container(
-                    width: Get.width,
+                    width: Utils().getWidgetWidth(context),
                     height: 100,
                     alignment: Alignment.center,
                     decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
@@ -63,7 +65,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                   ),
                   Container(
                     height: 50,
-                    width: Get.width,
+                    width: Utils().getWidgetWidth(context),
                     margin: const EdgeInsets.fromLTRB(16, 16, 16, 5),
                     child: Row(
                       children: [
@@ -80,7 +82,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                         )),
                         IconButton(
                             onPressed: () async {
-                              await Get.toNamed(Routes.signup, arguments: {"isSignup": false});
+                              await context.push(Routes.signup, extra: {"isSignup": false});
                               await appController.getcarList("drivers_list");
                             },
                             icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
@@ -101,11 +103,11 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                   children: [
                                     InkWell(
                                       onTap: () async {
-                                        await Get.toNamed(Routes.driverdetails, arguments: {"initdata": currentData});
+                                        await context.push(Routes.driverdetails, extra: {"initdata": currentData});
                                         setState(() {});
                                       },
                                       child: SizedBox(
-                                        width: Get.width,
+                                        width: Utils().getWidgetWidth(context),
                                         child: Column(
                                           children: [
                                             Row(
@@ -176,7 +178,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.symmetric(horizontal: 30),
-                      width: Get.width / 2,
+                      width: Utils().getWidgetWidth(context) / 2,
                       alignment: Alignment.center,
                       decoration: UIHelper.gradientContainer(15, 15, 15, 15, [_colors.orangeColour, _colors.yellowColour]),
                       child: UIHelper.titleTxtStyle("₹ ${appController.totalcartamount}", fntcolor: _colors.textColour, fntsize: 16, fntWeight: FontWeight.bold),
@@ -227,7 +229,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                             Expanded(child: UIHelper.titleTxtStyle("Edit Driver", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                Get.back();
+                                 context.pop();;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -245,12 +247,12 @@ class _DriverListScreenState extends State<DriverListScreen> {
                             UIHelper.verticalSpaceMedium,
                             CustomInput(hintText: "Password", initValue: currentdata['password'], fieldname: "password", fieldType: "text"),
                             UIHelper.verticalSpaceMedium,
-                            UIHelper().actionButton("Submit", 16, Get.width / 3, onPressed: () async {
+                            UIHelper().actionButton("Submit", 16, Utils().getWidgetWidth(context) / 3, onPressed: () async {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
                                 postParams['service_id'] = "driver_update";
                                 postParams['_id'] = currentdata['_id'];
-                                appController.driverupdate(postParams);
+                                appController.driverupdate(context,postParams);
                               }
                             }),
                           ])),

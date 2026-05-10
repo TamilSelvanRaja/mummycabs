@@ -22,7 +22,7 @@ class TripListPage extends StatefulWidget {
 class _TripListPageState extends State<TripListPage> {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   List selectedIndex = [];
   late AppController appController;
   String selectedDate = "";
@@ -56,12 +56,12 @@ class _TripListPageState extends State<TripListPage> {
             body: Center(
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 16),
-                width: Get.width / 2,
+                width: Utils().getWidgetWidth(context) / 2,
                 decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
                 child: Column(
                   children: [
                     Container(
-                      width: Get.width,
+                      width: Utils().getWidgetWidth(context),
                       height: 100,
                       alignment: Alignment.center,
                       decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),

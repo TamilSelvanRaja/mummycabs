@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/custom_popup.dart';
 import 'package:mummy_cabs/resources/images.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
-import 'package:mummy_cabs/services/services.dart';
 
 class Utils {
   final AppColors _colors = AppColors();
   final AppImages _images = AppImages();
-  final PreferenceService pref = Get.find<PreferenceService>();
   bool isNumberValid(value) {
     return RegExp(r'^[6789]\d{9}$').hasMatch(value);
   }
@@ -30,8 +29,8 @@ class Utils {
   }
 
 //// ************ Hide Indicator ***********\\\\\
-  Future<void> hideProgress() async {
-    Get.back();
+  Future<void> hideProgress(BuildContext context) async {
+     context.pop();
   }
 
   //// ************ Show Toast ***********\\\\\
@@ -51,4 +50,13 @@ class Utils {
       CustomAlert(title: contentType, message: message, onBackPress: onBackPress ?? () {}, onClickOK: onComplete ?? () {}, subTitle: subTitle ?? ""),
     );
   }
+
+getWidgetHeight(context){
+  return MediaQuery.of(context).size.height;
+}
+
+getWidgetWidth(context){
+  return MediaQuery.of(context).size.width;
+}
+
 }

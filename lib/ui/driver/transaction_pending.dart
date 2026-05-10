@@ -16,7 +16,7 @@ class PendingTransactionScreen extends StatefulWidget {
 
 class _PendingTransactionScreenState extends State<PendingTransactionScreen> {
   final AppColors _colors = AppColors();
-  final PreferenceService pref = Get.find<PreferenceService>();
+
   late AppController appController;
   dynamic userdata = {};
   @override
@@ -26,7 +26,7 @@ class _PendingTransactionScreenState extends State<PendingTransactionScreen> {
   }
 
   Future initialize() async {
-    userdata = await pref.getjsonData("userdata");
+    userdata = await PreferenceService().getjsonData("userdata");
     setState(() {});
   }
 
