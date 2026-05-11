@@ -45,7 +45,7 @@ class _PendingTransactionScreenState extends State<PendingTransactionScreen> {
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
             Future.delayed(const Duration(milliseconds: 600), () {
-              controller.getoldtransactionList("${userdata['_id']}");
+              controller.getoldtransactionList(context, "${userdata['_id']}");
             });
             return controller;
           })

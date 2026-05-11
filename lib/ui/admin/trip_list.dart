@@ -44,7 +44,7 @@ class _TripListPageState extends State<TripListPage> {
           final controller = AppController();
           Future.delayed(const Duration(seconds: 1), () {
             controller.initialize();
-            controller.gettripList(selectedDate);
+            controller.gettripList(context, selectedDate);
           });
           return controller;
         })
@@ -90,7 +90,7 @@ class _TripListPageState extends State<TripListPage> {
                                   hintText: "",
                                   fieldname: "trip_date",
                                   onSelected: (val) {
-                                    appController.gettripList(val);
+                                    appController.gettripList(context, val);
                                     selectedDate = val;
                                     setState(() {});
                                   }))
@@ -210,13 +210,13 @@ class _TripListPageState extends State<TripListPage> {
                 children: [
                   IconButton(
                       onPressed: () async {
-                        Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
+                        Utils().showAlert(context, "De", "Do you want to delete?", onComplete: () async {
                           Map<String, dynamic> postParams = {
                             'service_id': "delete_trip",
                             'trip_id': currentData['_id'],
                           };
-                          await appController.deleteTrip(postParams);
-                          appController.gettripList(selectedDate);
+                          await appController.deleteTrip(context, postParams);
+                          appController.gettripList(context, selectedDate);
                         });
                       },
                       icon: Icon(Icons.delete, size: 25, color: _colors.redColour)),

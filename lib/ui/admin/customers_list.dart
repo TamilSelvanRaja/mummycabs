@@ -106,11 +106,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   }
 
   Future showAddCustomer() async {
-    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
-      return MediaQuery.removeViewInsets(
-          removeBottom: true,
-          context: context,
-          child: AlertDialog(
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
               contentPadding: EdgeInsets.zero,
               backgroundColor: _colors.bgClr,
               insetPadding: EdgeInsets.only(
@@ -130,7 +129,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             Expanded(child: UIHelper.titleTxtStyle("New Customer", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                 context.pop();;
+                                context.pop();
+                                ;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -148,7 +148,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                               if (_formkey.currentState!.saveAndValidate()) {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
                                 postParams['service_id'] = "new_customer";
-                                appController.newcustomeradd(context,postParams);
+                                appController.newcustomeradd(context, postParams);
                               }
                             }),
                           ])),
@@ -156,7 +156,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                     UIHelper.verticalSpaceMedium,
                   ],
                 ),
-              )));
-    }));
+              ));
+        });
   }
 }

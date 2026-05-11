@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/go_router_services.dart';
-import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +17,6 @@ class CompantTripList extends StatefulWidget {
 class _CompantTripListState extends State<CompantTripList> {
   final AppColors _colors = AppColors();
 
-
   late AppController appController;
 
   String fromDate = "", toDate = "", cusId = "";
@@ -31,7 +28,12 @@ class _CompantTripListState extends State<CompantTripList> {
         ChangeNotifierProvider(create: (_) {
           final controller = AppController();
           Future.delayed(const Duration(seconds: 1), () {
-            //  controller.getCompanytripList(fromDate, toDate, cusId);
+            final extra = GoRouterState.of(context).extra as Map<String, dynamic>;
+            controller.initialize();
+            fromDate = extra["from"];
+            toDate = extra["to"];
+            cusId = extra["cusId"];
+            controller.getCompanytripList(context, fromDate, toDate, cusId);
           });
           return controller;
         })
@@ -40,20 +42,6 @@ class _CompantTripListState extends State<CompantTripList> {
         appController = ref;
         return Scaffold(
           backgroundColor: _colors.bgClr,
-          appBar: AppBar(
-            backgroundColor: _colors.primarycolour,
-            centerTitle: true,
-            iconTheme: IconThemeData(color: _colors.bgClr),
-            title: UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.bgClr, fntsize: 18),
-            actions: [
-              if (appController.companytripsList.isNotEmpty)
-                IconButton(
-                    onPressed: () async {
-                      await AppController().generateInvoiceReport(fromDate, toDate, cusId);
-                    },
-                    icon: const Icon(Icons.mail, size: 25))
-            ],
-          ),
           body: Center(
             child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 16),
@@ -62,16 +50,27 @@ class _CompantTripListState extends State<CompantTripList> {
                 child: Column(
                   children: [
                     Container(
-                      width: Utils().getWidgetWidth(context),
-                      height: 100,
-                      alignment: Alignment.center,
-                      decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
-                      child: UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
-                    ),
+                        width: Utils().getWidgetWidth(context),
+                        padding: EdgeInsets.all(20),
+                        height: 100,
+                        alignment: Alignment.center,
+                        decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
+                            if (appController.companytripsList.isNotEmpty)
+                              IconButton(
+                                  onPressed: () async {
+                                    await AppController().generateInvoiceReport(context, fromDate, toDate, cusId);
+                                  },
+                                  icon: Icon(Icons.mail, size: 25, color: _colors.bgClr))
+                          ],
+                        )),
                     Expanded(
                       child: appController.companytripsList.isNotEmpty
                           ? ListView.builder(
-                              padding: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.all(10),
                               itemCount: appController.companytripsList.length,
                               itemBuilder: (context, index) {
                                 dynamic currentData = appController.companytripsList[index];
@@ -155,8 +154,8 @@ class _CompantTripListState extends State<CompantTripList> {
               rowwidget("Balance", "${currentData['balance_amount']}", txtClr: _colors.redColour),
               GestureDetector(
                 onTap: () async {
-                   context.push(Routes.companyaddEditTrip, extra: {"isedit": true, "initdata": currentData});
-                  appController.getCompanytripList(fromDate, toDate, cusId);
+                  await context.push(Routes.companyaddEditTrip, extra: {"isedit": true, "initdata": currentData});
+                  appController.getCompanytripList(context, fromDate, toDate, cusId);
                 },
                 child: Container(
                   decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, _colors.bluecolor),

@@ -53,9 +53,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
                         if (postParams['password'] == postParams['confirmpassword']) {
                           postParams['service_id'] = "forgot_password";
-                          AppController().forgotpassword(context,postParams);
+                          AppController().forgotpassword(context, postParams);
                         } else {
-                          Utils().showAlert("W", "Password does not match");
+                          Utils().showAlert(context, "W", "Password does not match");
                         }
                       }
                     }),

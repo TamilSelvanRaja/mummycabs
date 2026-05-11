@@ -12,8 +12,8 @@ import 'package:mummy_cabs/services/utils.dart';
 import 'package:provider/provider.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
-  const DriverDetailsScreen({super.key});
-
+  const DriverDetailsScreen({super.key, required this.initdata});
+  final dynamic initdata;
   @override
   State<DriverDetailsScreen> createState() => _DriverDetailsScreenState();
 }
@@ -25,10 +25,11 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   late AppController appController;
   int selectedHistory = 0;
   dynamic initialData = {};
+
   @override
   void initState() {
     super.initState();
-    initialData = Get.arguments['initdata'];
+    initialData = widget.initdata;
     setState(() {});
   }
 
@@ -38,77 +39,82 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
       backgroundColor: _colors.bgClr,
       body: SafeArea(
         top: true,
-        child: MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) {
-              final controller = AppController();
-              Future.delayed(const Duration(milliseconds: 600), () {
-                controller.gettransactionList(initialData['_id'].toString());
-                controller.getoldtransactionList(initialData['_id'].toString());
-              });
-              return controller;
-            })
-          ],
-          child: Consumer<AppController>(builder: (context, ref, child) {
-            appController = ref;
-            return Column(
-              children: [
-                Row(
-                    children: List.generate(2, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      selectedHistory = index;
-                      setState(() {});
-                    },
-                    child: Container(
-                      width: Utils().getWidgetWidth(context) / 2,
-                      alignment: Alignment.center,
-                      decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.primarycolour : _colors.greycolor1),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      child: UIHelper.titleTxtStyle(index == 0 ? "Trip History" : "Pending History",
-                          fntcolor: index == selectedHistory ? _colors.whiteColour : _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
-                    ),
-                  );
-                })),
-                UIHelper.verticalSpaceSmall,
-                if (selectedHistory == 1) ...[
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: Center(
+          child: Container(
+            width: Utils().getWidgetWidth(context) / 2,
+            child: MultiProvider(
+              providers: [
+                ChangeNotifierProvider(create: (_) {
+                  final controller = AppController();
+                  Future.delayed(const Duration(milliseconds: 600), () {
+                    controller.gettransactionList(context, initialData['_id'].toString());
+                    controller.getoldtransactionList(context, initialData['_id'].toString());
+                  });
+                  return controller;
+                })
+              ],
+              child: Consumer<AppController>(builder: (context, ref, child) {
+                appController = ref;
+                return Column(
+                  children: [
+                    Row(
+                        children: List.generate(2, (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          selectedHistory = index;
+                          setState(() {});
+                        },
+                        child: Container(
+                          width: Utils().getWidgetWidth(context) / 4,
+                          alignment: Alignment.center,
+                          decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.primarycolour : _colors.greycolor1),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          child: UIHelper.titleTxtStyle(index == 0 ? "Trip History" : "Pending History",
+                              fntcolor: index == selectedHistory ? _colors.whiteColour : _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
+                        ),
+                      );
+                    })),
+                    UIHelper.verticalSpaceSmall,
+                    if (selectedHistory == 1) ...[
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            children: [
+                              Expanded(flex: 2, child: UIHelper.titleTxtStyle("Date", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
+                              Expanded(flex: 3, child: UIHelper.titleTxtStyle("Amount", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
+                              Expanded(flex: 2, child: UIHelper.titleTxtStyle("Cr/Dr", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
+                              Expanded(flex: 2, child: UIHelper.titleTxtStyle("Pending", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
+                            ],
+                          )),
+                      const Divider()
+                    ],
+                    Expanded(child: selectedHistory == 0 ? transactionHistory() : oldtransactionHistory()),
+                    Divider(color: _colors.primarycolour),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Expanded(flex: 2, child: UIHelper.titleTxtStyle("Date", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
-                          Expanded(flex: 3, child: UIHelper.titleTxtStyle("Amount", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
-                          Expanded(flex: 2, child: UIHelper.titleTxtStyle("Cr/Dr", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
-                          Expanded(flex: 2, child: UIHelper.titleTxtStyle("Pending", fntsize: 12, fntWeight: FontWeight.bold, fntcolor: _colors.primarycolour)),
+                          UIHelper.titleTxtStyle(
+                              selectedHistory == 0 ? "₹ ${double.parse("${initialData['cart_amt']}").toStringAsFixed(2)}" : "₹ ${double.parse(appController.pendingHistoryAmount).toStringAsFixed(2)}",
+                              fntWeight: FontWeight.bold,
+                              fntcolor: double.parse("${initialData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour),
+                          const Spacer(),
+                          UIHelper().actionButton("Add", 11, Utils().getWidgetWidth(context) / 6, bgcolour: _colors.redColour, onPressed: () {
+                            showAmountDialog("Add Amount", "${initialData['_id']}");
+                          }),
+                          UIHelper.horizontalSpaceSmall,
+                          UIHelper().actionButton("Deduct", 11, Utils().getWidgetWidth(context) / 6, bgcolour: _colors.greenColour, onPressed: () {
+                            showAmountDialog("Deduct Amount", "${initialData['_id']}");
+                          }),
                         ],
-                      )),
-                  const Divider()
-                ],
-                Expanded(child: selectedHistory == 0 ? transactionHistory() : oldtransactionHistory()),
-                Divider(color: _colors.primarycolour),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      UIHelper.titleTxtStyle(
-                          selectedHistory == 0 ? "₹ ${double.parse("${initialData['cart_amt']}").toStringAsFixed(2)}" : "₹ ${double.parse(appController.pendingHistoryAmount).toStringAsFixed(2)}",
-                          fntWeight: FontWeight.bold,
-                          fntcolor: double.parse("${initialData['cart_amt']}") > 0 ? _colors.redColour : _colors.greenColour),
-                      const Spacer(),
-                      UIHelper().actionButton("Add", 11, Utils().getWidgetWidth(context) / 4, bgcolour: _colors.redColour, onPressed: () {
-                        showAmountDialog("Add Amount", "${initialData['_id']}");
-                      }),
-                      UIHelper.horizontalSpaceSmall,
-                      UIHelper().actionButton("Deduct", 11, Utils().getWidgetWidth(context) / 4, bgcolour: _colors.greenColour, onPressed: () {
-                        showAmountDialog("Deduct Amount", "${initialData['_id']}");
-                      }),
-                    ],
-                  ),
-                ),
-                UIHelper.verticalSpaceSmall
-              ],
-            );
-          }),
+                      ),
+                    ),
+                    UIHelper.verticalSpaceSmall
+                  ],
+                );
+              }),
+            ),
+          ),
         ),
       ),
     );
@@ -150,7 +156,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
               Align(
                 alignment: isAlignright ? Alignment.centerRight : Alignment.centerLeft,
                 child: Container(
-                  width: Utils().getWidgetWidth(context) / 1.5,
+                  width: Utils().getWidgetWidth(context) / 6,
                   padding: const EdgeInsets.all(10),
                   decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.2) : _colors.redColour.withOpacity(0.2)),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -173,11 +179,11 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                       Center(
                         child: GestureDetector(
                           onTap: () {
-                            Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
+                            Utils().showAlert(context, "De", "Do you want to delete?", onComplete: () async {
                               Map<String, dynamic> postParams = {'service_id': "history_delete", 'history_id': currentData['_id'], 'driver_id': currentData['driver_id']};
-                              await appController.cartAmtUpdateFun(context,postParams);
-                               context.pop();;
-                              await appController.gettransactionList(currentData['driver_id']);
+                              await appController.cartAmtUpdateFun(context, postParams);
+                              context.pop();
+                              await appController.gettransactionList(context, currentData['driver_id']);
                             });
                           },
                           child: Container(
@@ -214,9 +220,9 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
 
         return GestureDetector(
           onDoubleTap: () {
-            Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
+            Utils().showAlert(context, "De", "Do you want to delete?", onComplete: () async {
               Map<String, dynamic> postParams = {'service_id': "delete_pending_history", 'id': currentData['_id'], 'driver_id': currentData['driver_id']};
-              await appController.oldPendingAdd(postParams);
+              await appController.oldPendingAdd(context, postParams);
             });
           },
           child: Padding(
@@ -250,11 +256,10 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   }
 
   Future showAmountDialog(String title, String id) async {
-    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
-      return MediaQuery.removeViewInsets(
-          removeBottom: true,
-          context: context,
-          child: AlertDialog(
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
               contentPadding: EdgeInsets.zero,
               backgroundColor: _colors.bgClr,
               insetPadding: EdgeInsets.only(
@@ -274,7 +279,8 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                             Expanded(child: UIHelper.titleTxtStyle(title, fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                 context.pop();;
+                                context.pop();
+                                ;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -301,15 +307,17 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                   postParams['service_id'] = "cart_amount_update";
                                   postParams['driver_id'] = id;
                                   postParams['type'] = title;
-                                  await appController.cartAmtUpdateFun(context,postParams);
-                                   context.pop();;
-                                  await appController.gettransactionList(id);
+                                  await appController.cartAmtUpdateFun(context, postParams);
+                                  context.pop();
+                                  ;
+                                  await appController.gettransactionList(context, id);
                                 } else {
-                                   context.pop();;
+                                  context.pop();
+                                  ;
                                   postParams['service_id'] = "old_pending_add";
                                   postParams['driver_id'] = id;
                                   postParams['type'] = title == "Add Amount" ? "CR" : "DR";
-                                  await appController.oldPendingAdd(postParams);
+                                  await appController.oldPendingAdd(context, postParams);
                                 }
                               }
                             }),
@@ -318,7 +326,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                     UIHelper.verticalSpaceMedium,
                   ],
                 ),
-              )));
-    }));
+              ));
+        });
   }
 }

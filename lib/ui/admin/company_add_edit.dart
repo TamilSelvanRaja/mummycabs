@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -12,8 +13,9 @@ import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 
 class CompantTripScreen extends StatefulWidget {
-  const CompantTripScreen({super.key});
-
+  const CompantTripScreen({super.key, required this.isedit, required this.initdata});
+  final bool isedit;
+  final dynamic initdata;
   @override
   State<CompantTripScreen> createState() => CompantTripScreenState();
 }
@@ -44,13 +46,18 @@ class CompantTripScreenState extends State<CompantTripScreen> {
   List driversLists = [];
   List carList = [];
   List customersList = [];
-
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
-    isEdit = Get.arguments['isedit'];
+    initialize1();
+    initialize();
+  }
+
+  initialize1() {
+    isEdit = widget.isedit;
     if (isEdit) {
-      initdata = Get.arguments['initdata'];
+      initdata = widget.initdata;
       selectedTypeid = int.parse("${initdata["type_id"]}");
       vehiclenumber = initdata["vehicle_no"].toString();
       selectedDriverid = initdata["driver_id"].toString();
@@ -66,9 +73,11 @@ class CompantTripScreenState extends State<CompantTripScreen> {
       advAmt = initdata["advance_amt"].toString();
       othrAmt = initdata["other_amount"].toString();
       otherDesc = initdata["description"].toString();
+      isLoading = false;
+    } else {
+      isLoading = false;
     }
     setState(() {});
-    initialize();
   }
 
   Future initialize() async {
@@ -80,7 +89,7 @@ class CompantTripScreenState extends State<CompantTripScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: _colors.bgClr, body: SingleChildScrollView(child: page1()));
+    return Scaffold(backgroundColor: _colors.bgClr, body: isLoading ? CircularProgressIndicator() : SingleChildScrollView(child: page1()));
   }
 
   Widget page1() {
@@ -297,23 +306,23 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                     ),
                     UIHelper.verticalSpaceMedium,
                     Center(
-                      child: UIHelper().actionButton("Next", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () {
+                      child: UIHelper().actionButton("Next", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () async {
                         if (customerName.isEmpty) {
-                          Utils().showToast("Warning", "please enter the customer name", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please enter the customer name", bgclr: _colors.orangeColour);
                         } else if (pickuptime.isEmpty && droptime.isEmpty) {
-                          Utils().showToast("Warning", "Time Details missing", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "Time Details missing", bgclr: _colors.orangeColour);
                         } else if (vehiclenumber.isEmpty) {
-                          Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please select Vehicle", bgclr: _colors.orangeColour);
                         } else if (selectedDriverid.isEmpty) {
-                          Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please select Driver", bgclr: _colors.orangeColour);
                         } else if (pickuppoint.isEmpty && droppoint.isEmpty) {
-                          Utils().showToast("Warning", "Location Details missing", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "Location Details missing", bgclr: _colors.orangeColour);
                         } else if (km.isEmpty) {
-                          Utils().showToast("Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please Enter the over all Kilometers", bgclr: _colors.orangeColour);
                         } else if (driversalarry.isEmpty) {
-                          Utils().showToast("Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please Enter Driver Salary", bgclr: _colors.orangeColour);
                         } else if (kmamt.isEmpty) {
-                          Utils().showToast("Warning", "please Enter Amount(per km)", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please Enter Amount(per km)", bgclr: _colors.orangeColour);
                         } else {
                           int hours = 0;
                           int days = 0;
@@ -332,16 +341,16 @@ class CompantTripScreenState extends State<CompantTripScreen> {
                           }
 
                           if (hours < 1) {
-                            Utils().showToast("Warning", "please Check the Droptime", bgclr: _colors.redColour);
+                            Utils().showToast(context, "Warning", "please Check the Droptime", bgclr: _colors.redColour);
                           } else {
-                            Map<String, dynamic> reqData = dataparsefunction(hours, days);
+                            dynamic reqData = await dataparsefunction(hours, days);
                             if (isEdit) {
                               reqData['trip_id'] = initdata['_id'];
                               reqData['service_id'] = "edit_companytrip";
-                              AppController().newCompanyTripStart(context,reqData);
+                              AppController().newCompanyTripStart(context, reqData);
                             } else {
                               reqData['service_id'] = "add_companytrip";
-                              AppController().newCompanyTripStart(context,reqData);
+                              AppController().newCompanyTripStart(context, reqData);
                             }
                           }
                         }
@@ -357,9 +366,11 @@ class CompantTripScreenState extends State<CompantTripScreen> {
     );
   }
 
-  dataparsefunction(int hours, int days) {
-    double onehrAmt = double.parse("${PreferenceService().dutyDetails['hr_amount']}");
-    int hrKm = int.parse("${PreferenceService().dutyDetails['per_hr_km']}");
+  dataparsefunction(int hours, int days) async {
+    dynamic dutyDetails = await PreferenceService().getjsonData("dutyDetails");
+
+    double onehrAmt = double.parse("${dutyDetails['hr_amount']}");
+    int hrKm = int.parse("${dutyDetails['per_hr_km']}");
     double extrakmAmt = double.parse(kmamt);
 
     double packageAmount = hours * onehrAmt;

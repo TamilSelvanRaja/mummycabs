@@ -1,18 +1,18 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:mummy_cabs/services/utils.dart';
-
 
 //**********************************************/
 //************** Service API Call **************/
 //**********************************************/
 class ApiServices {
   //String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
- //Sing apiurl = "http://10.163.19.180/mummycabs";
-  String apiurl = "http://192.168.1.4/mummy_cabs";   
+  String apiurl = "http://10.163.19.180/mummycabs";
+  //String apiurl = "http://192.168.1.4/mummy_cabs";
 
   Future formDataAPIServices(Map<String, dynamic> requestJson, String localPath) async {
     try {
@@ -39,7 +39,7 @@ class ApiServices {
       }
       return null;
     } catch (e) {
-      Utils().showToast("Failure", "Error : $e");
+      debugPrint("$e");
     }
   }
 }
@@ -55,8 +55,6 @@ class PreferenceService {
     {"reg_no": "Phone Pay"},
     {"reg_no": "Paytm"}
   ];
-
-  Map dutyDetails = {};
 
 //// ************ Set User Info ***********\\\\\
   Future<void> setString(String key, String value) async {
@@ -98,6 +96,13 @@ class PreferenceService {
 
 //// ************ Clear the local Storage ***********\\\\\
   Future cleanAllPreferences() async {
+    final box = await Hive.openBox('mummycabs');
+
+    await box.clear();
+
+    await box.close();
+
+    await Hive.deleteBoxFromDisk('mummycabs');
     _storage.deleteAll();
   }
 }

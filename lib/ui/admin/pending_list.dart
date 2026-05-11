@@ -10,6 +10,7 @@ import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
+import 'package:mummy_cabs/ui/admin/start_trip.dart';
 import 'package:provider/provider.dart';
 
 class PendingListPage extends StatefulWidget {
@@ -35,7 +36,7 @@ class _PendingListPageState extends State<PendingListPage> {
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
             Future.delayed(const Duration(seconds: 1), () {
-              controller.getpendingtripList();
+              controller.getpendingtripList(context);
               controller.initialize();
             });
 
@@ -165,7 +166,7 @@ class _PendingListPageState extends State<PendingListPage> {
                     child: UIHelper().actionButton("Submit", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () {
                       Map<String, dynamic> reqData = {'service_id': "submit_trip", "trip_id": "${currentData['_id']}"};
 
-                      AppController().tripSubmission(context,reqData);
+                      AppController().tripSubmission(context, reqData);
                     }),
                   ),
                   UIHelper.verticalSpaceSmall,
@@ -180,19 +181,19 @@ class _PendingListPageState extends State<PendingListPage> {
                 children: [
                   IconButton(
                       onPressed: () async {
-                         context.push(Routes.starttrip, extra: {"isedit": true, "initdata": currentData});
-                        await appController.getpendingtripList();
+                        await context.push(Routes.starttrip, extra: {"isedit": true, "initdata": currentData});
+                        await appController.getpendingtripList(context);
                       },
                       icon: Icon(Icons.edit, size: 25, color: _colors.bluecolor)),
                   IconButton(
                       onPressed: () async {
-                        Utils().showAlert("De", "Do you want to delete?", onComplete: () async {
+                        Utils().showAlert(context, "De", "Do you want to delete?", onComplete: () async {
                           Map<String, dynamic> postParams = {
                             'service_id': "delete_trip",
                             'trip_id': currentData['_id'],
                           };
-                          await appController.deleteTrip(postParams);
-                          appController.getpendingtripList();
+                          await appController.deleteTrip(context, postParams);
+                          appController.getpendingtripList(context);
                         });
                       },
                       icon: Icon(Icons.delete, size: 25, color: _colors.redColour)),

@@ -49,7 +49,7 @@ class _StatementScreenState extends State<StatementScreen> {
             ChangeNotifierProvider(create: (_) {
               final controller = AppController();
               Future.delayed(const Duration(milliseconds: 600), () {
-                controller.gettransactionList("${userdata['_id']}");
+                controller.gettransactionList(context, "${userdata['_id']}");
               });
               return controller;
             })

@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
@@ -10,8 +13,9 @@ import 'package:mummy_cabs/services/utils.dart';
 import 'package:mummy_cabs/ui/widgets/fuel_maintain.dart';
 
 class StartTripScreen extends StatefulWidget {
-  const StartTripScreen({super.key});
-
+  const StartTripScreen({super.key, required this.isedit, required this.initdata});
+  final bool isedit;
+  final dynamic initdata;
   @override
   State<StartTripScreen> createState() => _StartTripScreenState();
 }
@@ -45,9 +49,15 @@ class _StartTripScreenState extends State<StartTripScreen> {
   @override
   void initState() {
     super.initState();
-    isEdit = Get.arguments['isedit'];
+    initialize1();
+    initialize();
+    setState(() {});
+  }
+
+  initialize1() {
+    isEdit = widget.isedit;
     if (isEdit) {
-      initdata = Get.arguments['initdata'];
+      initdata = widget.initdata;
 
       tripDate = initdata["trip_date"].toString();
       vehiclenumber = initdata["vehicle_no"].toString();
@@ -76,7 +86,6 @@ class _StartTripScreenState extends State<StartTripScreen> {
         }).toList();
       }
     }
-    initialize();
     setState(() {});
   }
 
@@ -299,6 +308,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
                       fieldType: "number",
                       onchanged: (val) {
                         kilometer = val;
+                        log("kilometer: $kilometer");
                         setState(() {});
                       },
                     ),
@@ -377,17 +387,17 @@ class _StartTripScreenState extends State<StartTripScreen> {
                     Center(
                       child: UIHelper().actionButton("Next", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () async {
                         if (tripDate.isEmpty) {
-                          Utils().showToast("Warning", "please select Trip date", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please select Trip date", bgclr: _colors.orangeColour);
                         } else if (vehiclenumber.isEmpty) {
-                          Utils().showToast("Warning", "please select Vehicle", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please select Vehicle", bgclr: _colors.orangeColour);
                         } else if (selectedDriverid.isEmpty) {
-                          Utils().showToast("Warning", "please select Driver", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please select Driver", bgclr: _colors.orangeColour);
                         } else if (overAllCashAmt < 1 || overAllOperatorAmt < 1) {
-                          Utils().showToast("Warning", "Amount Details missing", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "Amount Details missing", bgclr: _colors.orangeColour);
                         } else if (kilometer.isEmpty) {
-                          Utils().showToast("Warning", "please Enter the Kilometers", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please Enter the Kilometers", bgclr: _colors.orangeColour);
                         } else if (salaryPercentage.isEmpty) {
-                          Utils().showToast("Warning", "please Enter the salary percentage", bgclr: _colors.orangeColour);
+                          Utils().showToast(context, "Warning", "please Enter the salary percentage", bgclr: _colors.orangeColour);
                         } else {
                           Map<String, dynamic> reqData = dataparsefunction();
                           if (isEdit) {
@@ -396,7 +406,7 @@ class _StartTripScreenState extends State<StartTripScreen> {
                           } else {
                             reqData['service_id'] = "new_trip";
                           }
-                          await AppController().newTripStart(context,reqData);
+                          await AppController().newTripStart(context, reqData);
                         }
                       }),
                     )
@@ -469,9 +479,10 @@ class _StartTripScreenState extends State<StartTripScreen> {
   }
 
   Future fuelUpdateDialog() async {
-    await Get.dialog<void>(
-        barrierDismissible: false,
-        FuelMaintanance(
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return FuelMaintanance(
             initialData: fuelDetailsList,
             returnData: (value) {
               fuelDetailsList = value;
@@ -481,6 +492,8 @@ class _StartTripScreenState extends State<StartTripScreen> {
               }
               overallfuel = oaf.toString();
               setState(() {});
-            }));
+            });
+      },
+    );
   }
 }

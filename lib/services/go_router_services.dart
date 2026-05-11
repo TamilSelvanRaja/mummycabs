@@ -1,7 +1,6 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/ui/admin/admin_dashboard.dart';
 import 'package:mummy_cabs/ui/admin/car_detail.dart';
 import 'package:mummy_cabs/ui/admin/compant_triplist.dart';
@@ -47,125 +46,133 @@ class Routes {
   static String driverStatement = 'driverStatement';
 }
 
-
 class AppRouter {
   static final GoRouter router = GoRouter(
+    redirect: (context, state) async {
+      final loggedIn = await PreferenceService().getString("mobile") != "" && await PreferenceService().getString("password") != "";
+
+      final loggingIn = state.matchedLocation == '/login';
+
+      if (!loggedIn && !loggingIn) {
+        return Routes.login;
+      }
+
+      if (loggedIn && loggingIn) {
+        return Routes.adminDashboard;
+      }
+      return null;
+    },
     routes: <RouteBase>[
       GoRoute(
         path: Routes.initial,
         builder: (BuildContext context, GoRouterState state) => const SplashScreen(),
-      
         routes: <RouteBase>[
-         GoRoute( 
-            path: Routes.login,
-            builder: (BuildContext context, GoRouterState state) {
-              return const LoginScreen();
-            }),
+          GoRoute(
+              path: Routes.login,
+              builder: (BuildContext context, GoRouterState state) {
+                return const LoginScreen();
+              }),
           GoRoute(
             path: Routes.signup,
             builder: (BuildContext context, GoRouterState state) {
               return const SignupScreen();
             },
           ),
-
           GoRoute(
             path: Routes.password,
             builder: (BuildContext context, GoRouterState state) {
               return const ForgotPasswordScreen();
             },
           ),
-
           GoRoute(
             path: Routes.adminDashboard,
             builder: (BuildContext context, GoRouterState state) {
               return const AdminDashboard();
             },
           ),
-
           GoRoute(
             path: Routes.starttrip,
             builder: (BuildContext context, GoRouterState state) {
-              return const StartTripScreen();
+              final data = state.extra as Map<String, dynamic>;
+              return StartTripScreen(
+                isedit: data['isedit'],
+                initdata: data['initdata'],
+              );
             },
           ),
-
           GoRoute(
             path: Routes.cardetails,
             builder: (BuildContext context, GoRouterState state) {
               return const CarDetailsScreen();
             },
           ),
-
           GoRoute(
             path: Routes.driverlist,
             builder: (BuildContext context, GoRouterState state) {
               return const DriverListScreen();
             },
           ),
-
           GoRoute(
             path: Routes.driverdetails,
             builder: (BuildContext context, GoRouterState state) {
-              return const DriverDetailsScreen();
+              final data = state.extra as Map<String, dynamic>;
+              return DriverDetailsScreen(
+                initdata: data['initdata'],
+              );
             },
           ),
-
           GoRoute(
             path: Routes.triplist,
             builder: (BuildContext context, GoRouterState state) {
               return const TripListPage();
             },
           ),
-
           GoRoute(
             path: Routes.pendingtriplist,
             builder: (BuildContext context, GoRouterState state) {
               return const PendingListPage();
             },
           ),
-
           GoRoute(
             path: Routes.driverDashboard,
             builder: (BuildContext context, GoRouterState state) {
               return const DriverDashboard();
             },
           ),
-
           GoRoute(
             path: Routes.driverTransaction,
             builder: (BuildContext context, GoRouterState state) {
               return const DriverTransactionScreen();
             },
           ),
-
           GoRoute(
             path: Routes.customerList,
             builder: (BuildContext context, GoRouterState state) {
               return const CustomerDetails();
             },
           ),
-
           GoRoute(
             path: Routes.companyTripList,
             builder: (BuildContext context, GoRouterState state) {
               return const CompantTripList();
             },
           ),
-
           GoRoute(
             path: Routes.companyaddEditTrip,
             builder: (BuildContext context, GoRouterState state) {
-              return const CompantTripScreen();
+              final data = state.extra as Map<String, dynamic>;
+              return CompantTripScreen(
+                isedit: data['isedit'],
+                initdata: data['initdata'],
+              );
             },
           ),
-
           GoRoute(
             path: Routes.driverOldTransaction,
             builder: (BuildContext context, GoRouterState state) {
               return const PendingTransactionScreen();
             },
           ),
-
           GoRoute(
             path: Routes.driverStatement,
             builder: (BuildContext context, GoRouterState state) {

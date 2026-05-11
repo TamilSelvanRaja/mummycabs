@@ -14,49 +14,77 @@ class Utils {
   }
 
   //// ************ Circle Indicator ***********\\\\\
-  Future<void> showProgress() async {
-    Get.dialog(
-        barrierColor: _colors.whiteColour.withOpacity(0.8),
-        barrierDismissible: false,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(_images.loader, height: 150, width: 150),
-            UIHelper.verticalSpaceSmall,
-            UIHelper.titleTxtStyle("Loading...", fntWeight: FontWeight.bold, fntsize: 15, fntcolor: _colors.bluecolor)
-          ],
-        ));
+  Future<void> showProgress(BuildContext context) async {
+    showDialog(
+        barrierColor: _colors.greycolor,
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: Container(
+                width: 200,
+                height: 300,
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(_images.loader, height: 150, width: 150),
+                    UIHelper.verticalSpaceSmall,
+                    UIHelper.titleTxtStyle("Loading...", fntWeight: FontWeight.bold, fntsize: 15, fntcolor: _colors.bluecolor)
+                  ],
+                )),
+          );
+        });
   }
 
 //// ************ Hide Indicator ***********\\\\\
   Future<void> hideProgress(BuildContext context) async {
-     context.pop();
+    context.pop();
   }
 
   //// ************ Show Toast ***********\\\\\
-  void showToast(String title, String message, {Color bgclr = Colors.red}) {
-    Get.snackbar(title, message,
-        animationDuration: const Duration(milliseconds: 800),
-        snackPosition: SnackPosition.BOTTOM,
+  void showToast(BuildContext context, String title, String message, {Color bgclr = Colors.red}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Column(
+          children: [
+            Text(
+              message,
+              style: TextStyle(fontSize: 30, color: _colors.whiteColour),
+            ),
+            Text(
+              message,
+              style: TextStyle(fontSize: 20, color: _colors.whiteColour),
+            ),
+          ],
+        ),
         backgroundColor: bgclr,
-        colorText: _colors.whiteColour,
-        margin: const EdgeInsets.fromLTRB(30, 0, 30, 30));
+        margin: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(milliseconds: 800),
+      ),
+    );
+    // Get.snackbar(title, message,
+    //     animationDuration: const Duration(milliseconds: 800),
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: bgclr,
+    //     colorText: _colors.whiteColour,
+    //     margin: const EdgeInsets.fromLTRB(30, 0, 30, 30));
   }
 
   //// ************ Popup Alert ***********\\\\\
-  Future<void> showAlert(String contentType, String message, {final onComplete, final onBackPress, final subTitle}) async {
-    await Get.dialog<void>(
-      barrierDismissible: false,
-      CustomAlert(title: contentType, message: message, onBackPress: onBackPress ?? () {}, onClickOK: onComplete ?? () {}, subTitle: subTitle ?? ""),
-    );
+  Future<void> showAlert(BuildContext context, String contentType, String message, {final onComplete, final onBackPress, final subTitle}) async {
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return CustomAlert(title: contentType, message: message, onBackPress: onBackPress ?? () {}, onClickOK: onComplete ?? () {}, subTitle: subTitle ?? "");
+        });
   }
 
-getWidgetHeight(context){
-  return MediaQuery.of(context).size.height;
-}
+  getWidgetHeight(context) {
+    return MediaQuery.of(context).size.height;
+  }
 
-getWidgetWidth(context){
-  return MediaQuery.of(context).size.width;
-}
-
+  getWidgetWidth(context) {
+    return MediaQuery.of(context).size.width;
+  }
 }

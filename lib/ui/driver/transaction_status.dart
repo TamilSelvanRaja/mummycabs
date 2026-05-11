@@ -46,7 +46,7 @@ class _DriverTransactionScreenState extends State<DriverTransactionScreen> {
           ChangeNotifierProvider(create: (_) {
             final controller = AppController();
             Future.delayed(const Duration(milliseconds: 600), () {
-              controller.gettransactionList("${userdata['_id']}");
+              controller.gettransactionList(context, "${userdata['_id']}");
             });
             return controller;
           })

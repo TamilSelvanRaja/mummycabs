@@ -63,7 +63,8 @@ class _CustomAlertState extends State<CustomAlert> {
                         alignment: Alignment.centerRight,
                         child: InkWell(
                           onTap: (() {
-                             context.pop();;
+                            context.pop();
+                            ;
                             widget.onBackPress();
                           }),
                           child: Icon(Icons.close_rounded, size: 30, color: _colors.whiteColour),
@@ -89,8 +90,8 @@ class _CustomAlertState extends State<CustomAlert> {
             UIHelper.verticalSpaceSmall,
             UIHelper.titleTxtStyle(widget.message, fntcolor: _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
             UIHelper.verticalSpaceMedium,
-            UIHelper().actionButton(widget.title == "S" || widget.title == "F" ? "Ok" : "Yes", 16, Utils().getWidgetWidth(context) / 4, onPressed: () {
-               context.pop();;
+            UIHelper().actionButton(widget.title == "S" || widget.title == "F" ? "Ok" : "Yes", 16, Utils().getWidgetWidth(context) / 8, onPressed: () {
+              context.pop();
               widget.onClickOK();
             }),
             UIHelper.verticalSpaceMedium

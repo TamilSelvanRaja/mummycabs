@@ -46,7 +46,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
               ChangeNotifierProvider(create: (_) {
                 final controller = AppController();
                 Future.delayed(const Duration(milliseconds: 600), () {
-                  controller.getcarList("drivers_list");
+                  controller.getcarList(context, "drivers_list");
                 });
                 return controller;
               })
@@ -83,7 +83,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                         IconButton(
                             onPressed: () async {
                               await context.push(Routes.signup, extra: {"isSignup": false});
-                              await appController.getcarList("drivers_list");
+                              await appController.getcarList(context, "drivers_list");
                             },
                             icon: Icon(size: 40, color: _colors.primarycolour, Icons.add_circle_outlined)),
                       ],
@@ -147,9 +147,9 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                               icon: Icon(Icons.edit, size: 20, color: _colors.primarycolour)),
                                                           IconButton(
                                                               onPressed: () {
-                                                                Utils().showAlert("De", "Do you want to delete driver \n\"${currentData['name']}\" ?", onComplete: () {
+                                                                Utils().showAlert(context, "De", "Do you want to delete driver \n\"${currentData['name']}\" ?", onComplete: () {
                                                                   Map<String, dynamic> postParams = {'service_id': "user_deactivate", "_id": currentData['_id'], "active_flag": 0};
-                                                                  appController.deactivatedrivers(postParams);
+                                                                  appController.deactivatedrivers(context, postParams);
                                                                 });
                                                               },
                                                               icon: Icon(Icons.delete, size: 20, color: _colors.redColour)),
@@ -205,11 +205,10 @@ class _DriverListScreenState extends State<DriverListScreen> {
   }
 
   Future showCarAddDialog(dynamic currentdata) async {
-    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
-      return MediaQuery.removeViewInsets(
-          removeBottom: true,
-          context: context,
-          child: AlertDialog(
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
               contentPadding: EdgeInsets.zero,
               backgroundColor: _colors.bgClr,
               insetPadding: EdgeInsets.only(
@@ -229,7 +228,8 @@ class _DriverListScreenState extends State<DriverListScreen> {
                             Expanded(child: UIHelper.titleTxtStyle("Edit Driver", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                 context.pop();;
+                                context.pop();
+                                ;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -252,7 +252,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                 Map<String, dynamic> postParams = Map.from(_formkey.currentState!.value);
                                 postParams['service_id'] = "driver_update";
                                 postParams['_id'] = currentdata['_id'];
-                                appController.driverupdate(context,postParams);
+                                appController.driverupdate(context, postParams);
                               }
                             }),
                           ])),
@@ -260,7 +260,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     UIHelper.verticalSpaceMedium,
                   ],
                 ),
-              )));
-    }));
+              ));
+        });
   }
 }

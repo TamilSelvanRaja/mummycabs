@@ -95,10 +95,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                         Expanded(flex: 2, child: UIHelper.titleTxtStyle(currentData['reg_no'].toString().toUpperCase(), fntsize: 14)),
                                         GestureDetector(
                                             onTap: () {
-                                              Utils().showAlert("De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
+                                              Utils().showAlert(context, "De", "Do you want to ${isactive == "1" ? "deactive" : "activate"}?", subTitle: isactive == "1" ? "Deactivate" : "Activate",
                                                   onComplete: () {
                                                 Map<String, dynamic> postParams = {'service_id': "car_deactive", "_id": currentData['_id'], "active_flag": isactive == "1" ? 0 : 1};
-                                                appController.deactivatecar(postParams);
+                                                appController.deactivatecar(context, postParams);
                                               });
                                             },
                                             child: isactive == "1" ? Icon(Icons.check, color: _colors.greenColour) : Icon(Icons.close, color: _colors.redColour)),
@@ -127,11 +127,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   }
 
   Future showCarAddDialog(bool isEdit, dynamic cardata) async {
-    await Get.dialog<void>(barrierDismissible: false, StatefulBuilder(builder: (context, setState) {
-      return MediaQuery.removeViewInsets(
-          removeBottom: true,
-          context: context,
-          child: AlertDialog(
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
               contentPadding: EdgeInsets.zero,
               backgroundColor: _colors.bgClr,
               insetPadding: EdgeInsets.only(
@@ -151,7 +150,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             Expanded(child: UIHelper.titleTxtStyle(isEdit ? "Edit car details" : "Add New Car", fntcolor: _colors.bgClr, fntsize: 18)),
                             InkWell(
                               onTap: (() {
-                                 context.pop();;
+                                context.pop();
+                                ;
                               }),
                               child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                             ),
@@ -175,10 +175,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 if (isEdit) {
                                   postParams['service_id'] = "car_update";
                                   postParams['_id'] = cardata['_id'];
-                                  appController.newaddcar(context,postParams);
+                                  appController.newaddcar(context, postParams);
                                 } else {
                                   postParams['service_id'] = "add_new_car";
-                                  appController.newaddcar(context,postParams);
+                                  appController.newaddcar(context, postParams);
                                 }
                               }
                             }),
@@ -187,7 +187,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     UIHelper.verticalSpaceMedium,
                   ],
                 ),
-              )));
-    }));
+              ));
+        });
   }
 }

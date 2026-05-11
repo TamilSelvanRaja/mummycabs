@@ -17,7 +17,7 @@ class ImageController extends ChangeNotifier {
       }
     } on PlatformException catch (e) {
       if (e.code == 'camera_access_denied') {
-        utils.showToast("Failed", "File Access Permission Denied");
+        utils.showToast(context, "Failed", "File Access Permission Denied");
         await AppSettings.openAppSettings(type: AppSettingsType.settings);
       }
     } catch (e) {

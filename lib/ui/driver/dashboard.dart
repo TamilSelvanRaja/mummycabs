@@ -46,7 +46,7 @@ class _DriverDashboardState extends State<DriverDashboard> {
               final controller = AppController();
               cartAmount = double.parse("${userdata['cart_amt']}");
               Future.delayed(const Duration(seconds: 1), () {
-                controller.getdrivertripList("All");
+                controller.getdrivertripList(context, "All");
               });
               return controller;
             })
@@ -91,9 +91,9 @@ class _DriverDashboardState extends State<DriverDashboard> {
         ),
         floatingActionButton: IconButton(
             onPressed: () async {
-              appController.getdrivertripList("All");
+              appController.getdrivertripList(context, "All");
               dynamic postParams = {"service_id": "login", "mobile": await PreferenceService().getString("mobile"), "password": await PreferenceService().getString("password")};
-              AppController().cartAmountGet(postParams);
+              AppController().cartAmountGet(context, postParams);
             },
             icon: Icon(size: 40, color: _colors.primarycolour, Icons.replay_circle_filled_outlined)));
   }
@@ -224,13 +224,14 @@ class _DriverDashboardState extends State<DriverDashboard> {
   itemWidget(title, int i, IconData icon) {
     return InkWell(
       onTap: () {
-         context.pop();;
+        context.pop();
+        ;
         if (i == 0) {
           context.push(Routes.driverTransaction);
         } else if (i == 1) {
-          Utils().showAlert("O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
+          Utils().showAlert(context, "O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
             PreferenceService().cleanAllPreferences();
-            context.go(Routes.initial);
+            context.go(Routes.login);
           });
         } else if (i == 4) {
           context.push(Routes.driverStatement);
