@@ -23,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
       backgroundColor: _colors.bgClr,
       body: Center(
@@ -58,18 +57,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: UIHelper.titleTxtStyle("Forgot password?", fntcolor: _colors.bluecolor, fntsize: 14))),
                     UIHelper.verticalSpaceMedium,
                     UIHelper().actionButton("Login", 18, Utils().getWidgetWidth(context) / 2, bgcolour: _colors.primarycolour, onPressed: () async {
-                      dynamic postParams = {
-                        "service_id": "login",
-                        "mobile": "8608335666",
-                        "password": "Mani@123#",
-                      };
-                      AppController().loginFunction(context,postParams);
+                      // dynamic postParams = {
+                      //   "service_id": "login",
+                      //   "mobile": "8608335666",
+                      //   "password": "Mani@123#",
+                      // };
+                      // AppController().loginFunction(context,postParams);
 
-                      // if (_formKey.currentState!.saveAndValidate()) {
-                      //   Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
-                      //   postParams['service_id'] = "login";
-                      //   AppController().loginFunction(postParams);
-                      // }
+                      if (_formKey.currentState!.saveAndValidate()) {
+                        Map<String, dynamic> postParams = Map.from(_formKey.currentState!.value);
+                        postParams['service_id'] = "login";
+                        AppController().loginFunction(context, postParams);
+                      }
                     }),
                     const Spacer(),
                     const Spacer(),
@@ -79,8 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         UIHelper.titleTxtStyle("Dont have an account?", fntcolor: _colors.bluecolor, fntsize: 14),
                         InkWell(
                             onTap: () {
-                               context.push(Routes.signup, extra:{"isSignup": true} );
-                           },
+                              context.push(Routes.signup, extra: {"isSignup": true});
+                            },
                             child: UIHelper.titleTxtStyle(" Register here", fntcolor: _colors.bluecolor, fntsize: 14, fntWeight: FontWeight.bold)),
                       ],
                     ),
