@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/services/go_router_services.dart';
@@ -7,8 +7,6 @@ import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
 
 class AppController with ChangeNotifier {
-  AppController() {}
-
   List admin_deriverList = [];
   List admin_carList = [];
   List admin_customerList = [];

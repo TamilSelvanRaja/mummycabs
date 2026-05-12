@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mummy_cabs/services/go_router_services.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GoRouter.optionURLReflectsImperativeAPIs = true;
-  setUrlStrategy(const HashUrlStrategy());
+  await Hive.initFlutter();
+  await Hive.openBox('mummycabs');
+
   runApp(const MyApp());
 }
 

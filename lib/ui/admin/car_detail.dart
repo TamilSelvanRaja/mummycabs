@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
-import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
+import 'package:mummy_cabs/ui/widgets/custom_header.dart';
 import 'package:provider/provider.dart';
 
 class CarDetailsScreen extends StatefulWidget {
@@ -45,13 +44,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               appController.initialize();
               return Column(
                 children: [
-                  Container(
-                    width: Utils().getWidgetWidth(context),
-                    height: 100,
-                    alignment: Alignment.center,
-                    decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
-                    child: UIHelper.titleTxtStyle("Car Details", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
-                  ),
+                  CustomHeader(title: "Car Details"),
                   Container(
                     height: 50,
                     width: Utils().getWidgetWidth(context),

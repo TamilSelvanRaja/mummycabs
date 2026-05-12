@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:mummy_cabs/services/utils.dart';
 
 //**********************************************/
 //************** Service API Call **************/
@@ -48,7 +46,6 @@ class ApiServices {
 //************ Shared Preferences **************/
 //**********************************************/
 class PreferenceService {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
   List paymentTypes = [
     {"reg_no": "Cash"},
     {"reg_no": "G-pay"},
@@ -56,53 +53,39 @@ class PreferenceService {
     {"reg_no": "Paytm"}
   ];
 
-//// ************ Set User Info ***********\\\\\
-  Future<void> setString(String key, String value) async {
-    await _storage.write(key: key, value: value);
+  Future setString(key, value) async {
+    var box = Hive.box('mummycabs');
+    await box.put(key, value);
   }
 
-//// ************ Get User Info ***********\\\\\
-  Future<String> getString(String key) async {
-    String getStr = await _storage.read(key: key) ?? '';
-    if (getStr != '') {
-      return getStr;
-    }
-    return '';
+  Future getString(key) async {
+    var box = Hive.box('mummycabs');
+    return await box.get(key, defaultValue: "");
   }
 
   Future setjsonData(key, value) async {
-    await Hive.openBox('mummycabs');
     var box = Hive.box('mummycabs');
     await box.put(key, value);
   }
 
   Future getjsonData(key) async {
-    await Hive.openBox('mummycabs');
     var box = Hive.box('mummycabs');
     return await box.get(key, defaultValue: {});
   }
 
   Future setArrayData(key, value) async {
-    await Hive.openBox('mummycabs');
     var box = Hive.box('mummycabs');
     await box.put(key, value);
   }
 
   Future getArrayData(key) async {
-    await Hive.openBox('mummycabs');
     var box = Hive.box('mummycabs');
-    return await box.get(key, defaultValue: {});
+    return await box.get(key, defaultValue: []);
   }
 
 //// ************ Clear the local Storage ***********\\\\\
   Future cleanAllPreferences() async {
-    final box = await Hive.openBox('mummycabs');
-
+    final box = Hive.box('mummycabs');
     await box.clear();
-
-    await box.close();
-
-    await Hive.deleteBoxFromDisk('mummycabs');
-    _storage.deleteAll();
   }
 }

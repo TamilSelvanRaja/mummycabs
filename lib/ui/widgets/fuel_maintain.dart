@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/resources/colors.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
@@ -20,7 +17,6 @@ class _FuelMaintananceState extends State<FuelMaintanance> {
   List<Map<String, TextEditingController>> rows = [];
   @override
   void initState() {
-    log("initialData ${widget.initialData}");
     super.initState();
 
     for (var i in widget.initialData) {
@@ -72,7 +68,8 @@ class _FuelMaintananceState extends State<FuelMaintanance> {
                           InkWell(
                             onTap: () {
                               rows.clear();
-                               context.pop();;
+                              context.pop();
+                              ;
                             },
                             child: Icon(Icons.close_rounded, size: 30, color: _colors.bgClr),
                           ),
@@ -167,7 +164,8 @@ class _FuelMaintananceState extends State<FuelMaintanance> {
                           }
                         }
                         widget.returnData(resarray);
-                         context.pop();;
+                        context.pop();
+                        ;
                       },
                       child: Container(
                         width: Utils().getWidgetWidth(context) / 2,

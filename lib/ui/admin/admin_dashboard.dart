@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -178,7 +175,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   UIHelper.verticalSpaceSmall,
                   Container(
-                    width: 200,
+                    width: Utils().getWidgetWidth(context) / 6,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     decoration: UIHelper.roundedBorderWithColor(10, 10, 10, 10, _colors.whiteColour),
                     child: Row(
@@ -384,8 +381,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
               dutydetailsEditDialog();
             } else {
               Utils().showAlert(context, "O", "Do you want to logout?", subTitle: "Logout", onComplete: () {
-                PreferenceService().cleanAllPreferences();
                 context.go(Routes.login);
+
+                PreferenceService().cleanAllPreferences();
               });
             }
           },

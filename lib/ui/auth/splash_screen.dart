@@ -18,24 +18,23 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final AppImages _images = AppImages();
   final AppColors _colors = AppColors();
- 
+
   @override
   void initState() {
     super.initState();
-   ;
 
     Future.delayed(const Duration(seconds: 2), () {
       initializate();
     });
   }
 
-  initializate() async {   
-     if (await PreferenceService().getString("mobile") != "" && await PreferenceService().getString("password") != "") {
-       dynamic postParams = {"service_id": "login", "mobile": await PreferenceService().getString("mobile"), "password": await PreferenceService().getString("password")};
-      AppController().loginFunction(context,postParams);
-     } else {
-     context.go(Routes.login);
-     }
+  initializate() async {
+    if (await PreferenceService().getString("mobile") != "" && await PreferenceService().getString("password") != "") {
+      dynamic postParams = {"service_id": "login", "mobile": await PreferenceService().getString("mobile"), "password": await PreferenceService().getString("password")};
+      AppController().loginFunction(context, postParams);
+    } else {
+      context.go(Routes.login);
+    }
   }
 
   @override
@@ -43,14 +42,14 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: _colors.bgClr,
       body: SizedBox(
-        width:  Utils().getWidgetWidth(context),
+        width: Utils().getWidgetWidth(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             UIHelper.titleTxtStyle("Mummy Cab's", fntcolor: _colors.primarycolour, fntsize: 70, fntWeight: FontWeight.bold, txtAlign: TextAlign.center),
             UIHelper.verticalSpaceSmall,
-           Image.asset(_images.loader, height: 200, width: 200),
+            Image.asset(_images.loader, height: 200, width: 200),
           ],
         ),
       ),

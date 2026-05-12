@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mummy_cabs/controller/auth_controller.dart';
 import 'package:mummy_cabs/resources/colors.dart';
@@ -10,7 +7,7 @@ import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/go_router_services.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
-import 'package:mummy_cabs/ui/admin/start_trip.dart';
+import 'package:mummy_cabs/ui/widgets/custom_header.dart';
 import 'package:provider/provider.dart';
 
 class PendingListPage extends StatefulWidget {
@@ -52,13 +49,7 @@ class _PendingListPageState extends State<PendingListPage> {
               decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
               child: Column(
                 children: [
-                  Container(
-                    width: Utils().getWidgetWidth(context),
-                    height: 100,
-                    alignment: Alignment.center,
-                    decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
-                    child: UIHelper.titleTxtStyle("Pending List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
-                  ),
+                  CustomHeader(title: "Pending List"),
                   Expanded(
                       child: appController.pendingtripsList.isNotEmpty
                           ? ListView.builder(

@@ -51,13 +51,21 @@ class _CompantTripListState extends State<CompantTripList> {
                   children: [
                     Container(
                         width: Utils().getWidgetWidth(context),
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         height: 100,
                         alignment: Alignment.center,
                         decoration: UIHelper.roundedBorderWithColor(20, 20, 0, 0, _colors.primarycolour),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            IconButton(
+                                onPressed: () {
+                                  context.pop();
+                                },
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  color: _colors.bgClr,
+                                )),
                             UIHelper.titleTxtStyle("Company Trip List", fntcolor: _colors.whiteColour, fntsize: 30, fntWeight: FontWeight.bold),
                             if (appController.companytripsList.isNotEmpty)
                               IconButton(
