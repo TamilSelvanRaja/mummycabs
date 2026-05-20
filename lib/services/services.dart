@@ -8,8 +8,8 @@ import 'package:http/http.dart' as http;
 //************** Service API Call **************/
 //**********************************************/
 class ApiServices {
-  //String apiurl = "https://xaviersxxxgym.com/mummy_cabs";
-  String apiurl = "http://10.163.19.180/mummycabs";
+  String apiurl = "https://mummycabs.in/mummy_cabs";
+  //String apiurl = "http://10.163.19.180/mummycabs";
   //String apiurl = "http://192.168.1.4/mummy_cabs";
 
   Future formDataAPIServices(Map<String, dynamic> requestJson, String localPath) async {
