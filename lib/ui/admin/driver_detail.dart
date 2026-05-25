@@ -8,6 +8,7 @@ import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
+import 'package:mummy_cabs/ui/widgets/custom_header.dart';
 import 'package:provider/provider.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
@@ -40,6 +41,8 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
         top: true,
         child: Center(
           child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
             width: Utils().getWidgetWidth(context) / 2,
             child: MultiProvider(
               providers: [
@@ -56,20 +59,22 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                 appController = ref;
                 return Column(
                   children: [
+                    CustomHeader(title: "Transactions Details"),
                     Row(
                         children: List.generate(2, (index) {
-                      return GestureDetector(
-                        onTap: () {
-                          selectedHistory = index;
-                          setState(() {});
-                        },
-                        child: Container(
-                          width: Utils().getWidgetWidth(context) / 4,
-                          alignment: Alignment.center,
-                          decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.primarycolour : _colors.greycolor1),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          child: UIHelper.titleTxtStyle(index == 0 ? "Trip History" : "Pending History",
-                              fntcolor: index == selectedHistory ? _colors.whiteColour : _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            selectedHistory = index;
+                            setState(() {});
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.bluecolor : _colors.greycolor1),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: UIHelper.titleTxtStyle(index == 0 ? "Trip History" : "Pending History",
+                                fntcolor: index == selectedHistory ? _colors.whiteColour : _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
+                          ),
                         ),
                       );
                     })),
@@ -308,7 +313,6 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                   postParams['type'] = title;
                                   await appController.cartAmtUpdateFun(context, postParams);
                                   context.pop();
-                                  ;
                                   await appController.gettransactionList(context, id);
                                 } else {
                                   context.pop();

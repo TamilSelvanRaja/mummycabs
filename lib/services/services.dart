@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -33,6 +34,7 @@ class ApiServices {
 
       if (streamedResponse.statusCode == 200) {
         var decodedData = json.decode(responseString);
+        log("decodedData $decodedData");
         return decodedData;
       }
       return null;
