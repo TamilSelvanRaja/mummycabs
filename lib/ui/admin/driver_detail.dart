@@ -8,6 +8,7 @@ import 'package:mummy_cabs/resources/input_fields.dart';
 import 'package:mummy_cabs/resources/ui_helper.dart';
 import 'package:mummy_cabs/services/services.dart';
 import 'package:mummy_cabs/services/utils.dart';
+import 'package:mummy_cabs/ui/widgets/custom_header.dart';
 import 'package:provider/provider.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
@@ -40,6 +41,8 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
         top: true,
         child: Center(
           child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            decoration: UIHelper.roundedBorderWithColor(20, 20, 20, 20, Colors.transparent, borderColor: _colors.primarycolour),
             width: Utils().getWidgetWidth(context) / 2,
             child: MultiProvider(
               providers: [
@@ -56,20 +59,22 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                 appController = ref;
                 return Column(
                   children: [
+                    CustomHeader(title: "Transactions Details"),
                     Row(
                         children: List.generate(2, (index) {
-                      return GestureDetector(
-                        onTap: () {
-                          selectedHistory = index;
-                          setState(() {});
-                        },
-                        child: Container(
-                          width: Utils().getWidgetWidth(context) / 4,
-                          alignment: Alignment.center,
-                          decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.primarycolour : _colors.greycolor1),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          child: UIHelper.titleTxtStyle(index == 0 ? "Trip History" : "Pending History",
-                              fntcolor: index == selectedHistory ? _colors.whiteColour : _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            selectedHistory = index;
+                            setState(() {});
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: UIHelper.roundedBorderWithColor(0, 0, 0, 0, index == selectedHistory ? _colors.bluecolor : _colors.greycolor1),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: UIHelper.titleTxtStyle(index == 0 ? "Trip History" : "Pending History",
+                                fntcolor: index == selectedHistory ? _colors.whiteColour : _colors.blackColour, fntsize: 14, fntWeight: FontWeight.bold),
+                          ),
                         ),
                       );
                     })),
@@ -144,7 +149,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   Widget transactionHistory() {
     return ListView.builder(
         itemCount: appController.transactionList.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (context1, index) {
           dynamic currentData = appController.transactionList[index];
           bool isAlignright = currentData['add_deduct_type'] == "Deduct Amount";
           DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${currentData['created_at']}");
@@ -155,7 +160,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
               Align(
                 alignment: isAlignright ? Alignment.centerRight : Alignment.centerLeft,
                 child: Container(
-                  width: Utils().getWidgetWidth(context) / 6,
+                  width: Utils().getWidgetWidth(context1) / 6,
                   padding: const EdgeInsets.all(10),
                   decoration: UIHelper.roundedBorderWithColor(15, 15, 15, 15, isAlignright ? _colors.greenColour.withOpacity(0.2) : _colors.redColour.withOpacity(0.2)),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -181,7 +186,6 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                             Utils().showAlert(context, "De", "Do you want to delete?", onComplete: () async {
                               Map<String, dynamic> postParams = {'service_id': "history_delete", 'history_id': currentData['_id'], 'driver_id': currentData['driver_id']};
                               await appController.cartAmtUpdateFun(context, postParams);
-                              context.pop();
                               await appController.gettransactionList(context, currentData['driver_id']);
                             });
                           },
@@ -257,7 +261,7 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
   Future showAmountDialog(String title, String id) async {
     await showDialog(
         context: context,
-        builder: (context) {
+        builder: (tempcontext) {
           return AlertDialog(
               contentPadding: EdgeInsets.zero,
               backgroundColor: _colors.bgClr,
@@ -307,12 +311,10 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                                   postParams['driver_id'] = id;
                                   postParams['type'] = title;
                                   await appController.cartAmtUpdateFun(context, postParams);
-                                  context.pop();
-                                  ;
                                   await appController.gettransactionList(context, id);
-                                } else {
                                   context.pop();
-                                  ;
+                                } else {
+                                  tempcontext.pop();
                                   postParams['service_id'] = "old_pending_add";
                                   postParams['driver_id'] = id;
                                   postParams['type'] = title == "Add Amount" ? "CR" : "DR";
@@ -327,5 +329,9 @@ class _DriverDetailsScreenState extends State<DriverDetailsScreen> {
                 ),
               ));
         });
+  }
+
+  void dispose() {
+    super.dispose();
   }
 }

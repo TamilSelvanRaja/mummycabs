@@ -16,7 +16,7 @@ class Utils {
   //// ************ Circle Indicator ***********\\\\\
   Future<void> showProgress(BuildContext context) async {
     showDialog(
-        barrierColor: _colors.greycolor,
+        barrierColor: _colors.greycolor.withOpacity(0.5),
         context: context,
         builder: (context) {
           return Dialog(

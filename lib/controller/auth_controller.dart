@@ -244,7 +244,6 @@ class AppController with ChangeNotifier {
   Future cartAmtUpdateFun(BuildContext context, postParams) async {
     final responce = await apiresponceCallback(context, postParams, "");
     if (responce != null) {
-      context.pop();
       Utils().showToast(context, "Success", '${responce["message"]}', bgclr: _colors.greenColour);
       List sourceDriverList = await PreferenceService().getArrayData("driversList");
 
