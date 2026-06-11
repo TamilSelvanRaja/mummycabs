@@ -238,7 +238,6 @@ class AppController with ChangeNotifier {
   Future cartAmtUpdateFun(postParams) async {
     final responce = await apiresponceCallback(postParams, "");
     if (responce != null) {
-      Get.back();
       Utils().showToast("Success", '${responce["message"]}', bgclr: _colors.greenColour);
       for (var i in pref.driversList) {
         if (i["_id"].toString() == postParams['driver_id'].toString()) {
