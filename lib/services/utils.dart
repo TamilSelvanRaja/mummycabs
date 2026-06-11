@@ -48,7 +48,7 @@ class Utils {
         content: Column(
           children: [
             Text(
-              message,
+              title,
               style: TextStyle(fontSize: 30, color: _colors.whiteColour),
             ),
             Text(

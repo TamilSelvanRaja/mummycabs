@@ -51,18 +51,19 @@ class AppController with ChangeNotifier {
   Future loginFunction(BuildContext context, postParams) async {
     final responce = await apiresponceCallback(context, postParams, "");
     if (responce != null) {
-      await PreferenceService().setjsonData("userdata", responce['data']);
-      await PreferenceService().setString("mobile", responce['data']['mobile']);
-      await PreferenceService().setString("password", responce['data']['password']);
-
       if (responce['data']['role'] == "Admin") {
+        await PreferenceService().setjsonData("userdata", responce['data']);
+        await PreferenceService().setString("mobile", responce['data']['mobile']);
+        await PreferenceService().setString("password", responce['data']['password']);
+
         await AppController().getcarList(context, "car_list");
         await AppController().getcarList(context, "drivers_list");
         await AppController().getcarList(context, "customer_list");
         await AppController().getcarList(context, "duty_details_get");
         context.go(Routes.adminDashboard);
       } else {
-        context.go(Routes.driverDashboard);
+        PreferenceService().cleanAllPreferences();
+        Utils().showToast(context, "Failure", 'Admin only login here.');
       }
     } else {
       PreferenceService().cleanAllPreferences();

@@ -48,20 +48,20 @@ class Routes {
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    redirect: (context, state) async {
-      final loggedIn = await PreferenceService().getString("mobile") != "" && await PreferenceService().getString("password") != "";
+    // redirect: (context, state) async {
+    //   final loggedIn = await PreferenceService().getString("mobile") != "" && await PreferenceService().getString("password") != "";
 
-      final loggingIn = state.matchedLocation == '/login';
+    //   final loggingIn = state.matchedLocation == '/login';
 
-      if (!loggedIn && !loggingIn) {
-        return Routes.login;
-      }
+    //   if (!loggedIn && !loggingIn) {
+    //     return Routes.login;
+    //   }
 
-      if (loggedIn && loggingIn) {
-        return Routes.adminDashboard;
-      }
-      return null;
-    },
+    //   if (loggedIn && loggingIn) {
+    //     return Routes.adminDashboard;
+    //   }
+    //   return null;
+    // },
     routes: <RouteBase>[
       GoRoute(
         path: Routes.initial,
